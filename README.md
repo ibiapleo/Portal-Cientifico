@@ -31,12 +31,12 @@ Uma plataforma colaborativa voltada à comunidade acadêmica, com foco no compar
 
 ## 🚀 Como Usar
 
-bash
+```bash
 git clone https://github.com/seuusuario/projeto-pesquisas-academicas.git](https://github.com/Portal-Cientifico/Portal-Cientifico)
 cd Portal-Cientifico)
 npm install
 npm run dev
-
+```
 
 ---
 
