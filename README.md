@@ -4,22 +4,22 @@ Uma plataforma colaborativa voltada à comunidade acadêmica, com foco no compar
 
 ## 👥 Colaboradores(as)
 
-> - Ênio Bazante [@eniobazante](#https://github.com/eniobazante)
-> - Gabriel Moraes [@GabrielMorais2](#https://github.com/GabrielMorais2)
-> - Leonardo Ibiapina [@ibiapleo](#https://github.com/ibiapleo)
+> - Ênio Bazante [@eniobazante](https://github.com/eniobazante)
+> - Gabriel Moraes [@GabrielMorais2](https://github.com/GabrielMorais2)
+> - Leonardo Ibiapina [@ibiapleo](https://github.com/ibiapleo)
 
 
 ---
 
 ## 🎥 Screencast da Plataforma
 
-🔗 Assista ao vídeo de demonstração [clicando aqui](#https://youtu.be/szpE2hgFouo)
+🔗 Assista ao vídeo de demonstração [clicando aqui](https://youtu.be/szpE2hgFouo)
 
 ---
 
 ## 🧪 Protótipo Lo-Fi
 
-🔗 Interaja com nosso protótipo [clicando aqui](#https://www.figma.com/proto/k5pap6pCHgXMyEZtbNGYUU/Prot%C3%B3tipo-Lo-fi---Portal-Cient%C3%ADfico?node-id=1-28&p=f&t=VVGT05M2aVdpzYf8-0&scaling=scale-down-width&content-scaling=fixed&page-id=0:1&starting-point-node-id=1:28)
+🔗 Interaja com nosso protótipo [clicando aqui](https://www.figma.com/proto/k5pap6pCHgXMyEZtbNGYUU/Prot%C3%B3tipo-Lo-fi---Portal-Cient%C3%ADfico?node-id=1-28&p=f&t=VVGT05M2aVdpzYf8-0&scaling=scale-down-width&content-scaling=fixed&page-id=0:1&starting-point-node-id=1:28)
 
 ---
 
