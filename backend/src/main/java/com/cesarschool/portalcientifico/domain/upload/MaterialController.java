@@ -32,8 +32,9 @@ public class MaterialController {
             description = "Retorna os detalhes de um material pelo ID"
     )
     @GetMapping("/{id}")
-    public MaterialResponseDTO getMaterialDetails(@PathVariable Long id) {
-        return materialService.getMaterialDetails(id);
+    public  ResponseEntity<MaterialResponseDTO> getMaterialDetails(@PathVariable Long id) {
+        MaterialResponseDTO materialResponse = materialService.getMaterialDetails(id);
+        return ResponseEntity.status(HttpStatus.OK).body(materialResponse);
     }
 
     @Operation(
@@ -42,7 +43,7 @@ public class MaterialController {
     )
     @GetMapping
     public ResponseEntity<List<MaterialResponseDTO>> getAllMaterials() {
-        List<MaterialResponseDTO> materials = materialService.getAllMaterials();
-        return ResponseEntity.ok(materials);
+        List<MaterialResponseDTO> materialResponse = materialService.getAllMaterials();
+        return ResponseEntity.status(HttpStatus.OK).body(materialResponse);
     }
 }
