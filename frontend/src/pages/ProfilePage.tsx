@@ -17,12 +17,12 @@ import {
 } from "lucide-react"
 import Layout from "../components/layout/Layout"
 import useAuth from "../hooks/useAuth"
-import useResources from "../hooks/useResource"
+import useMaterials from "../hooks/useMaterial"
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
-  const { resources, isLoading, error } = useResources({ page: 1, limit: 4 })
+  const { materials, isLoading, error } = useMaterials({ page: 1, limit: 4 })
   const [activeTab, setActiveTab] = useState<"uploads" | "saved" | "settings">("uploads")
 
   useEffect(() => {
@@ -107,7 +107,7 @@ const ProfilePage: React.FC = () => {
                     <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg">
                       <p>{error}</p>
                     </div>
-                  ) : resources.length === 0 ? (
+                  ) : materials.length === 0 ? (
                     <div className="text-center py-8">
                       <FileText className="h-12 w-12 text-gray-300 mx-auto mb-2" />
                       <h3 className="text-lg font-medium">Nenhum upload encontrado</h3>
@@ -122,11 +122,11 @@ const ProfilePage: React.FC = () => {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {resources.map((resource) => (
-                        <div key={resource.id} className="flex border rounded-lg overflow-hidden">
+                      {materials.map((material) => (
+                        <div key={material.id} className="flex border rounded-lg overflow-hidden">
                           <div className="w-16 bg-orange-50 flex items-center justify-center">
-                            {resource.type.toLowerCase().includes("article") ||
-                            resource.type.toLowerCase().includes("thesis") ? (
+                            {material.type.toLowerCase().includes("article") ||
+                            material.type.toLowerCase().includes("thesis") ? (
                               <FileText className="h-6 w-6 text-orange-500" />
                             ) : (
                               <BookOpen className="h-6 w-6 text-orange-500" />
@@ -135,16 +135,16 @@ const ProfilePage: React.FC = () => {
                           <div className="flex-1 p-4">
                             <div className="flex items-center justify-between">
                               <div>
-                                <h3 className="font-medium">{resource.title}</h3>
+                                <h3 className="font-medium">{material.title}</h3>
                                 <div className="flex items-center text-sm text-gray-500 mt-1">
-                                  <span>{resource.type}</span>
+                                  <span>{material.type}</span>
                                   <span className="mx-2">•</span>
-                                  <span>{new Date(resource.createdAt).toLocaleDateString("pt-BR")}</span>
+                                  <span>{new Date(material.createdAt).toLocaleDateString("pt-BR")}</span>
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Link
-                                  to={`/resource/${resource.id}`}
+                                  to={`/material/${material.id}`}
                                   className="inline-flex items-center justify-center rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 h-8 px-3 border"
                                 >
                                   Ver
@@ -157,19 +157,19 @@ const ProfilePage: React.FC = () => {
                             <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                               <div className="flex items-center gap-1">
                                 <Eye className="h-4 w-4" />
-                                <span>{resource.views}</span>
+                                <span>{material.views}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Download className="h-4 w-4" />
-                                <span>{resource.downloads}</span>
+                                <span>{material.downloads}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <ThumbsUp className="h-4 w-4" />
-                                <span>{resource.likes}</span>
+                                <span>{material.likes}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <MessageSquare className="h-4 w-4" />
-                                <span>{resource.comments}</span>
+                                <span>{material.comments}</span>
                               </div>
                             </div>
                           </div>

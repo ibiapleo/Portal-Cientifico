@@ -37,4 +37,10 @@ public class AuthController {
         userService.logout(refreshTokenRequestDTO.getRefreshToken());
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser(@RequestHeader("Authorization") String token) {
+        UserResponseDTO user = userService.getCurrentUser(token);
+        return ResponseEntity.ok(user);
+    }
 }

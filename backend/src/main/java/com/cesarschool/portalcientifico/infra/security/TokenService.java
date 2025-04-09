@@ -65,4 +65,13 @@ public class TokenService {
             throw new RuntimeException("Error while generating token");
         }
     }
+
+    public Optional<User> validateAccessToken(String token) {
+        String email = validateToken(token);
+        if (email == null) {
+            return Optional.empty();
+        }
+        return userRepository.findByEmail(email);
+    }
+
 }

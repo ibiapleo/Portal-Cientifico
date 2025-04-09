@@ -27,7 +27,7 @@ import { Progress } from "@/components/ui/progress"
 import { Textarea } from "@/components/ui/textarea"
 
 // Dados estáticos para recursos
-const staticResources = {
+const staticmaterials = {
   "1": {
     id: "1",
     title: "Fundamentos de Aprendizado de Máquina",
@@ -68,10 +68,10 @@ const staticResources = {
   },
 }
 
-const ResourcePage: React.FC = () => {
+const MaterialPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
 
-  if (!id || !staticResources[id as keyof typeof staticResources]) {
+  if (!id || !staticmaterials[id as keyof typeof staticmaterials]) {
     return (
       <div className="container mx-auto py-10 px-4 md:px-6">
         <div className="mb-8">
@@ -93,7 +93,7 @@ const ResourcePage: React.FC = () => {
     )
   }
 
-  const resource = staticResources[id as keyof typeof staticResources]
+  const material = staticmaterials[id as keyof typeof staticmaterials]
 
   return (
     <div className="container mx-auto py-10 px-4 md:px-6">
@@ -112,17 +112,17 @@ const ResourcePage: React.FC = () => {
                 <div className="space-y-2">
                   <div className="flex flex-wrap gap-2 mb-2">
                     <Badge variant="outline" className="bg-orange-50 text-orange-700">
-                      {resource.type}
+                      {material.type}
                     </Badge>
-                    <Badge variant="outline">{resource.subject}</Badge>
+                    <Badge variant="outline">{material.subject}</Badge>
                   </div>
-                  <h1 className="text-2xl font-bold">{resource.title}</h1>
+                  <h1 className="text-2xl font-bold">{material.title}</h1>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <User className="h-4 w-4" />
-                    <span>{resource.author}</span>
+                    <span>{material.author}</span>
                     <span className="mx-1">•</span>
                     <Calendar className="h-4 w-4" />
-                    <span>{resource.date}</span>
+                    <span>{material.date}</span>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -140,19 +140,19 @@ const ResourcePage: React.FC = () => {
               <div className="flex flex-wrap gap-4 mt-6 text-sm text-gray-500">
                 <div className="flex items-center gap-1">
                   <Eye className="h-4 w-4" />
-                  <span>{resource.views} visualizações</span>
+                  <span>{material.views} visualizações</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Download className="h-4 w-4" />
-                  <span>{resource.downloads} downloads</span>
+                  <span>{material.downloads} downloads</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <ThumbsUp className="h-4 w-4" />
-                  <span>{resource.likes} curtidas</span>
+                  <span>{material.likes} curtidas</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <MessageSquare className="h-4 w-4" />
-                  <span>{resource.comments} comentários</span>
+                  <span>{material.comments} comentários</span>
                 </div>
               </div>
 
@@ -167,13 +167,13 @@ const ResourcePage: React.FC = () => {
                 <TabsContent value="about" className="space-y-6 pt-4">
                   <div>
                     <h3 className="text-lg font-medium mb-2">Descrição</h3>
-                    <p className="text-gray-700">{resource.description}</p>
+                    <p className="text-gray-700">{material.description}</p>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">Palavras-chave</h3>
                     <div className="flex flex-wrap gap-2">
-                      {resource.keywords.map((keyword, index) => (
+                      {material.keywords.map((keyword, index) => (
                         <Badge key={index} variant="secondary" className="bg-orange-50">
                           {keyword}
                         </Badge>
@@ -188,23 +188,23 @@ const ResourcePage: React.FC = () => {
                         <li className="flex items-center gap-2">
                           <FileText className="h-4 w-4 text-gray-500" />
                           <span className="text-gray-500">Tipo:</span>
-                          <span>{resource.fileType}</span>
+                          <span>{material.fileType}</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <Clock className="h-4 w-4 text-gray-500" />
                           <span className="text-gray-500">Páginas:</span>
-                          <span>{resource.pages}</span>
+                          <span>{material.pages}</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <Download className="h-4 w-4 text-gray-500" />
                           <span className="text-gray-500">Tamanho:</span>
-                          <span>{resource.fileSize}</span>
+                          <span>{material.fileSize}</span>
                         </li>
                       </ul>
                     </div>
                     <div>
                       <h3 className="text-lg font-medium mb-2">Instituição</h3>
-                      <p className="text-gray-700">{resource.institution}</p>
+                      <p className="text-gray-700">{material.institution}</p>
                     </div>
                   </div>
                 </TabsContent>
@@ -234,7 +234,7 @@ const ResourcePage: React.FC = () => {
                 </TabsContent>
                 <TabsContent value="comments" className="space-y-6 pt-4">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Comentários ({resource.comments})</h3>
+                    <h3 className="text-lg font-medium">Comentários ({material.comments})</h3>
 
                     <div className="space-y-4">
                       <div className="flex gap-4">
@@ -303,15 +303,15 @@ const ResourcePage: React.FC = () => {
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
                   <AvatarFallback>
-                    {resource.author
+                    {material.author
                       .split(" ")
                       .map((n) => n[0])
                       .join("")}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h4 className="font-medium">{resource.author}</h4>
-                  <p className="text-sm text-gray-500">{resource.institution}</p>
+                  <h4 className="font-medium">{material.author}</h4>
+                  <p className="text-sm text-gray-500">{material.institution}</p>
                   <Button variant="link" className="text-orange-600 p-0 h-auto text-sm">
                     Ver perfil
                   </Button>
@@ -442,5 +442,5 @@ const ResourcePage: React.FC = () => {
   )
 }
 
-export default ResourcePage
+export default MaterialPage
 

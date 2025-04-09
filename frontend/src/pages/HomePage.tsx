@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import useAuth from "../hooks/useAuth"
 
 // Dados estáticos para recursos
-const staticResources = [
+const staticmaterials = [
   {
     id: "1",
     title: "Fundamentos de Aprendizado de Máquina",
@@ -98,7 +98,7 @@ const HomePage: React.FC = () => {
   const { isAuthenticated } = useAuth()
   const [searchTerm, setSearchTerm] = useState<string>("")
   const [selectedType, setSelectedType] = useState<string>("")
-  const [resources] = useState(staticResources)
+  const [materials] = useState(staticmaterials)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -250,29 +250,29 @@ const HomePage: React.FC = () => {
           </div>
 
           <div className="mt-8 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {resources.map((resource) => (
-              <Card key={resource.id} className="overflow-hidden transition-all hover:shadow-md">
+            {materials.map((material) => (
+              <Card key={material.id} className="overflow-hidden transition-all hover:shadow-md">
                 <CardHeader className="p-4 pb-0 flex items-start justify-between">
                   <div className="flex items-center space-x-2">
                     <Badge variant="outline" className="bg-orange-50 text-orange-700 hover:bg-orange-100">
-                      {resource.type}
+                      {material.type}
                     </Badge>
-                    <Badge variant="outline">{resource.subject}</Badge>
+                    <Badge variant="outline">{material.subject}</Badge>
                   </div>
-                  <div className="rounded-full bg-orange-50 p-2">{resource.icon}</div>
+                  <div className="rounded-full bg-orange-50 p-2">{material.icon}</div>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <h3 className="font-medium line-clamp-2 min-h-[48px]">{resource.title}</h3>
+                  <h3 className="font-medium line-clamp-2 min-h-[48px]">{material.title}</h3>
                   <div className="mt-2 flex items-center text-sm text-gray-500">
-                    <span>Por {resource.author}</span>
+                    <span>Por {material.author}</span>
                     <span className="mx-2">•</span>
-                    <span>{resource.date}</span>
+                    <span>{material.date}</span>
                   </div>
                 </CardContent>
                 <CardFooter className="p-4 pt-0 flex items-center justify-between">
                   <div className="flex items-center text-sm text-gray-500">
                     <Download className="mr-1 h-4 w-4" />
-                    <span>{resource.downloads}</span>
+                    <span>{material.downloads}</span>
                   </div>
                   <Button
                     size="sm"
@@ -280,7 +280,7 @@ const HomePage: React.FC = () => {
                     className="text-orange-600 hover:bg-orange-50 hover:text-orange-700"
                     asChild
                   >
-                    <Link to={`/resource/${resource.id}`}>Ver Detalhes</Link>
+                    <Link to={`/material/${material.id}`}>Ver Detalhes</Link>
                   </Button>
                 </CardFooter>
               </Card>

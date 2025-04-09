@@ -1,9 +1,9 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Download } from 'lucide-react';
-import { ResourceCardProps } from '../../types/resource';
+import { MaterialCardProps } from '../../types/material';
 
-const ResourceCard: React.FC<ResourceCardProps> = ({
+const MaterialCard: React.FC<MaterialCardProps> = ({
   id,
   title,
   type,
@@ -42,7 +42,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
           <span>{downloads}</span>
         </div>
         <Link 
-          to={`/resource/${id}`}
+          to={`/material/${id}`}
           className="inline-flex items-center justify-center rounded-md text-sm font-medium text-orange-600 hover:bg-orange-50 hover:text-orange-700 h-8 px-3"
         >
           Ver Detalhes
@@ -52,4 +52,4 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
   );
 };
 
-export default ResourceCard;
+export default MaterialCard;

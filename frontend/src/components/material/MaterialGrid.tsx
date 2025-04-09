@@ -1,16 +1,16 @@
 import React from 'react';
 import { BookOpen, FileText } from 'lucide-react';
-import ResourceCard from './ResourceCard';
-import { Resource } from '../../types/resource';
+import MaterialCard from './MaterialCard';
+import { Material } from '../../types/material';
 
-interface ResourceGridProps {
-  resources: Resource[];
+interface MaterialGridProps {
+  materials: Material[];
   title?: string;
   description?: string;
 }
 
-const ResourceGrid: React.FC<ResourceGridProps> = ({ 
-  resources, 
+const MaterialGrid: React.FC<MaterialGridProps> = ({ 
+  materials, 
   title = "Recursos", 
   description 
 }) => {
@@ -47,22 +47,22 @@ const ResourceGrid: React.FC<ResourceGridProps> = ({
       )}
       
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {resources.map((resource) => (
-          <ResourceCard
-            key={resource.id}
-            id={resource.id}
-            title={resource.title}
-            type={resource.type}
-            subject={resource.subject}
-            author={resource.author}
-            date={formatDate(resource.createdAt)}
-            downloads={resource.downloads}
-            icon={getIconForType(resource.type)}
+        {materials.map((material) => (
+          <materialCard
+            key={material.id}
+            id={material.id}
+            title={material.title}
+            type={material.type}
+            subject={material.subject}
+            author={material.author}
+            date={formatDate(material.createdAt)}
+            downloads={material.downloads}
+            icon={getIconForType(material.type)}
           />
         ))}
       </div>
       
-      {resources.length === 0 && (
+      {materials.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500">Nenhum recurso encontrado.</p>
         </div>
@@ -71,4 +71,4 @@ const ResourceGrid: React.FC<ResourceGridProps> = ({
   );
 };
 
-export default ResourceGrid;
+export default MaterialGrid;

@@ -16,14 +16,14 @@ import {
   Clock,
   Eye,
 } from "lucide-react"
-import resourceService from "../../services/resourceService"
-import type { Resource } from "../../types/resource"
+import MaterialService from "../../services/materialService"
+import type { Material } from "../../types/material"
 import useAuth from "../../hooks/useAuth"
 
-const ResourceDetails: React.FC = () => {
+const MaterialDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const { isAuthenticated, user } = useAuth()
-  const [resource, setResource] = useState<Resource | null>(null)
+  const [material, setmaterial] = useState<material | null>(null)
   const [activeTab, setActiveTab] = useState<"about" | "preview" | "comments">("about")
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string>("")
@@ -33,17 +33,17 @@ const ResourceDetails: React.FC = () => {
   const [likeCount, setLikeCount] = useState<number>(0)
 
   useEffect(() => {
-    const fetchResource = async () => {
+    const fetchmaterial = async () => {
       if (!id) return
 
       try {
         setIsLoading(true)
-        const data = await resourceService.getResourceById(id)
-        setResource(data)
+        const data = await materialService.getmaterialById(id)
+        setmaterial(data)
         setLikeCount(data.likes)
 
         // Buscar comentários
-        const commentsData = await resourceService.getComments(id)
+        const commentsData = await materialService.getComments(id)
         setComments(commentsData)
       } catch (err) {
         console.error("Erro ao buscar recurso:", err)
@@ -53,20 +53,20 @@ const ResourceDetails: React.FC = () => {
       }
     }
 
-    fetchResource()
+    fetchmaterial()
   }, [id])
 
   const handleDownload = async () => {
-    if (!id || !resource) return
+    if (!id || !material) return
 
     try {
-      const blob = await resourceService.downloadResource(id)
+      const blob = await materialService.downloadmaterial(id)
 
       // Criar URL para download
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = resource.title + "." + resource.fileType.toLowerCase()
+      a.download = material.title + "." + material.fileType.toLowerCase()
       document.body.appendChild(a)
       a.click()
 
@@ -83,7 +83,7 @@ const ResourceDetails: React.FC = () => {
     if (!id || !isAuthenticated) return
 
     try {
-      const { likes } = await resourceService.likeResource(id)
+      const { likes } = await materialService.likematerial(id)
       setLikeCount(likes)
       setIsLiked(true)
     } catch (err) {
@@ -97,10 +97,10 @@ const ResourceDetails: React.FC = () => {
     if (!id || !isAuthenticated || !newComment.trim()) return
 
     try {
-      await resourceService.addComment(id, newComment)
+      await materialService.addComment(id, newComment)
 
       // Atualizar comentários
-      const commentsData = await resourceService.getComments(id)
+      const commentsData = await materialService.getComments(id)
       setComments(commentsData)
       setNewComment("")
     } catch (err) {
@@ -116,7 +116,7 @@ const ResourceDetails: React.FC = () => {
     )
   }
 
-  if (error || !resource) {
+  if (error || !material) {
     return (
       <div className="container py-10">
         <div className="p-6 bg-red-50 border border-red-200 text-red-600 rounded-lg">
@@ -152,19 +152,19 @@ const ResourceDetails: React.FC = () => {
                 <div className="space-y-2">
                   <div className="flex flex-wrap gap-2 mb-2">
                     <span className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-2.5 py-0.5 text-xs font-medium text-orange-700">
-                      {resource.type}
+                      {material.type}
                     </span>
                     <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium">
-                      {resource.subject}
+                      {material.subject}
                     </span>
                   </div>
-                  <h1 className="text-2xl font-bold">{resource.title}</h1>
+                  <h1 className="text-2xl font-bold">{material.title}</h1>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <User className="h-4 w-4" />
-                    <span>{resource.author}</span>
+                    <span>{material.author}</span>
                     <span className="mx-1">•</span>
                     <Calendar className="h-4 w-4" />
-                    <span>{new Date(resource.createdAt).toLocaleDateString("pt-BR")}</span>
+                    <span>{new Date(material.createdAt).toLocaleDateString("pt-BR")}</span>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -185,11 +185,11 @@ const ResourceDetails: React.FC = () => {
               <div className="flex flex-wrap gap-4 mt-6 text-sm text-gray-500">
                 <div className="flex items-center gap-1">
                   <Eye className="h-4 w-4" />
-                  <span>{resource.views} visualizações</span>
+                  <span>{material.views} visualizações</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Download className="h-4 w-4" />
-                  <span>{resource.downloads} downloads</span>
+                  <span>{material.downloads} downloads</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <ThumbsUp
@@ -247,13 +247,13 @@ const ResourceDetails: React.FC = () => {
                   <div className="space-y-6 pt-4">
                     <div>
                       <h3 className="text-lg font-medium mb-2">Descrição</h3>
-                      <p className="text-gray-700">{resource.description}</p>
+                      <p className="text-gray-700">{material.description}</p>
                     </div>
 
                     <div>
                       <h3 className="text-lg font-medium mb-2">Palavras-chave</h3>
                       <div className="flex flex-wrap gap-2">
-                        {resource.keywords.map((keyword, index) => (
+                        {material.keywords.map((keyword, index) => (
                           <span
                             key={index}
                             className="inline-flex items-center rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-medium"
@@ -271,23 +271,23 @@ const ResourceDetails: React.FC = () => {
                           <li className="flex items-center gap-2">
                             <FileText className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-500">Tipo:</span>
-                            <span>{resource.fileType}</span>
+                            <span>{material.fileType}</span>
                           </li>
                           <li className="flex items-center gap-2">
                             <Clock className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-500">Páginas:</span>
-                            <span>{resource.pages || "N/A"}</span>
+                            <span>{material.pages || "N/A"}</span>
                           </li>
                           <li className="flex items-center gap-2">
                             <Download className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-500">Tamanho:</span>
-                            <span>{resource.fileSize}</span>
+                            <span>{material.fileSize}</span>
                           </li>
                         </ul>
                       </div>
                       <div>
                         <h3 className="text-lg font-medium mb-2">Instituição</h3>
-                        <p className="text-gray-700">{resource.institution || "Não informada"}</p>
+                        <p className="text-gray-700">{material.institution || "Não informada"}</p>
                       </div>
                     </div>
                   </div>
@@ -401,11 +401,11 @@ const ResourceDetails: React.FC = () => {
               <h3 className="text-lg font-medium">Sobre o Autor</h3>
               <div className="flex items-center gap-4">
                 <div className="flex-shrink-0 h-16 w-16 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-medium text-xl">
-                  {resource.author.charAt(0)}
+                  {material.author.charAt(0)}
                 </div>
                 <div>
-                  <h4 className="font-medium">{resource.author}</h4>
-                  <p className="text-sm text-gray-500">{resource.institution || "Instituição não informada"}</p>
+                  <h4 className="font-medium">{material.author}</h4>
+                  <p className="text-sm text-gray-500">{material.institution || "Instituição não informada"}</p>
                   <button className="text-orange-600 text-sm hover:underline">Ver perfil</button>
                 </div>
               </div>
@@ -493,5 +493,5 @@ const ResourceDetails: React.FC = () => {
   )
 }
 
-export default ResourceDetails
+export default MaterialDetails
 

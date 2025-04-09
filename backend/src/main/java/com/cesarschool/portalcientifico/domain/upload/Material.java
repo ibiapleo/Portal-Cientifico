@@ -25,13 +25,12 @@ public class Material {
     private String description;
 
     @Column(nullable = false)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private TypeMaterial type;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String discipline;
-
-    @Column(nullable = false)
-    private String knowledgeArea;
+    private Area area;
 
     @ElementCollection
     private List<String> keywords;

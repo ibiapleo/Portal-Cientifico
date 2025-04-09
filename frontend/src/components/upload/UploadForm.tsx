@@ -1,46 +1,85 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Upload, FileUp, File, X } from "lucide-react"
-import resourceService from "../../services/resourceService"
-import type { UploadFormData } from "../../types/resource"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { toast } from "react-toastify"
+import materialService from "@/services/materialService"
+
+// Enums que correspondem ao backend
+enum TypeMaterial {
+  ARTICLE = "ARTICLE",
+  THESIS = "THESIS",
+  NOTES = "NOTES",
+  PRESENTATION = "PRESENTATION",
+  EXERCISE = "EXERCISE",
+  OTHER = "OTHER",
+}
+
+enum Area {
+  COMPUTER_SCIENCE = "COMPUTER_SCIENCE",
+  ENGINEERING = "ENGINEERING",
+  MEDICINE = "MEDICINE",
+  BUSINESS = "BUSINESS",
+  LAW = "LAW",
+  PSYCHOLOGY = "PSYCHOLOGY",
+  EDUCATION = "EDUCATION",
+  ARTS = "ARTS",
+  OTHER = "OTHER",
+}
+
+// Interface atualizada para corresponder ao backend
+interface MaterialRequestDTO {
+  title: string
+  description: string
+  type: TypeMaterial
+  area: Area
+  keywords: []
+}
 
 const UploadForm: React.FC = () => {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [formData, setFormData] = useState<UploadFormData>({
+  const [formData, setFormData] = useState<MaterialRequestDTO>({
     title: "",
-    type: "",
-    subject: "",
     description: "",
-    keywords: "",
-    file: null,
+    type: TypeMaterial.ARTICLE,
+    area: Area.COMPUTER_SCIENCE,
+    keywords: []
   })
 
+  const [file, setFile] = useState<File | null>(null)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [uploadedFile, setUploadedFile] = useState<{ name: string; size: string } | null>(null)
   const [acceptTerms, setAcceptTerms] = useState<boolean>(false)
   const [error, setError] = useState<string>("")
 
+  useEffect(() => {
+    setIsUploading(false)
+  }, [])
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+  
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "keywords" ? value.split(",").map((keyword) => keyword.trim()) : value,
+    }));
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      // Verificar tamanho do arquivo (50MB = 52428800 bytes)
-      if (file.size > 52428800) {
+    const selectedFile = e.target.files?.[0]
+    if (selectedFile) {
+      if (selectedFile.size > 52428800) {
         setError("O arquivo excede o tamanho máximo de 50MB.")
         return
       }
-
-      // Verificar tipo de arquivo
       const allowedTypes = [
         "application/pdf",
         "application/msword",
@@ -48,26 +87,25 @@ const UploadForm: React.FC = () => {
         "application/vnd.ms-powerpoint",
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
       ]
-      if (!allowedTypes.includes(file.type)) {
+      if (!allowedTypes.includes(selectedFile.type)) {
         setError("Tipo de arquivo não suportado. Por favor, envie um PDF, DOC, DOCX, PPT ou PPTX.")
         return
       }
 
-      setFormData((prev) => ({ ...prev, file }))
+      setFile(selectedFile)
       setUploadedFile({
-        name: file.name,
-        size: formatFileSize(file.size),
+        name: selectedFile.name,
+        size: formatFileSize(selectedFile.size),
       })
       setError("")
 
-      // Simular upload para demonstração
       simulateUpload()
     }
   }
 
   const simulateUpload = () => {
     setUploadProgress(0)
-    setIsUploading(false)
+    setIsUploading(true)
 
     const interval = setInterval(() => {
       setUploadProgress((prev) => {
@@ -96,10 +134,9 @@ const UploadForm: React.FC = () => {
     e.preventDefault()
     e.stopPropagation()
 
-    const file = e.dataTransfer.files?.[0]
-    if (file) {
-      // Verificações de arquivo
-      if (file.size > 52428800) {
+    const droppedFile = e.dataTransfer.files?.[0]
+    if (droppedFile) {
+      if (droppedFile.size > 52428800) {
         setError("O arquivo excede o tamanho máximo de 50MB.")
         return
       }
@@ -111,15 +148,15 @@ const UploadForm: React.FC = () => {
         "application/vnd.ms-powerpoint",
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
       ]
-      if (!allowedTypes.includes(file.type)) {
+      if (!allowedTypes.includes(droppedFile.type)) {
         setError("Tipo de arquivo não suportado. Por favor, envie um PDF, DOC, DOCX, PPT ou PPTX.")
         return
       }
 
-      setFormData((prev) => ({ ...prev, file }))
+      setFile(droppedFile)
       setUploadedFile({
-        name: file.name,
-        size: formatFileSize(file.size),
+        name: droppedFile.name,
+        size: formatFileSize(droppedFile.size),
       })
       setError("")
 
@@ -129,7 +166,7 @@ const UploadForm: React.FC = () => {
   }
 
   const handleRemoveFile = () => {
-    setFormData((prev) => ({ ...prev, file: null }))
+    setFile(null)
     setUploadedFile(null)
     setUploadProgress(0)
     setIsUploading(false)
@@ -148,17 +185,7 @@ const UploadForm: React.FC = () => {
       return
     }
 
-    if (!formData.type) {
-      setError("Selecione o tipo de material.")
-      return
-    }
-
-    if (!formData.subject) {
-      setError("Selecione a disciplina/área.")
-      return
-    }
-
-    if (!formData.file) {
+    if (!file) {
       setError("Selecione um arquivo para upload.")
       return
     }
@@ -170,20 +197,23 @@ const UploadForm: React.FC = () => {
 
     try {
       const uploadData = new FormData()
-      uploadData.append("title", formData.title)
-      uploadData.append("type", formData.type)
-      uploadData.append("subject", formData.subject)
-      uploadData.append("description", formData.description)
-      uploadData.append("keywords", formData.keywords)
-      if (formData.file) {
-        uploadData.append("file", formData.file)
-      }
 
-      const response = await resourceService.uploadResource(uploadData)
+      const materialRequestDTO = new Blob([JSON.stringify(formData)], { type: "application/json" })
+      uploadData.append("materialRequestDTO", materialRequestDTO)
 
-      navigate(`/resource/${response.id}`)
+      uploadData.append("file", file)
+
+      setIsUploading(true)
+
+      const response = await materialService.uploadMaterial(uploadData)
+      setIsUploading(false)
+      toast.success("Material enviado com sucesso!")
+      //navigate(`/material/${response.id}`)
     } catch (err: any) {
-      setError(err.response?.data?.message || "Erro ao enviar o material. Tente novamente.")
+      setIsUploading(false)
+      const errorMessage = err.response?.data?.message || "Erro ao enviar o material. Tente novamente."
+      setError(errorMessage)
+      toast.error(errorMessage)
       console.error(err)
     }
   }
@@ -193,9 +223,7 @@ const UploadForm: React.FC = () => {
       {error && <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">{error}</div>}
 
       <div className="space-y-2">
-        <label htmlFor="upload-area" className="block text-sm font-medium">
-          Arquivo
-        </label>
+        <Label htmlFor="upload-area">Arquivo</Label>
         <div
           className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:bg-orange-50 transition-colors"
           onClick={() => fileInputRef.current?.click()}
@@ -216,13 +244,15 @@ const UploadForm: React.FC = () => {
               onChange={handleFileChange}
               accept=".pdf,.doc,.docx,.ppt,.pptx"
             />
-            <button
+            <Button
               type="button"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-orange-500 text-white hover:bg-orange-600 h-9 px-4 py-2 mt-2"
+              size="sm"
+              className="bg-orange-500 hover:bg-orange-600 mt-2"
+              onClick={() => fileInputRef.current?.click()}
             >
               <Upload className="mr-2 h-4 w-4" />
               Selecionar Arquivo
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -235,14 +265,15 @@ const UploadForm: React.FC = () => {
               <span className="font-medium">{uploadedFile.name}</span>
               <span className="text-xs text-gray-500">({uploadedFile.size})</span>
             </div>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-gray-500 hover:text-red-500"
               onClick={handleRemoveFile}
-              className="inline-flex items-center justify-center rounded-md text-gray-500 hover:text-red-500 h-8 w-8"
             >
               <X className="h-4 w-4" />
               <span className="sr-only">Remover</span>
-            </button>
+            </Button>
           </div>
           <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
             <div className="bg-orange-500 h-1.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
@@ -253,43 +284,22 @@ const UploadForm: React.FC = () => {
         </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
-          <label htmlFor="title" className="block text-sm font-medium">
-            Título
-          </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Digite o título do seu material"
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="author" className="block text-sm font-medium">
-            Autor
-          </label>
-          <input
-            id="author"
-            name="author"
-            type="text"
-            placeholder="Seu nome ou dos autores"
-            disabled
-            value="Preenchido automaticamente"
-            className="w-full px-3 py-2 border rounded-lg bg-gray-50 text-gray-500"
-          />
-          <p className="text-xs text-gray-500">Será usado seu nome de usuário</p>
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="title">Título</Label>
+        <input
+          id="title"
+          name="title"
+          type="text"
+          value={formData.title}
+          onChange={handleChange}
+          placeholder="Digite o título do seu material"
+          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <label htmlFor="type" className="block text-sm font-medium">
-            Tipo de Material
-          </label>
+          <Label htmlFor="type">Tipo de Material</Label>
           <select
             id="type"
             name="type"
@@ -297,48 +307,38 @@ const UploadForm: React.FC = () => {
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
-            <option value="" disabled>
-              Selecione o tipo
-            </option>
-            <option value="article">Artigo</option>
-            <option value="thesis">TCC</option>
-            <option value="notes">Resumo</option>
-            <option value="presentation">Apresentação</option>
-            <option value="exercise">Lista de Exercícios</option>
-            <option value="other">Outro</option>
+            <option value={TypeMaterial.ARTICLE}>Artigo</option>
+            <option value={TypeMaterial.THESIS}>TCC</option>
+            <option value={TypeMaterial.NOTES}>Resumo</option>
+            <option value={TypeMaterial.PRESENTATION}>Apresentação</option>
+            <option value={TypeMaterial.EXERCISE}>Lista de Exercícios</option>
+            <option value={TypeMaterial.OTHER}>Outros</option>
           </select>
         </div>
         <div className="space-y-2">
-          <label htmlFor="subject" className="block text-sm font-medium">
-            Disciplina/Área
-          </label>
+          <Label htmlFor="area">Área</Label>
           <select
-            id="subject"
-            name="subject"
-            value={formData.subject}
+            id="area"
+            name="area"
+            value={formData.area}
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
-            <option value="" disabled>
-              Selecione a área
-            </option>
-            <option value="cs">Ciência da Computação</option>
-            <option value="engineering">Engenharia</option>
-            <option value="medicine">Medicina</option>
-            <option value="business">Administração</option>
-            <option value="law">Direito</option>
-            <option value="psychology">Psicologia</option>
-            <option value="education">Educação</option>
-            <option value="arts">Artes</option>
-            <option value="other">Outra</option>
+            <option value={Area.COMPUTER_SCIENCE}>Ciência da Computação</option>
+            <option value={Area.ENGINEERING}>Engenharia</option>
+            <option value={Area.MEDICINE}>Medicina</option>
+            <option value={Area.BUSINESS}>Administração</option>
+            <option value={Area.LAW}>Direito</option>
+            <option value={Area.PSYCHOLOGY}>Psicologia</option>
+            <option value={Area.EDUCATION}>Educação</option>
+            <option value={Area.ARTS}>Artes</option>
+            <option value={Area.OTHER}>Outra</option>
           </select>
         </div>
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="description" className="block text-sm font-medium">
-          Descrição
-        </label>
+        <Label htmlFor="description">Descrição</Label>
         <textarea
           id="description"
           name="description"
@@ -350,14 +350,12 @@ const UploadForm: React.FC = () => {
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="keywords" className="block text-sm font-medium">
-          Palavras-chave
-        </label>
+        <Label htmlFor="keywords">Palavras-chave</Label>
         <input
           id="keywords"
           name="keywords"
           type="text"
-          value={formData.keywords}
+          value={formData.keywords.join(", ")} // Converte array para string
           onChange={handleChange}
           placeholder="Separe as palavras-chave por vírgulas (ex: inteligência artificial, machine learning)"
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -368,15 +366,12 @@ const UploadForm: React.FC = () => {
       </div>
 
       <div className="flex items-start space-x-2">
-        <input
-          id="terms"
-          type="checkbox"
-          checked={acceptTerms}
-          onChange={(e) => setAcceptTerms(e.target.checked)}
-          className="mt-1 rounded text-orange-500 focus:ring-orange-500"
-        />
+        <Checkbox id="terms" checked={acceptTerms} onCheckedChange={(checked) => setAcceptTerms(checked === true)} />
         <div className="grid gap-1.5 leading-none">
-          <label htmlFor="terms" className="text-sm font-medium leading-none">
+          <label
+            htmlFor="terms"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
             Aceito os termos e condições
           </label>
           <p className="text-xs text-gray-500">
@@ -390,20 +385,22 @@ const UploadForm: React.FC = () => {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
-        <button
-          type="submit"
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-orange-500 text-white hover:bg-orange-600 h-10 px-4 py-2 w-full sm:w-auto"
-        >
-          <Upload className="mr-2 h-4 w-4" />
-          Enviar Material
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate("/")}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 h-10 px-4 py-2 w-full sm:w-auto"
-        >
+        <Button type="submit" disabled={isUploading} className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600">
+          {isUploading ? (
+            <>
+              <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+              Enviando...
+            </>
+          ) : (
+            <>
+              <Upload className="mr-2 h-4 w-4" />
+              Enviar Material
+            </>
+          )}
+        </Button>
+        <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => navigate("/")}>
           Cancelar
-        </button>
+        </Button>
       </div>
     </form>
   )

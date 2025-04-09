@@ -8,7 +8,7 @@ import Layout from "./components/layout/Layout"
 import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
-import ResourcePage from "./pages/ResourcePage"
+import MaterialPage from "./pages/MaterialPage"
 import UploadPage from "./pages/UploadPage"
 import ProfilePage from "./pages/ProfilePage"
 import { ToastContainer } from 'react-toastify';
@@ -25,7 +25,7 @@ const App: React.FC = () => {
 
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
-            <Route path="resource/:id" element={<ResourcePage />} />
+            <Route path="material/:id" element={<materialPage />} />
             <Route path="explore" element={<HomePage />} />
 
             <Route element={<PrivateRoute />}>

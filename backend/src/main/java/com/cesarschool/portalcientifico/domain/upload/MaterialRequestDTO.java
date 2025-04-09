@@ -1,6 +1,7 @@
 package com.cesarschool.portalcientifico.domain.upload;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,14 +20,11 @@ public class MaterialRequestDTO {
 
     private String description;
 
-    @NotBlank
-    private String type;
+    @NotNull
+    private TypeMaterial type;
 
-    @NotBlank
-    private String discipline;
-
-    @NotBlank
-    private String knowledgeArea;
+    @NotNull
+    private Area area;
 
     private List<String> keywords;
 }

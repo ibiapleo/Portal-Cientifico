@@ -36,7 +36,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       const result = await login(credentials)
 
       if (result.success) {
-        // Exibir um toast de sucesso apenas quando o login for bem-sucedido
         toast.success('Login bem-sucedido!', {
           position: 'top-right', 
           autoClose: 5000,

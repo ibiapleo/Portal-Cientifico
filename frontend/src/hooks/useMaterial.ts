@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import resourceService from "../services/resourceService"
-import type { Resource } from "../types/resource"
+import materialService from "../services/materialService"
+import type { Material } from "../types/material"
 
-interface UseResourcesOptions {
+interface UsematerialsOptions {
   page?: number
   limit?: number
   type?: string
@@ -12,30 +12,30 @@ interface UseResourcesOptions {
   search?: string
 }
 
-interface UseResourcesResult {
-  resources: Resource[]
+interface UsematerialsResult {
+  materials: Material[]
   isLoading: boolean
   error: string | null
   total: number
   pages: number
-  fetchResources: (options?: UseResourcesOptions) => Promise<void>
+  fetchmaterials: (options?: UsematerialsOptions) => Promise<void>
 }
 
-export const useResources = (initialOptions?: UseResourcesOptions): UseResourcesResult => {
-  const [resources, setResources] = useState<Resource[]>([])
+export const usematerials = (initialOptions?: UsematerialsOptions): UsematerialsResult => {
+  const [materials, setmaterials] = useState<Material[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [total, setTotal] = useState<number>(0)
   const [pages, setPages] = useState<number>(0)
 
-  const fetchResources = async (options?: UseResourcesOptions) => {
+  const fetchmaterials = async (options?: UsematerialsOptions) => {
     try {
       setIsLoading(true)
       setError(null)
 
-      const { resources: data, total: totalCount, pages: totalPages } = await resourceService.getResources(options)
+      const { materials: data, total: totalCount, pages: totalPages } = await materialService.getMaterials(options)
 
-      setResources(data)
+      setmaterials(data)
       setTotal(totalCount)
       setPages(totalPages)
     } catch (err) {
@@ -47,31 +47,31 @@ export const useResources = (initialOptions?: UseResourcesOptions): UseResources
   }
 
   useEffect(() => {
-    fetchResources(initialOptions)
+    fetchmaterials(initialOptions)
   }, [])
 
-  return { resources, isLoading, error, total, pages, fetchResources }
+  return { materials, isLoading, error, total, pages, fetchmaterials }
 }
 
-interface UseResourceResult {
-  resource: Resource | null
+interface UsematerialResult {
+  material: Material | null
   isLoading: boolean
   error: string | null
-  fetchResource: () => Promise<void>
+  fetchmaterial: () => Promise<void>
 }
 
-export const useResource = (id: string): UseResourceResult => {
-  const [resource, setResource] = useState<Resource | null>(null)
+export const usematerial = (id: string): UsematerialResult => {
+  const [material, setmaterial] = useState<Material | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchResource = async () => {
+  const fetchmaterial = async () => {
     try {
       setIsLoading(true)
       setError(null)
 
-      const data = await resourceService.getResourceById(id)
-      setResource(data)
+      const data = await materialService.getmaterialById(id)
+      setmaterial(data)
     } catch (err) {
       console.error("Erro ao buscar recurso:", err)
       setError("Não foi possível carregar os detalhes deste recurso.")
@@ -81,11 +81,11 @@ export const useResource = (id: string): UseResourceResult => {
   }
 
   useEffect(() => {
-    fetchResource()
+    fetchmaterial()
   }, [id])
 
-  return { resource, isLoading, error, fetchResource }
+  return { material, isLoading, error, fetchmaterial }
 }
 
-export default useResources
+export default usematerials
 

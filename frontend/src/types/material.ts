@@ -1,4 +1,4 @@
-export interface Resource {
+export interface Material {
     id: string;
     title: string;
     type: 'article' | 'thesis' | 'notes' | 'presentation' | 'exercise' | 'other';
@@ -20,7 +20,7 @@ export interface Resource {
     updatedAt: string;
   }
   
-  export interface ResourceCardProps {
+  export interface MaterialCardProps {
     id: string;
     title: string;
     type: string;

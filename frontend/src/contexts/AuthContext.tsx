@@ -1,101 +1,91 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { AuthContextType, User, LoginCredentials, RegisterData } from '../types/auth';
-import authService from '../services/authService';
-import { setUser, removeUser, getUser } from '../utils/storage';
+"use client";
 
-// Valor padrão do contexto
-const defaultAuthContext: AuthContextType = {
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
-  login: async () => ({ success: false }),
-  register: async () => ({ success: false }),
-  logout: () => {},
-};
+import { createContext, useState, useEffect, ReactNode } from "react";
+import authService from "../services/authService";
+import { setToken, clearToken, setUser, getUser } from "../utils/storage";
+import { AuthResponse, LoginCredentials, RegisterData, User } from "@/types/auth";
 
-// Criação do contexto
-export const AuthContext = createContext<AuthContextType>(defaultAuthContext);
-
-interface AuthProviderProps {
-  children: ReactNode;
+interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (credentials: LoginCredentials) => Promise<AuthResponse>;
+  register: (data: RegisterData) => Promise<AuthResponse>;
+  logout: () => void;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUserState] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-  // Verifica se o usuário está autenticado ao carregar a aplicação
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUserState] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Verifica se o token existe ao montar o componente
   useEffect(() => {
-    const currentUser = getUser();
-    if (currentUser) {
-      setUserState(currentUser);
-    } else {
-      checkAuth();
+    const token = localStorage.getItem("token");
+    const storedUser = getUser();
+    if (token && storedUser) {
+      setUserState(storedUser); // Define o usuário caso o token e os dados existam
     }
   }, []);
 
-  // Função para verificar o usuário no backend
-  const checkAuth = async () => {
+  const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
+    setIsLoading(true);
     try {
-      const currentUser = await authService.getCurrentUser();
-      if (currentUser) {
-        setUserState(currentUser);
-        setUser(currentUser);
+      const response = await authService.login(credentials);
+      if (response.success) {
+        const userData = await authService.getCurrentUser();
+        setUserState(userData); // Atualiza o estado do usuário
+        setUser(userData); // Armazena o usuário no localStorage
+        return { success: true, data: response };
+      } else {
+        return { success: false, error: response.error || "Erro ao realizar login." };
       }
     } catch (error) {
-      console.error('Erro ao verificar autenticação:', error);
+      return { success: false, error: "Erro ao realizar login." };
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Função de login
-  const login = async (credentials: LoginCredentials) => {
-    try {
-      const data = await authService.login(credentials);
-      console.log(data)
-      setUserState(data.name);
-      setUser(data.name);
-      return { success: true, data };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.response?.data?.message || 'Erro ao fazer login',
-      };
-    }
-  };
-
-  // Função de registro
-  const register = async (data: RegisterData) => {
+  const register = async (data: RegisterData): Promise<AuthResponse> => {
+    setIsLoading(true);
     try {
       const response = await authService.register(data);
-      setUserState(response.user);
-      setUser(response.user);
-      return { success: true, data: response };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.response?.data?.message || 'Erro ao criar conta',
-      };
+      if (response.success) {
+        setUserState(response.user); // Atualiza o estado com o usuário retornado
+        setUser(response.user); // Armazena o usuário no localStorage
+        setToken(response.token); // Armazena o token no localStorage
+        return { success: true, data: response };
+      } else {
+        return { success: false, error: response.error || "Erro ao criar conta." };
+      }
+    } catch (error) {
+      return { success: false, error: "Erro ao criar conta." };
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Função de logout
   const logout = () => {
     authService.logout();
     setUserState(null);
-    removeUser();
+    localStorage.removeItem("user"); // Limpa o usuário do localStorage
+    clearToken(); // Limpa o token do localStorage
   };
 
-  // Valores e funções disponíveis no contexto
-  const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    register,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        isLoading,
+        login,
+        register,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };

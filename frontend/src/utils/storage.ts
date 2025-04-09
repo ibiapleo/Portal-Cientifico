@@ -1,31 +1,12 @@
-export const getToken = (): string | null => {
-    return localStorage.getItem('token');
-  };
-  
-  export const setToken = (token: string): void => {
-    localStorage.setItem('token', token);
-  };
-  
-  export const removeToken = (): void => {
-    localStorage.removeItem('token');
-  };
-  
-  export const getUser = (): any | null => {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) return null;
-    
-    try {
-      return JSON.parse(userStr);
-    } catch (error) {
-      console.error('Erro ao parsear usuário do localStorage:', error);
-      return null;
-    }
-  };
-  
-  export const setUser = (user: any): void => {
-    localStorage.setItem('user', JSON.stringify(user));
-  };
-  
-  export const removeUser = (): void => {
-    localStorage.removeItem('user');
-  };
+import { User } from "@/types/auth";
+
+export const setToken = (token: string) => localStorage.setItem("token", token);
+export const getToken = (): string | null => localStorage.getItem("token");
+export const clearToken = () => localStorage.removeItem("token");
+
+export const setUser = (user: User) => localStorage.setItem("user", JSON.stringify(user));
+export const getUser = (): User | null => {
+  const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
+};
+export const removeUser = () => localStorage.removeItem("user");

@@ -1,9 +1,6 @@
 package com.cesarschool.portalcientifico.domain.user;
 
-import com.cesarschool.portalcientifico.domain.user.payload.LoginRequestDTO;
-import com.cesarschool.portalcientifico.domain.user.payload.RegisterRequestDTO;
-import com.cesarschool.portalcientifico.domain.user.payload.RegisterResponseDTO;
-import com.cesarschool.portalcientifico.domain.user.payload.TokenResponseDTO;
+import com.cesarschool.portalcientifico.domain.user.payload.*;
 import com.cesarschool.portalcientifico.exception.EmailAlreadyExistsException;
 import com.cesarschool.portalcientifico.infra.security.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -69,5 +66,12 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             throw new EmailAlreadyExistsException("Email already exists: " + email);
         }
+    }
+
+    public UserResponseDTO getCurrentUser(String token) {
+        User user = tokenService.validateAccessToken(token)
+                .orElseThrow(() -> new BadCredentialsException("Invalid access token"));
+
+        return new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(), user.getCreatedAt());
     }
 }
