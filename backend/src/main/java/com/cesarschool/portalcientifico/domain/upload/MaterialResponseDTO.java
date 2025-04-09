@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,5 +19,5 @@ public class MaterialResponseDTO {
     private String knowledgeArea;
     private int totalDownload;
     private int totalView;
-    private String uploadDate;
+    private LocalDateTime uploadDate;
 }

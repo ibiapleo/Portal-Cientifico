@@ -60,6 +60,7 @@ public class SecurityConfig {
                                 "/v1/auth/login",
                                 "/v1/auth/register",
                                 "/v1/auth/refresh-token",
+                                "/v1/materials",
                                 "/v2/api-docs",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
