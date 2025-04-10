@@ -1,6 +1,5 @@
 package com.cesarschool.portalcientifico.config;
 
-import org.springframework.http.HttpMethod;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -45,7 +44,12 @@ public class S3Config {
     }
 
     public static String generatePresignedUrl(String keyName) {
-        try (S3Presigner presigner = S3Presigner.create()) {
+        try (S3Presigner presigner = S3Presigner.builder()
+                .region(Region.of(REGION))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(ACCESS_KEY, SECRET_KEY)
+                ))
+                .build()) {
 
             GetObjectRequest objectRequest = GetObjectRequest.builder()
                     .bucket(BUCKET_NAME)
@@ -61,5 +65,4 @@ public class S3Config {
             return presignedRequest.url().toExternalForm();
         }
     }
-
 }

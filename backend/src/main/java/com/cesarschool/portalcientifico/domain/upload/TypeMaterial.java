@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum TypeMaterial {
     ARTICLE("Artigo"),
+    IMAGE("Imagem"),
     TCC("Trabalho de Conclusão de Curso"),
     NOTES("Resumo"),
     PRESENTATION("Apresentação"),

@@ -40,6 +40,7 @@ public class MaterialService {
                 .build();
 
         materialRepository.save(material);
+
         return mapper.map(material, MaterialResponseDTO.class);
     }
 
@@ -57,5 +58,12 @@ public class MaterialService {
         return materialRepository.findAll().stream().map(material ->
             mapper.map(material, MaterialResponseDTO.class)
         ).collect(Collectors.toList());
+    }
+
+    public DownloadUrlResponse getFileNameByMaterialId(Long id) {
+        Material material = materialRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Material não encontrado para o id: " + id));
+        String presignedUrl = s3Service.generatePresignedUrl(material.getFileName());
+        return new DownloadUrlResponse(material.getFileName(), presignedUrl);
     }
 }
