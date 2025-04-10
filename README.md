@@ -113,6 +113,12 @@ Como estudante, quero baixar materiais de estudo, para utilizá-los offline.
 
 ---
 
-## 🖼️ Diagrama de Telas
+### 🖼️ Diagrama de classes
 
-![Diagrama de Telas](CAMINHO-DA-IMAGEM.png)
+![DIAGRAMA DE CLASSES](https://github.com/user-attachments/assets/f4ab8c06-0eb9-4b41-ab59-2ebdc1cc82f8)
+
+## 🎞️ Demonstrações da Entrega 3
+
+A fazer
+
+
