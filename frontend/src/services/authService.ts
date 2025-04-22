@@ -1,6 +1,6 @@
-import { LoginCredentials, RegisterData } from "@/types/auth";
+import {LoginCredentials, RegisterData} from "@/types/auth";
 import api from "../services/api";
-import { setToken, clearToken } from "../utils/storage";
+import {clearToken, setToken} from "../utils/storage";
 
 const authService = {
 

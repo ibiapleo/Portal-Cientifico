@@ -4,6 +4,10 @@ api:
       secret: my-secret-key
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${DB_PORT:5434}/${POSTGRES_DB:db_backend}
     username: ${POSTGRES_USER:root}

@@ -1,13 +1,13 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import { Search, Upload, BookOpen, FileText, Download } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import {useState} from "react"
+import {Link} from "react-router-dom"
+import {BookOpen, Download, FileText, Search, Upload} from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
+import {Badge} from "@/components/ui/badge"
 import useAuth from "../hooks/useAuth"
 
 // Dados estáticos para recursos

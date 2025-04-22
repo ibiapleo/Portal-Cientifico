@@ -4,15 +4,14 @@ import com.cesarschool.portalcientifico.domain.user.User;
 import com.cesarschool.portalcientifico.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +33,11 @@ public class MaterialService {
                 .area(materialRequestDTO.getArea())
                 .keywords(materialRequestDTO.getKeywords())
                 .fileName(filename)
+                .fileSize(formatFileSize(file.getSize()))
+                .fileType(file.getContentType())
                 .user(user)
                 .uploadDate(LocalDateTime.now())
-                .creationDate(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         materialRepository.save(material);
@@ -51,19 +52,34 @@ public class MaterialService {
         material.setTotalView(material.getTotalView() + 1);
         materialRepository.save(material);
 
-        return mapper.map(materialRepository.save(material), MaterialResponseDTO.class);
+        MaterialResponseDTO dto = mapper.map(material, MaterialResponseDTO.class);
+        dto.setAuthor(material.getUser().getName());
+
+        return dto;
     }
 
-    public List<MaterialResponseDTO> getAllMaterials() {
-        return materialRepository.findAll().stream().map(material ->
-            mapper.map(material, MaterialResponseDTO.class)
-        ).collect(Collectors.toList());
+    public Page<MaterialResponseDTO> getAllMaterialsByUser(User user, Pageable pageable) {
+        return materialRepository.findByUser(user, pageable)
+                .map(material -> {
+                    MaterialResponseDTO dto = mapper.map(material, MaterialResponseDTO.class);
+                    dto.setArea(material.getArea().getDescription());
+                    dto.setType(material.getType().getDescription());
+                    dto.setAuthor(material.getUser().getName());
+                    return dto;
+                });
     }
 
     public DownloadUrlResponse getFileNameByMaterialId(Long id) {
         Material material = materialRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Material não encontrado para o id: " + id));
         String presignedUrl = s3Service.generatePresignedUrl(material.getFileName());
-        return new DownloadUrlResponse(material.getFileName(), presignedUrl);
+        return new DownloadUrlResponse(presignedUrl, material.getFileName());
+    }
+
+    private String formatFileSize(long sizeInBytes) {
+        if (sizeInBytes < 1024) return sizeInBytes + " B";
+        int exp = (int) (Math.log(sizeInBytes) / Math.log(1024));
+        char unit = "KMGTPE".charAt(exp - 1);
+        return String.format("%.1f %sB", sizeInBytes / Math.pow(1024, exp), unit);
     }
 }

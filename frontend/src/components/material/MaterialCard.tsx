@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Download } from 'lucide-react';
-import { MaterialCardProps } from '../../types/material';
+import {Link} from 'react-router-dom';
+import {Download} from 'lucide-react';
+import {MaterialCardProps} from '../../types/material';
 
 const MaterialCard: React.FC<MaterialCardProps> = ({
   id,

@@ -1,10 +1,10 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
-import { Link } from "react-router-dom"
+import {useState} from "react"
+import {Link} from "react-router-dom"
 import useAuth from "../../hooks/useAuth"
-import type { RegisterData } from "../../types/auth"
+import type {RegisterData} from "../../types/auth"
 
 interface RegisterFormProps {
   onSuccess?: () => void

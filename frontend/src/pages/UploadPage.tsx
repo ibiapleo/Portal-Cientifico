@@ -1,7 +1,7 @@
 import type React from "react"
-import { Link } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {Link} from "react-router-dom"
+import {ArrowLeft} from "lucide-react"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import UploadForm from "../components/upload/UploadForm"
 
 const UploadPage: React.FC = () => {

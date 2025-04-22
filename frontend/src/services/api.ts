@@ -1,5 +1,5 @@
 import axios from "axios"
-import { getToken } from "../utils/storage"
+import {getToken} from "../utils/storage"
 
 const api = axios.create({
   baseURL: "http://localhost:8080",

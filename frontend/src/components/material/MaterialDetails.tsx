@@ -1,23 +1,21 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
-import { useParams, Link } from "react-router-dom"
+import {useEffect, useState} from "react"
+import {Link, useParams} from "react-router-dom"
 import {
-  Download,
-  BookOpen,
-  ThumbsUp,
-  MessageSquare,
-  Bookmark,
-  Flag,
-  Calendar,
-  User,
-  FileText,
-  Clock,
-  Eye,
+    Bookmark,
+    BookOpen,
+    Calendar,
+    Clock,
+    Download,
+    Eye,
+    FileText,
+    Flag,
+    MessageSquare,
+    ThumbsUp,
+    User,
 } from "lucide-react"
-import MaterialService from "../../services/materialService"
-import type { Material } from "../../types/material"
 import useAuth from "../../hooks/useAuth"
 
 const MaterialDetails: React.FC = () => {
