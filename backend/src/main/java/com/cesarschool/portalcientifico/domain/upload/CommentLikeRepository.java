@@ -12,5 +12,7 @@ public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> 
 
     Optional<CommentLike> findByCommentIdAndUserId(Long commentId, String userId);
 
-    void delete(Optional<CommentLike> existingLike);
+    default void delete(Optional<CommentLike> commentLike) {
+        commentLike.ifPresent(this::delete);
+    }
 }

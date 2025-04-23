@@ -10,8 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 public class MaterialService {
 
     private final MaterialRepository materialRepository;
+    private final MaterialLikeRepository materialLikeRepository;
     private final S3Service s3Service;
     private final ModelMapper mapper;
 
     @Transactional
     public MaterialResponseDTO uploadMaterial(MaterialRequestDTO materialRequestDTO, User user, MultipartFile file) throws IOException {
-
         var filename = s3Service.uploadFile(file);
 
         Material material = Material.builder()
@@ -51,13 +51,13 @@ public class MaterialService {
         material.setTotalView(material.getTotalView() + 1);
         materialRepository.save(material);
 
-        return mapper.map(materialRepository.save(material), MaterialResponseDTO.class);
+        return mapper.map(material, MaterialResponseDTO.class);
     }
 
     public List<MaterialResponseDTO> getAllMaterials() {
-        return materialRepository.findAll().stream().map(material ->
-            mapper.map(material, MaterialResponseDTO.class)
-        ).collect(Collectors.toList());
+        return materialRepository.findAll().stream()
+                .map(material -> mapper.map(material, MaterialResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     public DownloadUrlResponse getFileNameByMaterialId(Long id) {
@@ -65,5 +65,23 @@ public class MaterialService {
                 .orElseThrow(() -> new EntityNotFoundException("Material não encontrado para o id: " + id));
         String presignedUrl = s3Service.generatePresignedUrl(material.getFileName());
         return new DownloadUrlResponse(material.getFileName(), presignedUrl);
+    }
+
+    @Transactional
+    public void toggleMaterialLike(Long materialId, User user) {
+        Material material = materialRepository.findById(materialId)
+                .orElseThrow(() -> new EntityNotFoundException("Material não encontrado: " + materialId));
+
+        Optional<MaterialLike> existingLike = materialLikeRepository.findByMaterialIdAndUserId(materialId, user.getId());
+
+        if (existingLike.isPresent()) {
+            materialLikeRepository.delete(existingLike.get());
+        } else {
+            MaterialLike newLike = MaterialLike.builder()
+                    .material(material)
+                    .user(user)
+                    .build();
+            materialLikeRepository.save(newLike);
+        }
     }
 }

@@ -16,9 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/materials/{materialId}/comments")
+@RequestMapping("/v1/materials/{id}/comments")
 @RequiredArgsConstructor
-@Tag(name = "Comentários", description = "Endpoints para gerenciar os comentários e likes dos materiais")
+@Tag(name = "Comentários", description = "Endpoints para gerenciar os comentários")
 public class CommentController {
 
     private final CommentService commentService;
@@ -40,12 +40,31 @@ public class CommentController {
     })
     @PostMapping
     public ResponseEntity<CommentResponseDTO> addComment(
-            @Parameter(description = "ID do material", required = true) @PathVariable Long materialId,
+            @Parameter(description = "ID do material", required = true) @PathVariable Long id,
             @Valid @RequestBody CommentRequestDTO request,
             @Parameter(hidden = true) Authentication authentication
     ) {
         User user = (User) authentication.getPrincipal();
-        CommentResponseDTO response = commentService.addComment(materialId, request.getContent(), user);
+        CommentResponseDTO response = commentService.addComment(id, request.getContent(), user);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(
+            summary = "Curtir ou descurtir um comentário",
+            description = "Alterna o estado de curtida de um comentário (toggle)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Like concluído com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Comentário não encontrado", content = @Content)
+    })
+    @PostMapping("/{commentId}/like")
+    public ResponseEntity<Void> toggleLike(
+            @PathVariable Long id,
+            @PathVariable Long commentId,
+            @Parameter(hidden = true) Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        commentService.toggleLike(commentId, user);
+        return ResponseEntity.ok().build();
     }
 }

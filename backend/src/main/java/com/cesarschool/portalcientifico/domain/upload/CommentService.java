@@ -18,9 +18,9 @@ public class CommentService {
     private final MaterialRepository materialRepository;
 
     @Transactional
-    public CommentResponseDTO addComment(Long materialId, String content, User user) {
-        Material material = materialRepository.findById(materialId)
-                .orElseThrow(() -> new EntityNotFoundException("Material não encontrado para o id: " + materialId));
+    public CommentResponseDTO addComment(Long id, String content, User user) {
+        Material material = materialRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Material não encontrado para o id: " + id));
 
         Comment comment = Comment.builder()
                 .material(material)

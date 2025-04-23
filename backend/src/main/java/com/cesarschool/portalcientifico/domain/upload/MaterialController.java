@@ -99,4 +99,22 @@ public class MaterialController {
     public ResponseEntity<DownloadUrlResponse> generateDownloadUrl(@PathVariable Long id) {
         return ResponseEntity.ok(materialService.getFileNameByMaterialId(id));
     }
+
+    @Operation(
+            summary = "Curtir ou descurtir um material",
+            description = "Alterna o estado de curtida de um material (toggle)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Like concluído com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Material não encontrado", content = @Content)
+    })
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Void> toggleMaterialLike(
+            @PathVariable Long id,
+            @Parameter(hidden = true) Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        materialService.toggleMaterialLike(id, user);
+        return ResponseEntity.ok().build();
+    }
 }
