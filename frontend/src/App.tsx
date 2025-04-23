@@ -25,7 +25,7 @@ const App: React.FC = () => {
 
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
-            <Route path="material/:id" element={<materialPage />} />
+            <Route path="material/:id" element={<MaterialPage />} />
             <Route path="explore" element={<HomePage />} />
 
             <Route element={<PrivateRoute />}>
