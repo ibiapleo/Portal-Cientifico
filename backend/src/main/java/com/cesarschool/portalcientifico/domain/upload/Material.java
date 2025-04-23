@@ -4,6 +4,7 @@ import com.cesarschool.portalcientifico.domain.user.User;
 import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -53,4 +54,7 @@ public class Material {
 
     @Column(name = "creation_date", columnDefinition = "timestamp default now()")
     private LocalDateTime creationDate;
+
+    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 }

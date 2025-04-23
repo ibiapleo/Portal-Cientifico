@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class User {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -52,4 +53,5 @@ public class User {
     protected void onUpdate() {
         this.lastActivity = LocalDateTime.now();
     }
+
 }
