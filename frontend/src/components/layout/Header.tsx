@@ -1,10 +1,10 @@
 "use client"
 
 import type React from "react"
-import { Link, useLocation } from "react-router-dom"
-import { GraduationCap, Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import {Link, useLocation} from "react-router-dom"
+import {GraduationCap, Menu} from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
 import useAuth from "../../hooks/useAuth"
 
 const Header: React.FC = () => {

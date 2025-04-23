@@ -1,36 +1,36 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
-import { useParams, Link } from "react-router-dom"
+import {useEffect, useState} from "react"
+import {Link, useParams} from "react-router-dom"
 import {
-  ArrowLeft,
-  Download,
-  BookOpen,
-  ThumbsUp,
-  MessageSquare,
-  Bookmark,
-  Flag,
-  Calendar,
-  User,
-  FileText,
-  Clock,
-  Eye,
-  AlertCircle,
+    AlertCircle,
+    ArrowLeft,
+    Bookmark,
+    BookOpen,
+    Calendar,
+    Clock,
+    Download,
+    Eye,
+    FileText,
+    Flag,
+    MessageSquare,
+    ThumbsUp,
+    User,
 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
-import { Progress } from "@/components/ui/progress"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "react-toastify"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent} from "@/components/ui/card"
+import {Badge} from "@/components/ui/badge"
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
+import {Avatar, AvatarFallback} from "@/components/ui/avatar"
+import {Separator} from "@/components/ui/separator"
+import {Progress} from "@/components/ui/progress"
+import {Textarea} from "@/components/ui/textarea"
+import {toast} from "react-toastify"
 import resourceService from "../services/resourceService"
 import useAuth from "../hooks/useAuth"
-import type { Resource } from "../types/resource"
+import type {Resource} from "../types/resource"
 
 const ResourcePage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -272,7 +272,7 @@ const ResourcePage: React.FC = () => {
                     <Badge variant="outline" className="bg-orange-50 text-orange-700">
                       {resource.type}
                     </Badge>
-                    <Badge variant="outline">{resource.subject}</Badge>
+                    <Badge variant="outline">{resource.area}</Badge>
                   </div>
                   <h1 className="text-2xl font-bold">{resource.title}</h1>
                   <div className="flex items-center gap-2 text-sm text-gray-500">

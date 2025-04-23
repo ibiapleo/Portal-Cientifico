@@ -1,5 +1,5 @@
 import api from "./api"
-import type { MaterialResponseDTO, Resource } from "../types/resource"
+import type {MaterialResponseDTO, Resource} from "../types/resource"
 
 // Interface para a resposta paginada do Spring
 interface PageResponse<T> {

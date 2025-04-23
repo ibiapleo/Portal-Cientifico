@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {Button} from "@/components/ui/button"
+import {ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight} from "lucide-react"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 
 interface PaginationProps {
   currentPage: number

@@ -2,10 +2,6 @@ package com.cesarschool.portalcientifico.domain.upload;
 
 import com.cesarschool.portalcientifico.domain.user.User;
 import com.cesarschool.portalcientifico.exception.EntityNotFoundException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -16,9 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -61,7 +55,10 @@ public class MaterialService {
         materialRepository.save(material);
 
         MaterialResponseDTO dto = mapper.map(material, MaterialResponseDTO.class);
+
         dto.setAuthor(material.getUser().getName());
+        dto.setArea(material.getArea().getDescription());
+        dto.setType(material.getType().getDescription());
 
         return dto;
     }

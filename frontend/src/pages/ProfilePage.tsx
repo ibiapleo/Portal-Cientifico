@@ -1,45 +1,45 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import {useEffect, useState} from "react"
+import {Link, useNavigate} from "react-router-dom"
 import {
-  Settings,
-  FileText,
-  LogOut,
-  Bookmark,
-  Upload,
-  BookOpen,
-  Eye,
-  Download,
-  ThumbsUp,
-  MessageSquare,
-  Pencil,
-  Trash2,
-  AlertCircle,
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
+    AlertCircle,
+    Bookmark,
+    BookOpen,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
+    Download,
+    Eye,
+    FileText,
+    LogOut,
+    MessageSquare,
+    Pencil,
+    Plus,
+    Settings,
+    ThumbsUp,
+    Trash2,
+    Upload,
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent} from "@/components/ui/card"
+import {Separator} from "@/components/ui/separator"
+import {Badge} from "@/components/ui/badge"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { toast } from "react-toastify"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {toast} from "react-toastify"
 import useAuth from "../hooks/useAuth"
 import resourceService from "../services/resourceService"
-import type { Resource } from "../types/resource"
+import type {Resource} from "../types/resource"
 
 interface PaginationInfo {
   currentPage: number

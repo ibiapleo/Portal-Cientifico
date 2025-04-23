@@ -1,12 +1,12 @@
 import type React from "react"
-import { Link } from "react-router-dom"
-import { Clock, Download, Bookmark } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import type { Resource } from "../../types/resource"
-import { getResourceIcon, formatDate, getResourceTypeName } from "../../utils/material-helpers"
+import {Link} from "react-router-dom"
+import {Bookmark, Clock, Download} from "lucide-react"
+import {Card, CardContent} from "@/components/ui/card"
+import {Badge} from "@/components/ui/badge"
+import {Button} from "@/components/ui/button"
+import {Avatar, AvatarFallback} from "@/components/ui/avatar"
+import type {Resource} from "../../types/resource"
+import {formatDate, getResourceIcon, getResourceTypeName} from "../../utils/material-helpers"
 
 interface ResourceListProps {
   resources: Resource[]

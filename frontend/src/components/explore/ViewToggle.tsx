@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
-import { Grid, List } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import {Grid, List} from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip"
 
 interface ViewToggleProps {
   viewMode: "grid" | "list"

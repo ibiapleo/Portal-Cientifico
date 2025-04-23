@@ -1,11 +1,11 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
-import { useNavigate } from "react-router-dom"
-import { Upload, FileUp, File, X } from "lucide-react"
+import {useRef, useState} from "react"
+import {useNavigate} from "react-router-dom"
+import {File, FileUp, Upload, X} from "lucide-react"
 import resourceService from "../../services/resourceService"
-import type { UploadFormData } from "../../types/resource"
+import type {UploadFormData} from "../../types/resource"
 
 const UploadForm: React.FC = () => {
   const navigate = useNavigate()

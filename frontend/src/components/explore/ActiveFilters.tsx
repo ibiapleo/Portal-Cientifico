@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
-import { X } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import {X} from "lucide-react"
+import {Badge} from "@/components/ui/badge"
+import {Button} from "@/components/ui/button"
 
 interface ResourceType {
   id: string

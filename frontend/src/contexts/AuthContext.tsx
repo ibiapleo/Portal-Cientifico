@@ -1,7 +1,7 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { AuthContextType, User, LoginCredentials, RegisterData } from '../types/auth';
+import React, {createContext, ReactNode, useEffect, useState} from 'react';
+import {AuthContextType, LoginCredentials, RegisterData, User} from '../types/auth';
 import authService from '../services/authService';
-import { getToken } from '@/utils/storage';
+import {getToken} from '@/utils/storage';
 
 const defaultAuthContext: AuthContextType = {
   user: null,

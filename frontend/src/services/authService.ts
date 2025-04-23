@@ -1,6 +1,6 @@
 import api from './api';
-import { AuthResponse, LoginCredentials, RegisterData, User } from '../types/auth';
-import { getToken, setToken, removeToken } from '../utils/storage';
+import {AuthResponse, LoginCredentials, RegisterData, User} from '../types/auth';
+import {getToken, removeToken, setToken} from '../utils/storage';
 
 const authService = {
 

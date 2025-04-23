@@ -1,4 +1,4 @@
-import { FileText, GraduationCap, BookOpen, Layers, Lightbulb } from "lucide-react"
+import {BookOpen, FileText, GraduationCap, Layers, Lightbulb} from "lucide-react"
 
 export const getResourceIcon = (type: string) => {
   switch (type) {

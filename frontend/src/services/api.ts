@@ -1,5 +1,5 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { getToken, setToken, removeToken } from '../utils/storage';
+import axios, {AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
+import {getToken, removeToken, setToken} from '../utils/storage';
 
 const API_URL = 'http://localhost:8080/v1/';
 

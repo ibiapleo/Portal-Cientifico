@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
-import { FileText } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Link } from "react-router-dom"
+import {FileText} from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Link} from "react-router-dom"
 
 interface EmptyStateProps {
   type: "search" | "recommended" | "login"

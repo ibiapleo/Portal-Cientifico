@@ -1,11 +1,11 @@
 "use client"
 
 import type React from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent} from "@/components/ui/card"
+import {Skeleton} from "@/components/ui/skeleton"
 import ResourceGrid from "./MaterialGrid"
-import type { Resource } from "../../types/resource"
+import type {Resource} from "../../types/resource"
 
 interface ResourceSectionProps {
   title: string
