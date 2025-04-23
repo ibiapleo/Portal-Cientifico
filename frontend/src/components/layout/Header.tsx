@@ -1,15 +1,16 @@
 "use client"
 
 import type React from "react"
-import {Link} from "react-router-dom"
-import {GraduationCap, Menu} from "lucide-react"
-import {Button} from "@/components/ui/button"
-import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
+import { Link, useLocation } from "react-router-dom"
+import { GraduationCap, Menu } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import useAuth from "../../hooks/useAuth"
 
 const Header: React.FC = () => {
-  const { isAuthenticated, user, logout } = useAuth()
-    console.log(isAuthenticated);
+  const { isAuthenticated, logout } = useAuth()
+  const location = useLocation()
+
   return (
     <header className="sticky top-0 z-10 border-b bg-background w-full">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
@@ -22,17 +23,39 @@ const Header: React.FC = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="text-sm font-medium hover:text-orange-500 transition-colors">
+          <Link
+            to="/"
+            className={`text-sm font-medium transition-colors ${
+              location.pathname === "/" ? "text-orange-500" : "hover:text-orange-500"
+            }`}
+          >
             Início
           </Link>
-          <Link to="/explore" className="text-sm font-medium hover:text-orange-500 transition-colors">
+          <Link
+            to="/explore"
+            className={`text-sm font-medium transition-colors ${
+              location.pathname === "/explore" ? "text-orange-500" : "hover:text-orange-500"
+            }`}
+          >
             Explorar
           </Link>
-          <Link to="/upload" className="text-sm font-medium hover:text-orange-500 transition-colors">
+          <Link
+            to="/upload"
+            className={`text-sm font-medium transition-colors ${
+              location.pathname === "/upload" ? "text-orange-500" : "hover:text-orange-500"
+            }`}
+          >
             Enviar Material
           </Link>
           {isAuthenticated && (
-            <Link to="/profile" className="text-sm font-medium hover:text-orange-500 transition-colors">
+            <Link
+              to="/profile"
+              className={`text-sm font-medium transition-colors ${
+                location.pathname === "/profile" || location.pathname === "/my-upload"
+                  ? "text-orange-500"
+                  : "hover:text-orange-500"
+              }`}
+            >
               Meus Uploads
             </Link>
           )}
@@ -107,4 +130,3 @@ const Header: React.FC = () => {
 }
 
 export default Header
-

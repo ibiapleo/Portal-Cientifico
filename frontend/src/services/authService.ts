@@ -1,52 +1,53 @@
-import {LoginCredentials, RegisterData} from "@/types/auth";
-import api from "../services/api";
-import {clearToken, setToken} from "../utils/storage";
+import api from './api';
+import { AuthResponse, LoginCredentials, RegisterData, User } from '../types/auth';
+import { getToken, setToken, removeToken } from '../utils/storage';
 
 const authService = {
 
-  async login(credentials: LoginCredentials) {
+  async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      const response = await api.post("/v1/auth/login", credentials);
-      console.log(response.data);
-
+      const response = await api.post<AuthResponse>('/auth/login', credentials);
       if (response.data.accessToken) {
         setToken(response.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-        return { success: true, accessToken: response.data.accessToken, refreshToken: response.data.refreshToken };
-      } else {
-        return { success: false, error: "Token não recebido do servidor" };
+        localStorage.setItem('refreshToken', response.data.refreshToken);
       }
-    } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      return { success: false, error: "Erro ao fazer login" };
+      return response.data;
+    } catch (err) {
+      console.error("Erro no login do authService:", err);
+      throw err;
     }
   },
 
-  async register(data: RegisterData) {
-    try {
-      const response = await api.post('/v1/auth/register', data);
-      const { token, user } = response.data;
-      setToken(token);
-      return { success: true, user, token };
-    } catch (error) {
-      console.error("Erro no registro:", error);
-      return { success: false, error: "Erro ao criar conta" };
+  async register(data: RegisterData): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/auth/register', data);
+    if (response.data.accessToken) {
+      setToken(response.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
     }
+    return response.data;
   },
 
-  async getCurrentUser() {
+  logout(): void {
+    removeToken();
+    localStorage.removeItem('refreshToken');
+  },
+
+  async getCurrentUser(): Promise<User | null> {
+    const token = getToken();
+    if (!token) return null;
+
     try {
-      const response = await api.get("/v1/auth/me");
+      const response = await api.get<User>('/auth/me');
       return response.data;
     } catch (error) {
-      console.error("Erro ao obter usuário:", error);
-      throw error;
+      this.logout();  // Se houver erro ao recuperar o usuário, fazemos logout
+      return null;
     }
   },
 
-  logout() {
-    clearToken();
-  },
-}
+  isAuthenticated(): boolean {
+    return !!getToken();  // Verifica se há token armazenado
+  }
+};
 
 export default authService;
