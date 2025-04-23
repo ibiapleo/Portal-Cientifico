@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import {useEffect, useState} from "react"
 import {Link} from "react-router-dom"
@@ -34,7 +32,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
 
     try {
       const result = await login(credentials)
-
       if (result.success) {
         toast.success('Login bem-sucedido!', {
           position: 'top-right', 

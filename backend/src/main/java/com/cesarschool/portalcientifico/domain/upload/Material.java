@@ -3,6 +3,8 @@ package com.cesarschool.portalcientifico.domain.upload;
 import com.cesarschool.portalcientifico.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,9 +60,11 @@ public class Material {
     @Column(name = "upload_date", columnDefinition = "timestamp default now()")
     private LocalDateTime uploadDate;
 
-    @Column(columnDefinition = "timestamp default now()")
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(columnDefinition = "timestamp default now()")
+    @UpdateTimestamp
+    @Column(name = "update_at", nullable = false)
     private LocalDateTime updateAt;
 }
