@@ -169,20 +169,36 @@ const UploadForm: React.FC = () => {
     }
 
     try {
+      // Criar o objeto MaterialRequestDTO
+      const materialRequestDTO = {
+        title: formData.title,
+        description: formData.description || "",
+        type: formData.type.toUpperCase(), // Convertendo para enum TypeMaterial
+        area: formData.subject.toUpperCase(), // Convertendo para enum Area
+        keywords: formData.keywords ? formData.keywords.split(",").map((k) => k.trim()) : [],
+      }
+
+      // Criar FormData para envio multipart
       const uploadData = new FormData()
-      uploadData.append("title", formData.title)
-      uploadData.append("type", formData.type)
-      uploadData.append("subject", formData.subject)
-      uploadData.append("description", formData.description)
-      uploadData.append("keywords", formData.keywords)
+
+      // Adicionar o MaterialRequestDTO como parte JSON
+      uploadData.append(
+        "materialRequestDTO",
+        new Blob([JSON.stringify(materialRequestDTO)], { type: "application/json" }),
+      )
+
+      // Adicionar o arquivo como parte separada
       if (formData.file) {
         uploadData.append("file", formData.file)
       }
 
+      setIsUploading(true)
       const response = await resourceService.uploadResource(uploadData)
+      setIsUploading(false)
 
       navigate(`/resource/${response.id}`)
     } catch (err: any) {
+      setIsUploading(false)
       setError(err.response?.data?.message || "Erro ao enviar o material. Tente novamente.")
       console.error(err)
     }
@@ -300,12 +316,13 @@ const UploadForm: React.FC = () => {
             <option value="" disabled>
               Selecione o tipo
             </option>
-            <option value="article">Artigo</option>
-            <option value="thesis">TCC</option>
-            <option value="notes">Resumo</option>
-            <option value="presentation">Apresentação</option>
-            <option value="exercise">Lista de Exercícios</option>
-            <option value="other">Outro</option>
+            <option value="ARTICLE">Artigo</option>
+            <option value="IMAGE">Imagem</option>
+            <option value="TCC">TCC</option>
+            <option value="NOTES">Resumo</option>
+            <option value="PRESENTATION">Apresentação</option>
+            <option value="EXERCISE">Lista de Exercícios</option>
+            <option value="OTHER">Outro</option>
           </select>
         </div>
         <div className="space-y-2">
@@ -322,15 +339,15 @@ const UploadForm: React.FC = () => {
             <option value="" disabled>
               Selecione a área
             </option>
-            <option value="cs">Ciência da Computação</option>
-            <option value="engineering">Engenharia</option>
-            <option value="medicine">Medicina</option>
-            <option value="business">Administração</option>
-            <option value="law">Direito</option>
-            <option value="psychology">Psicologia</option>
-            <option value="education">Educação</option>
-            <option value="arts">Artes</option>
-            <option value="other">Outra</option>
+            <option value="COMPUTER_SCIENCE">Ciência da Computação</option>
+            <option value="ENGINEERING">Engenharia</option>
+            <option value="MEDICINE">Medicina</option>
+            <option value="BUSINESS">Administração</option>
+            <option value="LAW">Direito</option>
+            <option value="PSYCHOLOGY">Psicologia</option>
+            <option value="EDUCATION">Educação</option>
+            <option value="ARTS">Artes</option>
+            <option value="OTHER">Outra</option>
           </select>
         </div>
       </div>
@@ -410,4 +427,3 @@ const UploadForm: React.FC = () => {
 }
 
 export default UploadForm
-

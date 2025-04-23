@@ -3,20 +3,25 @@ import { AuthResponse, LoginCredentials, RegisterData, User } from '../types/aut
 import { getToken, setToken, removeToken } from '../utils/storage';
 
 const authService = {
+
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/v1/auth/login', credentials);
-    if (response.data.token) {
-      setToken(response.data.token);
-      console.log(response.data.token)
-      localStorage.setItem('refreshToken', response.data.refreshToken);
+    try {
+      const response = await api.post<AuthResponse>('/auth/login', credentials);
+      if (response.data.accessToken) {
+        setToken(response.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+      }
+      return response.data;
+    } catch (err) {
+      console.error("Erro no login do authService:", err);
+      throw err;
     }
-    return response.data;
   },
 
   async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/v1/auth/register', data);
-    if (response.data.token) {
-      setToken(response.data.token);
+    const response = await api.post<AuthResponse>('/auth/register', data);
+    if (response.data.accessToken) {
+      setToken(response.data.accessToken);
       localStorage.setItem('refreshToken', response.data.refreshToken);
     }
     return response.data;
@@ -32,7 +37,7 @@ const authService = {
     if (!token) return null;
 
     try {
-      const response = await api.get<User>('/v1/auth/me');
+      const response = await api.get<User>('/auth/me');
       return response.data;
     } catch (error) {
       this.logout();  // Se houver erro ao recuperar o usuário, fazemos logout

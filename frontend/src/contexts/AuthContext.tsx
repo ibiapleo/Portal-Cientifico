@@ -1,9 +1,8 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { AuthContextType, User, LoginCredentials, RegisterData } from '../types/auth';
 import authService from '../services/authService';
-import { setUser, removeUser, getUser } from '../utils/storage';
+import { getToken } from '@/utils/storage';
 
-// Valor padrão do contexto
 const defaultAuthContext: AuthContextType = {
   user: null,
   isAuthenticated: false,
@@ -13,7 +12,6 @@ const defaultAuthContext: AuthContextType = {
   logout: () => {},
 };
 
-// Criação do contexto
 export const AuthContext = createContext<AuthContextType>(defaultAuthContext);
 
 interface AuthProviderProps {
@@ -21,41 +19,21 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUserState] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Verifica se o usuário está autenticado ao carregar a aplicação
   useEffect(() => {
-    const currentUser = getUser();
-    if (currentUser) {
-      setUserState(currentUser);
-    } else {
-      checkAuth();
-    }
+    const token = getToken();
+    setIsAuthenticated(!!token);
+    setIsLoading(false);
   }, []);
 
-  // Função para verificar o usuário no backend
-  const checkAuth = async () => {
-    try {
-      const currentUser = await authService.getCurrentUser();
-      if (currentUser) {
-        setUserState(currentUser);
-        setUser(currentUser);
-      }
-    } catch (error) {
-      console.error('Erro ao verificar autenticação:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Função de login
   const login = async (credentials: LoginCredentials) => {
     try {
       const data = await authService.login(credentials);
-      console.log(data)
-      setUserState(data.name);
-      setUser(data.name);
+      setUser(data.user);
+      setIsAuthenticated(true);
       return { success: true, data };
     } catch (error: any) {
       return {
@@ -65,12 +43,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Função de registro
   const register = async (data: RegisterData) => {
     try {
       const response = await authService.register(data);
-      setUserState(response.user);
       setUser(response.user);
+      setIsAuthenticated(true);
       return { success: true, data: response };
     } catch (error: any) {
       return {
@@ -80,22 +57,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Função de logout
   const logout = () => {
     authService.logout();
-    setUserState(null);
-    removeUser();
+    setUser(null);
+    setIsAuthenticated(false);
   };
 
-  // Valores e funções disponíveis no contexto
-  const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    register,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        isLoading,
+        login,
+        register,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };

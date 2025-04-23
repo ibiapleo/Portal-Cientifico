@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import {
   ArrowLeft,
@@ -15,6 +16,7 @@ import {
   FileText,
   Clock,
   Eye,
+  AlertCircle,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -25,53 +27,206 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
 import { Textarea } from "@/components/ui/textarea"
-
-// Dados estáticos para recursos
-const staticResources = {
-  "1": {
-    id: "1",
-    title: "Fundamentos de Aprendizado de Máquina",
-    type: "Resumo",
-    subject: "Ciência da Computação",
-    author: "Maria Silva",
-    date: "15 Mar 2025",
-    downloads: 128,
-    views: 342,
-    likes: 47,
-    comments: 8,
-    description:
-      "Este material apresenta os conceitos fundamentais de aprendizado de máquina, incluindo algoritmos supervisionados e não supervisionados, técnicas de validação cruzada, e implementações práticas usando Python e bibliotecas como scikit-learn e TensorFlow. Ideal para estudantes de graduação em Ciência da Computação, Engenharia ou áreas correlatas que desejam iniciar seus estudos em IA.",
-    institution: "Universidade Federal de São Paulo",
-    pages: 45,
-    fileSize: "2.4 MB",
-    fileType: "PDF",
-    keywords: ["machine learning", "inteligência artificial", "algoritmos", "python", "data science"],
-  },
-  "2": {
-    id: "2",
-    title: "Arquitetura Sustentável: TCC de Planejamento Urbano",
-    type: "TCC",
-    subject: "Arquitetura",
-    author: "João Santos",
-    date: "10 Mar 2025",
-    downloads: 85,
-    views: 210,
-    likes: 23,
-    comments: 5,
-    description:
-      "Este TCC explora abordagens inovadoras para o planejamento urbano sustentável, com foco em edificações de baixo impacto ambiental e integração com espaços verdes. O trabalho inclui estudos de caso de cidades brasileiras e internacionais, análises comparativas de diferentes metodologias de construção sustentável, e propostas de implementação para centros urbanos em desenvolvimento.",
-    institution: "Universidade de São Paulo",
-    pages: 120,
-    fileSize: "8.7 MB",
-    fileType: "PDF",
-    keywords: ["arquitetura sustentável", "planejamento urbano", "construção verde", "sustentabilidade", "urbanismo"],
-  },
-}
+import { toast } from "react-toastify"
+import resourceService from "../services/resourceService"
+import useAuth from "../hooks/useAuth"
+import type { Resource } from "../types/resource"
 
 const ResourcePage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
+  const { isAuthenticated, user } = useAuth()
+  const [resource, setResource] = useState<Resource | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<"about" | "preview" | "comments">("about")
+  const [comments, setComments] = useState<any[]>([])
+  const [newComment, setNewComment] = useState<string>("")
+  const [isLiked, setIsLiked] = useState<boolean>(false)
+  const [likeCount, setLikeCount] = useState<number>(0)
+  const [relatedResources, setRelatedResources] = useState<any[]>([])
+  const [authorStats, setAuthorStats] = useState<any>({
+    resources: 0,
+    downloads: 0,
+    followers: 0,
+    rating: 0,
+  })
 
-  if (!id || !staticResources[id as keyof typeof staticResources]) {
+  useEffect(() => {
+    const fetchResourceData = async () => {
+      if (!id) return
+
+      try {
+        setIsLoading(true)
+        setError(null)
+
+        // Buscar detalhes do recurso
+        const resourceData = await resourceService.getResourceById(id)
+        setResource(resourceData)
+
+        // Mockar dados de likes
+        setLikeCount(resourceData.likes || Math.floor(Math.random() * 50) + 5)
+
+        // Mockar comentários
+        const mockComments = [
+          {
+            id: "1",
+            author: "Rafael Pereira",
+            text: "Material excelente! Muito bem estruturado e com explicações claras. Ajudou bastante nos meus estudos.",
+            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 dias atrás
+            likes: 5,
+          },
+          {
+            id: "2",
+            author: "Luiza Costa",
+            text: "Gostei muito do conteúdo, mas senti falta de alguns exemplos práticos. De qualquer forma, é um ótimo material de referência.",
+            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 dias atrás
+            likes: 3,
+          },
+        ]
+        setComments(mockComments)
+
+        // Mockar recursos relacionados
+        const mockRelatedResources = [
+          {
+            id: "101",
+            title: "Introdução à Ciência de Dados com Python",
+            type: "Artigo",
+            author: "Maria Silva",
+            downloads: 230,
+          },
+          {
+            id: "102",
+            title: "Algoritmos de Deep Learning: Uma Abordagem Prática",
+            type: "Resumo",
+            author: "Carlos Mendes",
+            downloads: 185,
+          },
+          {
+            id: "103",
+            title: "Processamento de Linguagem Natural para Iniciantes",
+            type: "Artigo",
+            author: "Ana Oliveira",
+            downloads: 142,
+          },
+        ]
+        setRelatedResources(mockRelatedResources)
+
+        // Mockar estatísticas do autor
+        setAuthorStats({
+          resources: 12,
+          downloads: 1200,
+          followers: 87,
+          rating: 4.8,
+        })
+      } catch (err) {
+        console.error("Erro ao buscar recurso:", err)
+        setError("Não foi possível carregar os detalhes deste recurso.")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchResourceData()
+  }, [id])
+
+  const handleDownload = async () => {
+    if (!id || !resource) return;
+  
+    try {
+      const response = await resourceService.downloadResource(id);
+      const downloadUrl = response.url;
+      const fileName = response.fileName;
+  
+      const a = document.createElement("a");
+      a.href = downloadUrl;
+      a.download = fileName;
+      a.target = "_blank";
+      document.body.appendChild(a);
+      a.click();
+  
+      document.body.removeChild(a);
+  
+      toast.success("Download iniciado com sucesso!");
+    } catch (err) {
+      console.error("Erro ao baixar recurso:", err);
+      toast.error("Não foi possível baixar este recurso.");
+    }
+  };
+
+  const handleLike = async () => {
+    if (!id || !isAuthenticated) {
+      if (!isAuthenticated) {
+        toast.info("Faça login para curtir este recurso")
+      }
+      return
+    }
+
+    // Simular curtida
+    setLikeCount((prevCount) => prevCount + 1)
+    setIsLiked(true)
+    toast.success("Recurso curtido com sucesso!")
+  }
+
+  const handleSaveResource = async () => {
+    if (!id || !isAuthenticated) {
+      if (!isAuthenticated) {
+        toast.info("Faça login para salvar este recurso")
+      }
+      return
+    }
+
+    try {
+      await resourceService.saveResource(id)
+      toast.success("Recurso salvo com sucesso!")
+    } catch (err) {
+      console.error("Erro ao salvar recurso:", err)
+      toast.error("Não foi possível salvar este recurso.")
+    }
+  }
+
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!id || !isAuthenticated || !newComment.trim()) {
+      if (!isAuthenticated) {
+        toast.info("Faça login para comentar")
+      } else if (!newComment.trim()) {
+        toast.info("O comentário não pode estar vazio")
+      }
+      return
+    }
+
+    // Simular adição de comentário
+    const newCommentObj = {
+      id: `comment-${Date.now()}`,
+      author: user?.name || "Usuário",
+      text: newComment,
+      createdAt: new Date().toISOString(),
+      likes: 0,
+    }
+
+    setComments((prevComments) => [newCommentObj, ...prevComments])
+    setNewComment("")
+    toast.success("Comentário adicionado com sucesso!")
+  }
+
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString("pt-BR")
+    } catch (e) {
+      return dateString
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-10 px-4 md:px-6 flex justify-center items-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+      </div>
+    )
+  }
+
+  if (error || !resource) {
     return (
       <div className="container mx-auto py-10 px-4 md:px-6">
         <div className="mb-8">
@@ -82,8 +237,13 @@ const ResourcePage: React.FC = () => {
         </div>
         <Card>
           <CardContent className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Recurso não encontrado</h1>
-            <p className="text-gray-500 mb-4">O recurso que você está procurando não existe ou foi removido.</p>
+            <div className="flex items-center gap-2 text-red-600 mb-4">
+              <AlertCircle className="h-5 w-5" />
+              <h1 className="text-2xl font-bold">Recurso não encontrado</h1>
+            </div>
+            <p className="text-gray-500 mb-4">
+              {error || "O recurso que você está procurando não existe ou foi removido."}
+            </p>
             <Button asChild>
               <Link to="/">Voltar para a página inicial</Link>
             </Button>
@@ -92,8 +252,6 @@ const ResourcePage: React.FC = () => {
       </div>
     )
   }
-
-  const resource = staticResources[id as keyof typeof staticResources]
 
   return (
     <div className="container mx-auto py-10 px-4 md:px-6">
@@ -122,15 +280,15 @@ const ResourcePage: React.FC = () => {
                     <span>{resource.author}</span>
                     <span className="mx-1">•</span>
                     <Calendar className="h-4 w-4" />
-                    <span>{resource.date}</span>
+                    <span>{formatDate(resource.createdAt || resource.date)}</span>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <Button className="bg-orange-500 hover:bg-orange-600">
+                  <Button className="bg-orange-500 hover:bg-orange-600" onClick={handleDownload}>
                     <Download className="mr-2 h-4 w-4" />
                     Baixar
                   </Button>
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={handleSaveResource}>
                     <Bookmark className="mr-2 h-4 w-4" />
                     Salvar
                   </Button>
@@ -140,25 +298,25 @@ const ResourcePage: React.FC = () => {
               <div className="flex flex-wrap gap-4 mt-6 text-sm text-gray-500">
                 <div className="flex items-center gap-1">
                   <Eye className="h-4 w-4" />
-                  <span>{resource.views} visualizações</span>
+                  <span>{resource.views || 0} visualizações</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Download className="h-4 w-4" />
-                  <span>{resource.downloads} downloads</span>
+                  <span>{resource.downloads || 0} downloads</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <ThumbsUp className="h-4 w-4" />
-                  <span>{resource.likes} curtidas</span>
+                <div className="flex items-center gap-1 cursor-pointer" onClick={handleLike}>
+                  <ThumbsUp className={`h-4 w-4 ${isLiked ? "text-orange-500" : ""}`} />
+                  <span>{likeCount} curtidas</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <MessageSquare className="h-4 w-4" />
-                  <span>{resource.comments} comentários</span>
+                  <span>{comments.length} comentários</span>
                 </div>
               </div>
 
               <Separator className="my-6" />
 
-              <Tabs defaultValue="about">
+              <Tabs defaultValue="about" value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="about">Sobre</TabsTrigger>
                   <TabsTrigger value="preview">Visualização</TabsTrigger>
@@ -173,11 +331,12 @@ const ResourcePage: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-medium mb-2">Palavras-chave</h3>
                     <div className="flex flex-wrap gap-2">
-                      {resource.keywords.map((keyword, index) => (
-                        <Badge key={index} variant="secondary" className="bg-orange-50">
-                          {keyword}
-                        </Badge>
-                      ))}
+                      {resource.keywords &&
+                        resource.keywords.map((keyword, index) => (
+                          <Badge key={index} variant="secondary" className="bg-orange-50">
+                            {keyword}
+                          </Badge>
+                        ))}
                     </div>
                   </div>
 
@@ -193,7 +352,7 @@ const ResourcePage: React.FC = () => {
                         <li className="flex items-center gap-2">
                           <Clock className="h-4 w-4 text-gray-500" />
                           <span className="text-gray-500">Páginas:</span>
-                          <span>{resource.pages}</span>
+                          <span>{resource.pages || "N/A"}</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <Download className="h-4 w-4 text-gray-500" />
@@ -204,7 +363,7 @@ const ResourcePage: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="text-lg font-medium mb-2">Instituição</h3>
-                      <p className="text-gray-700">{resource.institution}</p>
+                      <p className="text-gray-700">{resource.institution || "Não informada"}</p>
                     </div>
                   </div>
                 </TabsContent>
@@ -226,7 +385,7 @@ const ResourcePage: React.FC = () => {
                         <div className="h-4 bg-gray-100 rounded-full w-2/3"></div>
                       </div>
                     </div>
-                    <Button className="mt-6 bg-orange-500 hover:bg-orange-600">
+                    <Button className="mt-6 bg-orange-500 hover:bg-orange-600" onClick={handleDownload}>
                       <Download className="mr-2 h-4 w-4" />
                       Baixar Documento Completo
                     </Button>
@@ -234,61 +393,64 @@ const ResourcePage: React.FC = () => {
                 </TabsContent>
                 <TabsContent value="comments" className="space-y-6 pt-4">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Comentários ({resource.comments})</h3>
+                    <h3 className="text-lg font-medium">Comentários ({comments.length})</h3>
 
-                    <div className="space-y-4">
-                      <div className="flex gap-4">
-                        <Avatar>
-                          <AvatarFallback>RP</AvatarFallback>
-                        </Avatar>
-                        <div className="space-y-1 flex-1">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <span className="font-medium">Rafael Pereira</span>
-                              <span className="text-gray-500 text-sm ml-2">• 2 dias atrás</span>
-                            </div>
-                            <div className="flex items-center gap-1 text-sm text-gray-500">
-                              <ThumbsUp className="h-3 w-3" />
-                              <span>5</span>
-                            </div>
-                          </div>
-                          <p className="text-gray-700">
-                            Material excelente! Muito bem estruturado e com explicações claras. Ajudou bastante nos meus
-                            estudos.
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-4">
-                        <Avatar>
-                          <AvatarFallback>LC</AvatarFallback>
-                        </Avatar>
-                        <div className="space-y-1 flex-1">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <span className="font-medium">Luiza Costa</span>
-                              <span className="text-gray-500 text-sm ml-2">• 5 dias atrás</span>
-                            </div>
-                            <div className="flex items-center gap-1 text-sm text-gray-500">
-                              <ThumbsUp className="h-3 w-3" />
-                              <span>3</span>
-                            </div>
-                          </div>
-                          <p className="text-gray-700">
-                            Gostei muito do conteúdo, mas senti falta de alguns exemplos práticos. De qualquer forma, é
-                            um ótimo material de referência.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-4">
-                      <h4 className="text-sm font-medium mb-2">Adicionar um comentário</h4>
+                    {comments.length > 0 ? (
                       <div className="space-y-4">
-                        <Textarea placeholder="Escreva seu comentário aqui..." className="min-h-[100px]" />
-                        <Button className="bg-orange-500 hover:bg-orange-600">Publicar Comentário</Button>
+                        {comments.map((comment, index) => (
+                          <div key={index} className="flex gap-4">
+                            <Avatar>
+                              <AvatarFallback>{comment.author?.charAt(0) || "U"}</AvatarFallback>
+                            </Avatar>
+                            <div className="space-y-1 flex-1">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <span className="font-medium">{comment.author}</span>
+                                  <span className="text-gray-500 text-sm ml-2">• {formatDate(comment.createdAt)}</span>
+                                </div>
+                                <div className="flex items-center gap-1 text-sm text-gray-500">
+                                  <ThumbsUp className="h-3 w-3" />
+                                  <span>{comment.likes || 0}</span>
+                                </div>
+                              </div>
+                              <p className="text-gray-700">{comment.text}</p>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    </div>
+                    ) : (
+                      <div className="text-center py-4 bg-gray-50 rounded-lg">
+                        <p className="text-gray-500">Nenhum comentário ainda. Seja o primeiro a comentar!</p>
+                      </div>
+                    )}
+
+                    {isAuthenticated ? (
+                      <form onSubmit={handleAddComment} className="pt-4">
+                        <h4 className="text-sm font-medium mb-2">Adicionar um comentário</h4>
+                        <div className="space-y-4">
+                          <Textarea
+                            placeholder="Escreva seu comentário aqui..."
+                            className="min-h-[100px]"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                          />
+                          <Button
+                            type="submit"
+                            className="bg-orange-500 hover:bg-orange-600"
+                            disabled={!newComment.trim()}
+                          >
+                            Publicar Comentário
+                          </Button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div className="pt-4 p-4 bg-gray-50 rounded-lg text-center">
+                        <p className="text-gray-700 mb-2">Faça login para adicionar um comentário</p>
+                        <Button asChild className="bg-orange-500 hover:bg-orange-600">
+                          <Link to="/login">Entrar</Link>
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>
@@ -311,9 +473,9 @@ const ResourcePage: React.FC = () => {
                 </Avatar>
                 <div>
                   <h4 className="font-medium">{resource.author}</h4>
-                  <p className="text-sm text-gray-500">{resource.institution}</p>
-                  <Button variant="link" className="text-orange-600 p-0 h-auto text-sm">
-                    Ver perfil
+                  <p className="text-sm text-gray-500">{resource.institution || "Instituição não informada"}</p>
+                  <Button variant="link" className="text-orange-600 p-0 h-auto text-sm" asChild>
+                    <Link to={`/author/${encodeURIComponent(resource.author)}`}>Ver perfil</Link>
                   </Button>
                 </div>
               </div>
@@ -323,23 +485,27 @@ const ResourcePage: React.FC = () => {
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="flex flex-col">
                     <span className="text-gray-500">Recursos</span>
-                    <span className="font-medium">12</span>
+                    <span className="font-medium">{authorStats.resources}</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="text-gray-500">Downloads</span>
-                    <span className="font-medium">1.2k</span>
+                    <span className="font-medium">
+                      {authorStats.downloads >= 1000
+                        ? `${(authorStats.downloads / 1000).toFixed(1)}k`
+                        : authorStats.downloads}
+                    </span>
                   </div>
                   <div className="flex flex-col">
                     <span className="text-gray-500">Seguidores</span>
-                    <span className="font-medium">87</span>
+                    <span className="font-medium">{authorStats.followers}</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="text-gray-500">Avaliação</span>
-                    <span className="font-medium">4.8/5</span>
+                    <span className="font-medium">{authorStats.rating}/5</span>
                   </div>
                 </div>
               </div>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" disabled={!isAuthenticated}>
                 Seguir Autor
               </Button>
             </CardContent>
@@ -348,41 +514,39 @@ const ResourcePage: React.FC = () => {
           <Card>
             <CardContent className="p-6 space-y-4">
               <h3 className="text-lg font-medium">Recursos Relacionados</h3>
-              <div className="space-y-4">
-                <div className="flex gap-3">
-                  <div className="rounded-md bg-orange-100 p-2 h-fit">
-                    <FileText className="h-5 w-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-sm line-clamp-2">Introdução à Ciência de Dados com Python</h4>
-                    <p className="text-xs text-gray-500">Maria Silva • 230 downloads</p>
-                  </div>
+              {relatedResources.length > 0 ? (
+                <div className="space-y-4">
+                  {relatedResources.map((related, index) => (
+                    <div key={index} className="flex gap-3">
+                      <div className="rounded-md bg-orange-100 p-2 h-fit">
+                        {related.type.toLowerCase().includes("resumo") ? (
+                          <BookOpen className="h-5 w-5 text-orange-600" />
+                        ) : (
+                          <FileText className="h-5 w-5 text-orange-600" />
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm line-clamp-2">
+                          <Link to={`/resource/${related.id}`} className="hover:text-orange-600">
+                            {related.title}
+                          </Link>
+                        </h4>
+                        <p className="text-xs text-gray-500">
+                          {related.author} • {related.downloads} downloads
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex gap-3">
-                  <div className="rounded-md bg-orange-100 p-2 h-fit">
-                    <BookOpen className="h-5 w-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-sm line-clamp-2">
-                      Algoritmos de Deep Learning: Uma Abordagem Prática
-                    </h4>
-                    <p className="text-xs text-gray-500">Carlos Mendes • 185 downloads</p>
-                  </div>
+              ) : (
+                <div className="text-center py-4 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500">Nenhum recurso relacionado encontrado.</p>
                 </div>
-                <div className="flex gap-3">
-                  <div className="rounded-md bg-orange-100 p-2 h-fit">
-                    <FileText className="h-5 w-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-sm line-clamp-2">
-                      Processamento de Linguagem Natural para Iniciantes
-                    </h4>
-                    <p className="text-xs text-gray-500">Ana Oliveira • 142 downloads</p>
-                  </div>
-                </div>
-              </div>
-              <Button variant="link" className="text-orange-600 p-0 h-auto text-sm w-fit">
-                Ver mais recursos relacionados
+              )}
+              <Button variant="link" className="text-orange-600 p-0 h-auto text-sm w-fit" asChild>
+                <Link to={`/explore?subject=${encodeURIComponent(resource.subject)}`}>
+                  Ver mais recursos relacionados
+                </Link>
               </Button>
             </CardContent>
           </Card>
@@ -420,7 +584,7 @@ const ResourcePage: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" disabled={!isAuthenticated}>
                 Avaliar este recurso
               </Button>
             </CardContent>
@@ -443,4 +607,3 @@ const ResourcePage: React.FC = () => {
 }
 
 export default ResourcePage
-
