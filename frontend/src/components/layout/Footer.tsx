@@ -1,6 +1,6 @@
 import type React from "react"
-import { Link } from "react-router-dom"
-import { GraduationCap } from "lucide-react"
+import {Link} from "react-router-dom"
+import {GraduationCap} from "lucide-react"
 
 const Footer: React.FC = () => {
   return (

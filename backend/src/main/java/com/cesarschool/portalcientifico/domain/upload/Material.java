@@ -1,8 +1,9 @@
 package com.cesarschool.portalcientifico.domain.upload;
 
 import com.cesarschool.portalcientifico.domain.user.User;
-import lombok.*;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,11 +50,20 @@ public class Material {
     @Column(name = "total_view", columnDefinition = "integer default 0")
     private int totalView;
 
+    @Column(name = "file_size")
+    private String fileSize;
+
+    @Column(name = "file_type")
+    private String fileType;
+
     @Column(name = "upload_date", columnDefinition = "timestamp default now()")
     private LocalDateTime uploadDate;
 
-    @Column(name = "creation_date", columnDefinition = "timestamp default now()")
-    private LocalDateTime creationDate;
+    @Column(columnDefinition = "timestamp default now()")
+    private LocalDateTime createdAt;
+
+    @Column(columnDefinition = "timestamp default now()")
+    private LocalDateTime updateAt;
 
     @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();

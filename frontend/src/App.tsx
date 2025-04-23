@@ -1,6 +1,6 @@
 import type React from "react"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { AuthProvider } from "./contexts/AuthContext"
+import {BrowserRouter, Route, Routes} from "react-router-dom"
+import {AuthProvider} from "./contexts/AuthContext"
 import PrivateRoute from "./components/auth/PrivateRoute"
 import Layout from "./components/layout/Layout"
 
@@ -8,10 +8,9 @@ import Layout from "./components/layout/Layout"
 import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
-import MaterialPage from "./pages/MaterialPage"
 import UploadPage from "./pages/UploadPage"
 import ProfilePage from "./pages/ProfilePage"
-import { ToastContainer } from 'react-toastify';
+import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const App: React.FC = () => {

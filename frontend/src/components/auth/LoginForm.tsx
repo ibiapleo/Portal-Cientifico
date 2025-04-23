@@ -1,11 +1,11 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import {useEffect, useState} from "react"
+import {Link} from "react-router-dom"
 import useAuth from "../../hooks/useAuth"
-import type { LoginCredentials } from "../../types/auth"
-import { toast } from 'react-toastify'; // Importe o toast
+import type {LoginCredentials} from "../../types/auth"
+import {toast} from 'react-toastify'; // Importe o toast
 
 interface LoginFormProps {
   onSuccess?: () => void

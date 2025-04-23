@@ -1,7 +1,6 @@
 import React from 'react';
-import { BookOpen, FileText } from 'lucide-react';
-import MaterialCard from './MaterialCard';
-import { Material } from '../../types/material';
+import {BookOpen, FileText} from 'lucide-react';
+import {Material} from '../../types/material';
 
 interface MaterialGridProps {
   materials: Material[];
