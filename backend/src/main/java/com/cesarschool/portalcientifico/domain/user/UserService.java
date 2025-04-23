@@ -34,10 +34,10 @@ public class UserService {
 
     public TokenResponseDTO login(LoginRequestDTO loginRequestDTO) {
         User user = userRepository.findByEmail(loginRequestDTO.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("Email or password incorrect"));
+                .orElseThrow(() -> new BadCredentialsException("Email ou senha incorretos"));
 
         if (!passwordEncoder.matches(loginRequestDTO.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("Email or password incorrect");
+            throw new BadCredentialsException("Email ou senha incorretos");
         }
 
         String accessToken = tokenService.generateAccessToken(user);

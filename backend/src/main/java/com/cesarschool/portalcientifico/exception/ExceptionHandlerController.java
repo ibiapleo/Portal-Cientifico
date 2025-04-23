@@ -39,10 +39,10 @@ public class ExceptionHandlerController {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> badCredentialsException(BadCredentialsException ex) {
         ErrorResponse message = new ErrorResponse(
-                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.BAD_REQUEST.value(),
                 timestamp,
                 ex.getMessage());
-        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

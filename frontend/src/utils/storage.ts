@@ -1,4 +1,4 @@
-import { User } from "@/types/auth";
+import {User} from "@/types/auth";
 
 export const setToken = (token: string) => localStorage.setItem("token", token);
 export const getToken = (): string | null => localStorage.getItem("token");

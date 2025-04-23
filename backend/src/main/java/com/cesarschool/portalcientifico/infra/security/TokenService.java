@@ -3,7 +3,6 @@ package com.cesarschool.portalcientifico.infra.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.cesarschool.portalcientifico.domain.user.User;
 import com.cesarschool.portalcientifico.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,16 +36,12 @@ public class TokenService {
     }
 
     public String validateToken(String token) {
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.require(algorithm)
-                    .withIssuer("login-auth-api")
-                    .build()
-                    .verify(token)
-                    .getSubject();
-        } catch (JWTVerificationException exception) {
-            return null;
-        }
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        return JWT.require(algorithm)
+                .withIssuer("login-auth-api")
+                .build()
+                .verify(token)
+                .getSubject();
     }
 
     public Optional<User> validateRefreshToken(String refreshToken) {

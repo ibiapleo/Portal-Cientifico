@@ -3,14 +3,17 @@ package com.cesarschool.portalcientifico.domain.upload;
 import com.cesarschool.portalcientifico.domain.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/materials")
@@ -73,18 +75,22 @@ public class MaterialController {
         return ResponseEntity.status(HttpStatus.OK).body(materialResponse);
     }
 
+    @GetMapping
     @Operation(
-            summary = "Obtém todos os materiais",
-            description = "Retorna a lista completa de materiais cadastrados."
+            summary = "Obtém todos os materiais do usuário logado (paginado)",
+            description = "Retorna a lista paginada de materiais cadastrados pelo usuário autenticado."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de materiais obtida com sucesso",
+            @ApiResponse(responseCode = "200", description = "Materiais obtidos com sucesso",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = MaterialResponseDTO.class))))
     })
-    @GetMapping
-    public ResponseEntity<List<MaterialResponseDTO>> getAllMaterials() {
-        List<MaterialResponseDTO> materialResponse = materialService.getAllMaterials();
-        return ResponseEntity.status(HttpStatus.OK).body(materialResponse);
+    public ResponseEntity<Page<MaterialResponseDTO>> getAllMaterials(
+            @Parameter Authentication authentication,
+            @ParameterObject Pageable pageable
+    ) {
+        User user = (User) authentication.getPrincipal();
+        Page<MaterialResponseDTO> materials = materialService.getAllMaterialsByUser(user, pageable);
+        return ResponseEntity.ok(materials);
     }
 
     @Operation(
@@ -95,7 +101,7 @@ public class MaterialController {
             @ApiResponse(responseCode = "200", description = "URL gerada com sucesso"),
             @ApiResponse(responseCode = "404", description = "Material não encontrado")
     })
-    @GetMapping("/{id}/download-url")
+    @GetMapping("/{id}/download")
     public ResponseEntity<DownloadUrlResponse> generateDownloadUrl(@PathVariable Long id) {
         return ResponseEntity.ok(materialService.getFileNameByMaterialId(id));
     }

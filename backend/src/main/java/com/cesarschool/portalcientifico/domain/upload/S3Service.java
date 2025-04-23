@@ -2,10 +2,10 @@ package com.cesarschool.portalcientifico.domain.upload;
 
 import com.cesarschool.portalcientifico.config.S3Config;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.IOException;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class S3Service {

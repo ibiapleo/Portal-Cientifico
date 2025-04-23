@@ -1,5 +1,5 @@
 import api from "./api"
-import type { Material } from "../types/material"
+import type {Material} from "../types/material"
 
 const materialService = {
 

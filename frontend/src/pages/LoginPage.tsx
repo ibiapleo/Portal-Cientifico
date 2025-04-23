@@ -1,8 +1,8 @@
 import type React from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
+import {Link, useNavigate} from "react-router-dom"
+import {ArrowLeft} from "lucide-react"
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import LoginForm from "../components/auth/LoginForm"
 
 const LoginPage: React.FC = () => {
