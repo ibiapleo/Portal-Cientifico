@@ -1,6 +1,7 @@
 package com.cesarschool.portalcientifico.domain.upload;
 
 import com.cesarschool.portalcientifico.domain.user.User;
+import com.sun.security.auth.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -18,10 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/materials")
@@ -75,7 +78,7 @@ public class MaterialController {
         return ResponseEntity.status(HttpStatus.OK).body(materialResponse);
     }
 
-    @GetMapping
+    @GetMapping("/me")
     @Operation(
             summary = "Obtém todos os materiais do usuário logado (paginado)",
             description = "Retorna a lista paginada de materiais cadastrados pelo usuário autenticado."
@@ -104,5 +107,40 @@ public class MaterialController {
     @GetMapping("/{id}/download")
     public ResponseEntity<DownloadUrlResponse> generateDownloadUrl(@PathVariable Long id) {
         return ResponseEntity.ok(materialService.getFileNameByMaterialId(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<MaterialResponseDTO>> getMaterials(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<TypeMaterial> type,
+            @RequestParam(required = false) List<Area> area,
+            @RequestParam(required = false) Integer dateRange,
+            @RequestParam(required = false) Integer minDownloads,
+            Pageable pageable
+    ) {
+        Page<MaterialResponseDTO> page = materialService.getMaterials(search, type, area, dateRange, minDownloads, pageable);
+        return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/recommended")
+    public ResponseEntity<Page<MaterialResponseDTO>> getRecommendedMaterials(
+            @Parameter Authentication authentication,
+            Pageable pageable
+    ) {
+        User user = (User) authentication.getPrincipal();
+        Page<MaterialResponseDTO> result = materialService.getRecommendedMaterials(user, pageable);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/trending-topics")
+    public ResponseEntity<List<String>> getTrendingTopics() {
+        List<String> topics = materialService.getTrendingTopics();
+        return ResponseEntity.ok(topics);
+    }
+
+    @GetMapping("/trending")
+    public ResponseEntity<Page<MaterialResponseDTO>> getTrendingMaterials(Pageable pageable) {
+        Page<MaterialResponseDTO> result = materialService.getTrendingMaterials(pageable);
+        return ResponseEntity.ok(result);
     }
 }
