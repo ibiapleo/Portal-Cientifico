@@ -8,28 +8,32 @@ import Layout from "./components/layout/Layout"
 import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
+import ResourcePage from "./pages/ResourcePage"
 import UploadPage from "./pages/UploadPage"
 import ProfilePage from "./pages/ProfilePage"
-import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {ToastContainer} from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import ExplorePage from "./pages/ExplorePage"
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-      <ToastContainer />
+        <ToastContainer />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/cadastro" element={<RegisterPage />} />
 
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
-            <Route path="material/:id" element={<MaterialPage />} />
-            <Route path="explore" element={<HomePage />} />
+            <Route path="resource/:id" element={<ResourcePage />} />
+            <Route path="explore" element={<ExplorePage />} />
 
             <Route element={<PrivateRoute />}>
               <Route path="upload" element={<UploadPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="my-upload" element={<ProfilePage />} />
+              <Route path="edit-resource/:id" element={<UploadPage />} />
               <Route path="settings" element={<ProfilePage />} />
             </Route>
           </Route>
@@ -40,4 +44,3 @@ const App: React.FC = () => {
 }
 
 export default App
-

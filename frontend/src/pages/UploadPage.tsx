@@ -1,8 +1,9 @@
+// Importar o componente UploadForm
+import UploadForm from "../../src/components/upload/UploadForm"
 import type React from "react"
 import {Link} from "react-router-dom"
 import {ArrowLeft} from "lucide-react"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
-import UploadForm from "../components/upload/UploadForm"
 
 const UploadPage: React.FC = () => {
   return (
@@ -21,7 +22,8 @@ const UploadPage: React.FC = () => {
             Compartilhe seu conhecimento com outros estudantes. Preencha os detalhes abaixo para enviar seu material.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent>
+          {/* Integrar o componente UploadForm aqui */}
           <UploadForm />
         </CardContent>
       </Card>
@@ -30,4 +32,3 @@ const UploadPage: React.FC = () => {
 }
 
 export default UploadPage
-
