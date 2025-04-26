@@ -1,5 +1,8 @@
-package com.cesarschool.portalcientifico.domain.upload;
+package com.cesarschool.portalcientifico.domain.material;
 
+import com.cesarschool.portalcientifico.domain.comment.Comment;
+import com.cesarschool.portalcientifico.domain.material.dto.Area;
+import com.cesarschool.portalcientifico.domain.material.dto.TypeMaterial;
 import com.cesarschool.portalcientifico.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,7 +21,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Material {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -69,6 +71,6 @@ public class Material {
     @Column(name = "update_at", nullable = false)
     private LocalDateTime updateAt;
 
-    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "materialId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 }

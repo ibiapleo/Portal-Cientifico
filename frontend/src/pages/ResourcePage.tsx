@@ -30,7 +30,9 @@ import {Textarea} from "@/components/ui/textarea"
 import {toast} from "react-toastify"
 import resourceService from "../services/resourceService"
 import useAuth from "../hooks/useAuth"
-import type {Resource} from "../types/resource"
+import type { Resource } from "../types/resource"
+import { debounce } from "lodash-es"
+import { CommentResponseDTO } from "@/types/comment"
 
 const ResourcePage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -39,17 +41,20 @@ const ResourcePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<"about" | "preview" | "comments">("about")
-  const [comments, setComments] = useState<any[]>([])
+  const [comments, setComments] = useState<CommentResponseDTO[]>([])
   const [newComment, setNewComment] = useState<string>("")
   const [isLiked, setIsLiked] = useState<boolean>(false)
   const [likeCount, setLikeCount] = useState<number>(0)
-  const [relatedResources, setRelatedResources] = useState<any[]>([])
-  const [authorStats, setAuthorStats] = useState<any>({
+  const [relatedResources, setRelatedResources] = useState<unknown[]>([])
+  const [authorStats, setAuthorStats] = useState<unknown>({
     resources: 0,
     downloads: 0,
     followers: 0,
     rating: 0,
   })
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
 
   useEffect(() => {
     const fetchResourceData = async () => {
@@ -63,27 +68,22 @@ const ResourcePage: React.FC = () => {
         const resourceData = await resourceService.getResourceById(id)
         setResource(resourceData)
 
-        // Mockar dados de likes
-        setLikeCount(resourceData.likes || Math.floor(Math.random() * 50) + 5)
-
-        // Mockar comentários
-        const mockComments = [
-          {
-            id: "1",
-            author: "Rafael Pereira",
-            text: "Material excelente! Muito bem estruturado e com explicações claras. Ajudou bastante nos meus estudos.",
-            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 dias atrás
-            likes: 5,
-          },
-          {
-            id: "2",
-            author: "Luiza Costa",
-            text: "Gostei muito do conteúdo, mas senti falta de alguns exemplos práticos. De qualquer forma, é um ótimo material de referência.",
-            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 dias atrás
-            likes: 3,
-          },
-        ]
-        setComments(mockComments)
+        const loadComments = async () => {
+          if (!id) return;
+          setIsLoadingComments(true); // Ativa loading
+          try {
+            const commentsResponse = await resourceService.getComments(id, currentPage, 10);
+            setComments(commentsResponse.content);
+            setTotalPages(commentsResponse.totalPages);
+          } finally {
+            setIsLoadingComments(false); // Desativa loading
+          }
+        };
+        loadComments();
+        
+        // Verificar se o usuário já curtiu o material
+        setIsLiked(resourceData.liked)
+        setLikeCount(resourceData.likeCount || 0)
 
         // Mockar recursos relacionados
         const mockRelatedResources = [
@@ -127,7 +127,60 @@ const ResourcePage: React.FC = () => {
     }
 
     fetchResourceData()
-  }, [id])
+  }, [id, currentPage])
+  
+  const handleLike = debounce(async () => {
+    if (!id || !isAuthenticated) return
+    try {
+      const liked = await resourceService.toggleMaterialLike(id)
+      setIsLiked(liked)
+      setLikeCount(prev => liked ? prev + 1 : prev - 1)
+    } catch (err) {
+      console.error("Erro ao curtir recurso:", err)
+      toast.error("Não foi possível curtir este recurso.")
+    }
+  }, 500)
+  
+  // Função de Adicionar Comentário
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newComment.trim() || !id) return
+    try {
+      const newCommentData = await resourceService.addComment(id, newComment)
+      setComments(prev => [...prev, newCommentData])
+      setNewComment("")
+      toast.success("Comentário publicado com sucesso!")
+      setCurrentPage(0); // Volta para a primeira página
+      const newResponse = await resourceService.getComments(id, 0, 10)
+      setComments(newResponse.content);
+      setTotalPages(newResponse.totalPages);
+    } catch (err) {
+      console.error("Erro ao adicionar comentário:", err)
+      toast.error("Não foi possível publicar seu comentário.")
+    }
+  }
+  
+  // Função de Like em Comentário com debounce
+  const handleCommentLike = debounce(async (commentId: string) => {
+    if (!id || !isAuthenticated) {
+      toast.info("Faça login para curtir comentários")
+      return
+    }
+    
+    try {
+      const liked = await resourceService.toggleCommentLike(id, commentId)
+      setComments(prev => 
+        prev.map(comment => 
+          comment.id === commentId 
+            ? { ...comment, likes: liked ? comment.likes + 1 : comment.likes - 1 } 
+            : comment
+        )
+      )
+    } catch (err) {
+      console.error("Erro ao curtir comentário:", err)
+      toast.error("Não foi possível curtir este comentário.")
+    }
+  }, 500)
 
   const handleDownload = async () => {
     if (!id || !resource) return;
@@ -153,20 +206,6 @@ const ResourcePage: React.FC = () => {
     }
   };
 
-  const handleLike = async () => {
-    if (!id || !isAuthenticated) {
-      if (!isAuthenticated) {
-        toast.info("Faça login para curtir este recurso")
-      }
-      return
-    }
-
-    // Simular curtida
-    setLikeCount((prevCount) => prevCount + 1)
-    setIsLiked(true)
-    toast.success("Recurso curtido com sucesso!")
-  }
-
   const handleSaveResource = async () => {
     if (!id || !isAuthenticated) {
       if (!isAuthenticated) {
@@ -182,32 +221,6 @@ const ResourcePage: React.FC = () => {
       console.error("Erro ao salvar recurso:", err)
       toast.error("Não foi possível salvar este recurso.")
     }
-  }
-
-  const handleAddComment = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!id || !isAuthenticated || !newComment.trim()) {
-      if (!isAuthenticated) {
-        toast.info("Faça login para comentar")
-      } else if (!newComment.trim()) {
-        toast.info("O comentário não pode estar vazio")
-      }
-      return
-    }
-
-    // Simular adição de comentário
-    const newCommentObj = {
-      id: `comment-${Date.now()}`,
-      author: user?.name || "Usuário",
-      text: newComment,
-      createdAt: new Date().toISOString(),
-      likes: 0,
-    }
-
-    setComments((prevComments) => [newCommentObj, ...prevComments])
-    setNewComment("")
-    toast.success("Comentário adicionado com sucesso!")
   }
 
   const formatDate = (dateString: string) => {
@@ -298,11 +311,11 @@ const ResourcePage: React.FC = () => {
               <div className="flex flex-wrap gap-4 mt-6 text-sm text-gray-500">
                 <div className="flex items-center gap-1">
                   <Eye className="h-4 w-4" />
-                  <span>{resource.views || 0} visualizações</span>
+                  <span>{resource.totalView || 0} visualizações</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Download className="h-4 w-4" />
-                  <span>{resource.downloads || 0} downloads</span>
+                  <span>{resource.totalDownload || 0} downloads</span>
                 </div>
                 <div className="flex items-center gap-1 cursor-pointer" onClick={handleLike}>
                   <ThumbsUp className={`h-4 w-4 ${isLiked ? "text-orange-500" : ""}`} />
@@ -393,9 +406,12 @@ const ResourcePage: React.FC = () => {
                 </TabsContent>
                 <TabsContent value="comments" className="space-y-6 pt-4">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Comentários ({comments.length})</h3>
-
-                    {comments.length > 0 ? (
+                    <h3 className="text-lg font-medium">Comentários ({resource.commentCount})</h3>
+                    {isLoadingComments ? (
+                      <div className="text-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
+                      </div>
+                    ) :comments.length > 0 ? (
                       <div className="space-y-4">
                         {comments.map((comment, index) => (
                           <div key={index} className="flex gap-4">
@@ -409,14 +425,37 @@ const ResourcePage: React.FC = () => {
                                   <span className="text-gray-500 text-sm ml-2">• {formatDate(comment.createdAt)}</span>
                                 </div>
                                 <div className="flex items-center gap-1 text-sm text-gray-500">
-                                  <ThumbsUp className="h-3 w-3" />
+                                  <ThumbsUp className="h-3 w-3" onClick={() => handleCommentLike(comment.id)}/>
                                   <span>{comment.likes || 0}</span>
                                 </div>
                               </div>
-                              <p className="text-gray-700">{comment.text}</p>
+                              <p className="text-gray-700">{comment.content}</p>
                             </div>
                           </div>
                         ))}
+                        {totalPages > 1 && (
+                        <div className="flex justify-center gap-2 mt-6">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={currentPage === 0}
+                            onClick={() => setCurrentPage(prev => prev - 1)}
+                          >
+                            Anterior
+                          </Button>
+                          <span className="flex items-center px-4 text-sm text-gray-600">
+                            Página {currentPage + 1} de {totalPages}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={currentPage >= totalPages - 1}
+                            onClick={() => setCurrentPage(prev => prev + 1)}
+                          >
+                            Próxima
+                          </Button>
+                        </div>
+                      )}
                       </div>
                     ) : (
                       <div className="text-center py-4 bg-gray-50 rounded-lg">
@@ -429,7 +468,7 @@ const ResourcePage: React.FC = () => {
                         <h4 className="text-sm font-medium mb-2">Adicionar um comentário</h4>
                         <div className="space-y-4">
                           <Textarea
-                            placeholder="Escreva seu comentário aqui..."
+                            placeholder="Escreva seu comentário aqui..."  
                             className="min-h-[100px]"
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}

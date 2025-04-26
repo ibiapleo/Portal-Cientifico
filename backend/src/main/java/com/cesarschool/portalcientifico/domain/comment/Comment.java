@@ -1,12 +1,10 @@
-package com.cesarschool.portalcientifico.domain.upload;
+package com.cesarschool.portalcientifico.domain.comment;
 
 import com.cesarschool.portalcientifico.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "comments")
@@ -21,13 +19,12 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "material_id", nullable = false)
-    private Material material;
+    @Column(name = "material_id", nullable = false)
+    private Long materialId;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private User author;
+    private User user;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
@@ -35,6 +32,4 @@ public class Comment {
     @Column(name = "created_at", columnDefinition = "timestamp default now()")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommentLike> likes = new ArrayList<>();
 }

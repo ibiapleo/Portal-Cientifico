@@ -1,4 +1,4 @@
-package com.cesarschool.portalcientifico.domain.upload;
+package com.cesarschool.portalcientifico.domain.material.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +18,9 @@ public class MaterialResponseDTO {
     private String type;
     private String area;
     private String author;
+    private long likeCount;
+    private boolean liked;
+    private long commentCount;
     private List<String> keywords;
     private String fileName;
     private int totalDownload;

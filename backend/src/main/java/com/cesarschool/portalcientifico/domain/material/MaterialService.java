@@ -1,5 +1,7 @@
-package com.cesarschool.portalcientifico.domain.upload;
+package com.cesarschool.portalcientifico.domain.material;
 
+import com.cesarschool.portalcientifico.domain.material.dto.*;
+import com.cesarschool.portalcientifico.domain.s3.S3Service;
 import com.cesarschool.portalcientifico.domain.user.User;
 import com.cesarschool.portalcientifico.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,15 +16,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MaterialService {
 
     private final MaterialRepository materialRepository;
-    private final MaterialLikeRepository materialLikeRepository;
     private final S3Service s3Service;
     private final ModelMapper mapper;
 
@@ -72,6 +71,7 @@ public class MaterialService {
                     dto.setArea(material.getArea().getDescription());
                     dto.setType(material.getType().getDescription());
                     dto.setAuthor(material.getUser().getName());
+                    dto.setCommentCount(material.getComments().size());
                     return dto;
                 });
     }
@@ -139,23 +139,5 @@ public class MaterialService {
                     dto.setAuthor(material.getUser().getName());
                     return dto;
                 });
-    }
-
-    @Transactional
-    public void toggleMaterialLike(Long materialId, User user) {
-        Material material = materialRepository.findById(materialId)
-                .orElseThrow(() -> new EntityNotFoundException("Material não encontrado: " + materialId));
-
-        Optional<MaterialLike> existingLike = materialLikeRepository.findByMaterialIdAndUserId(materialId, user.getId());
-
-        if (existingLike.isPresent()) {
-            materialLikeRepository.delete(existingLike.get());
-        } else {
-            MaterialLike newLike = MaterialLike.builder()
-                    .material(material)
-                    .user(user)
-                    .build();
-            materialLikeRepository.save(newLike);
-        }
     }
 }

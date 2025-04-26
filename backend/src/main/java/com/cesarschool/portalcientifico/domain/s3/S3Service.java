@@ -1,4 +1,4 @@
-package com.cesarschool.portalcientifico.domain.upload;
+package com.cesarschool.portalcientifico.domain.s3;
 
 import com.cesarschool.portalcientifico.config.S3Config;
 import org.springframework.stereotype.Service;

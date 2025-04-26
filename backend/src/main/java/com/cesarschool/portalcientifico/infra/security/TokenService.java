@@ -25,7 +25,7 @@ public class TokenService {
     }
 
     public String generateAccessToken(User user) {
-        return generateToken(user, LocalDateTime.now().plusMinutes(15)); // Token curto (15 min)
+        return generateToken(user, LocalDateTime.now().plusMinutes(60)); // Token curto (15 min)
     }
 
     public String generateRefreshToken(User user) {

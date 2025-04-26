@@ -13,10 +13,11 @@ export interface Material {
     fileSize: string;
     pages?: number;
     keywords: string[];
-    downloads: number;
-    views: number;
-    likes: number;
-    comments: number;
+    totalDownload: number;
+    totalView: number;
+    likeCount: number;
+    liked: boolean;
+    commentCount: number;
     createdAt: string;
     updatedAt: string;
   }
@@ -36,10 +37,11 @@ export interface Material {
     fileSize: string;
     pages?: number;
     keywords: string[];
-    downloads: number;
-    views: number;
-    likes: number;
-    comments: number;
+    totalDownload: number;
+    totalView: number;
+    likeCount: number;
+    liked: boolean;
+    commentCount: number;
     createdAt: string;
     updatedAt: string;
   }
@@ -53,7 +55,7 @@ export interface Material {
     date: string;
     downloads: number;
     icon: React.ReactNode;
-  }
+  } 
   
   export interface UploadFormData {
     title: string;

@@ -1,6 +1,11 @@
-package com.cesarschool.portalcientifico.domain.upload;
+package com.cesarschool.portalcientifico.domain.material;
 
+import com.cesarschool.portalcientifico.domain.comment.Comment;
+import com.cesarschool.portalcientifico.domain.comment.CommentRequestDTO;
+import com.cesarschool.portalcientifico.domain.comment.CommentResponseDTO;
+import com.cesarschool.portalcientifico.domain.material.dto.*;
 import com.cesarschool.portalcientifico.domain.user.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -23,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/materials")
@@ -31,6 +37,7 @@ import java.util.List;
 public class MaterialController {
 
     private final MaterialService materialService;
+    private final MaterialLikeCommentAggregation materialLikeCommentAggregation;
 
     @Operation(
             summary = "Faz o upload de um material",
@@ -71,8 +78,10 @@ public class MaterialController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<MaterialResponseDTO> getMaterialDetails(
-            @Parameter(description = "ID do material", required = true) @PathVariable Long id) {
-        MaterialResponseDTO materialResponse = materialService.getMaterialDetails(id);
+            @Parameter(description = "ID do material", required = true) @PathVariable Long id,
+            @Parameter Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        MaterialResponseDTO materialResponse = materialLikeCommentAggregation.getMaterialAggregation(id, user);
         return ResponseEntity.status(HttpStatus.OK).body(materialResponse);
     }
 
@@ -143,20 +152,76 @@ public class MaterialController {
     }
 
     @Operation(
-            summary = "Curtir ou descurtir um material",
-            description = "Alterna o estado de curtida de um material (toggle)."
+            summary = "Obtém todos os dados de um material",
+            description = "Retorna os dados do material, quantidade de curtidas, se o usuário curtiu e comentários."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Like concluído com sucesso"),
+            @ApiResponse(responseCode = "200", description = "Dados agregados obtidos com sucesso",
+                    content = @Content(schema = @Schema(implementation = AggregationDTO.class))),
             @ApiResponse(responseCode = "404", description = "Material não encontrado", content = @Content)
     })
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<Page<CommentResponseDTO>> getCommentsByMaterial(
+            @Parameter(description = "ID do material", required = true) @PathVariable Long id,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(materialLikeCommentAggregation.getCommentsByMaterialId(id, pageable));
+    }
+
+    @Operation(
+            summary = "Alterna o like de um material",
+            description = "Permite que um usuário logado curta ou descurta um material."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Like atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Material não encontrado")
+    })
     @PostMapping("/{id}/like")
-    public ResponseEntity<Void> toggleMaterialLike(
-            @PathVariable Long id,
+    public ResponseEntity<Boolean> toggleLikeForMaterial(
+            @Parameter(description = "ID do material", required = true) @PathVariable Long id,
             @Parameter(hidden = true) Authentication authentication
     ) {
         User user = (User) authentication.getPrincipal();
-        materialService.toggleMaterialLike(id, user);
-        return ResponseEntity.ok().build();
+        boolean liked = materialLikeCommentAggregation.toggleLikeForMaterial(id, user);
+        return ResponseEntity.ok(liked);
+    }
+
+    @Operation(
+            summary = "Alterna o like de um comentário",
+            description = "Permite que um usuário logado curta ou descurta um comentário de um material."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Like atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Comentário ou Material não encontrado")
+    })
+    @PostMapping("/{materialId}/comments/{commentId}/like")
+    public ResponseEntity<Boolean> toggleLikeForComment(
+            @Parameter(description = "ID do material", required = true) @PathVariable Long materialId,
+            @Parameter(description = "ID do comentário", required = true) @PathVariable Long commentId,
+            @Parameter(hidden = true) Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        boolean liked = materialLikeCommentAggregation.toggleLikeForComment(materialId, commentId, user);
+        return ResponseEntity.ok(liked);
+    }
+
+    @Operation(
+            summary = "Adiciona um comentário",
+            description = "Permite que um usuário logado comente um material."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Comentário adicionado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Material não encontrado")
+    })
+    @PostMapping("/{id}/comments")
+    public ResponseEntity<CommentResponseDTO> addComment(
+            @Parameter(description = "ID do material", required = true) @PathVariable Long id,
+            @RequestBody CommentRequestDTO commentRequest,
+            @Parameter(hidden = true) Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        String content = commentRequest.getContent();
+        CommentResponseDTO response = materialLikeCommentAggregation.addCommentToMaterial(id, content, user);
+        return ResponseEntity.ok(response);
     }
 }

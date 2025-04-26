@@ -1,6 +1,6 @@
 package com.cesarschool.portalcientifico.domain.user;
 
-import com.cesarschool.portalcientifico.domain.upload.Area;
+import com.cesarschool.portalcientifico.domain.material.dto.Area;
 import jakarta.persistence.*;
 import lombok.*;
 

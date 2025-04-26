@@ -1,4 +1,4 @@
-package com.cesarschool.portalcientifico.domain.upload;
+package com.cesarschool.portalcientifico.domain.material.dto;
 
 import lombok.Getter;
 

@@ -1,5 +1,7 @@
-package com.cesarschool.portalcientifico.domain.upload;
+package com.cesarschool.portalcientifico.domain.material;
 
+import com.cesarschool.portalcientifico.domain.material.dto.Area;
+import com.cesarschool.portalcientifico.domain.material.dto.TypeMaterial;
 import com.cesarschool.portalcientifico.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,7 @@ public interface MaterialRepository extends JpaRepository<Material, Long> {
         SELECT m FROM Material m
         JOIN FETCH m.user user
         JOIN FETCH m.keywords keywords
+        JOIN FETCH m.comments comments
         WHERE (:search       IS NULL
                OR LOWER(m.title)       LIKE LOWER(CONCAT('%', :search, '%'))
                OR LOWER(m.description) LIKE LOWER(CONCAT('%', :search, '%')))

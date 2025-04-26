@@ -290,19 +290,19 @@ const ProfilePage: React.FC = () => {
                             <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                               <div className="flex items-center gap-1">
                                 <Eye className="h-4 w-4" />
-                                <span>{resource.views || 0}</span>
+                                <span>{resource.totalView|| 0}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Download className="h-4 w-4" />
-                                <span>{resource.downloads || 0}</span>
+                                <span>{resource.totalDownload || 0}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <ThumbsUp className="h-4 w-4" />
-                                <span>{resource.likes || 0}</span>
+                                <span>{resource.likeCount || 0}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <MessageSquare className="h-4 w-4" />
-                                <span>{resource.comments || 0}</span>
+                                <span>{resource.commentCount || 0}</span>
                               </div>
                             </div>
                           </div>

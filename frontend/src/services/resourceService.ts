@@ -1,5 +1,6 @@
 import api from "./api"
 import type {MaterialResponseDTO, Resource} from "../types/resource"
+import type {CommentRequestDTO, CommentResponseDTO} from "../types/comment"
 
 // Interface para a resposta paginada do Spring
 interface PageResponse<T> {
@@ -126,11 +127,35 @@ const resourceService = {
     return response.data
   },
 
-  // // Curtir um recurso
-  // async likeResource(id: string): Promise<{ likes: number }> {
-  //   const response = await api.post(`/materials/${id}/like`)
-  //   return response.data
-  // },
+  // Curtir/Descurtir material
+  async toggleMaterialLike(materialId: string): Promise<boolean> {
+    const response = await api.post(`/materials/${materialId}/like`)
+    return response.data
+  },
+
+  // Curtir/Descurtir comentário
+  async toggleCommentLike(materialId: string, commentId: string): Promise<boolean> {
+    const response = await api.post(`/materials/${materialId}/comments/${commentId}/like`)
+    return response.data
+  },
+
+  // Adicionar comentário
+  async addComment(materialId: string, content: string): Promise<CommentResponseDTO> {
+    const response = await api.post<CommentResponseDTO>(
+      `/materials/${materialId}/comments`, 
+      { content } as CommentRequestDTO
+    )
+    return response.data
+  },
+
+  // Buscar comentários paginados
+  async getComments(materialId: string, page = 0, size = 10): Promise<PageResponse<CommentResponseDTO>> {
+    const response = await api.get<PageResponse<CommentResponseDTO>>(
+      `/materials/${materialId}/comments`,
+      { params: { page, size } }
+    )
+    return response.data
+  },
 
   // // Salvar um recurso para o usuário
   // async saveResource(id: string): Promise<void> {
@@ -140,12 +165,6 @@ const resourceService = {
   // // Adicionar comentário a um recurso
   // async addComment(id: string, comment: string): Promise<any> {
   //   const response = await api.post(`/materials/${id}/comments`, { text: comment })
-  //   return response.data
-  // },
-
-  // // Buscar comentários de um recurso
-  // async getComments(id: string): Promise<any[]> {
-  //   const response = await api.get(`/materials/${id}/comments`)
   //   return response.data
   // },
 
