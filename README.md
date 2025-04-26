@@ -21,7 +21,7 @@ Uma **plataforma colaborativa** voltada à comunidade acadêmica, com foco no **
 🖱️ [Interaja com o protótipo no Figma](https://www.figma.com/proto/k5pap6pCHgXMyEZtbNGYUU/Prot%C3%B3tipo-Lo-fi---Portal-Cient%C3%ADfico?node-id=1-28&p=f&t=VVGT05M2aVdpzYf8-0&scaling=scale-down-width&content-scaling=fixed&page-id=0:1&starting-point-node-id=1:28)
 
 ### 📖 Histórias do Projeto  
-📄 [Visualize as histórias](https://docs.google.com/document/d/1LFEneIjGzYzV-NdVrRg7SpgecYAnPrniMDs4sBEjZZc/edit?usp=sharing)
+📄 [Visualize as histórias](http://docs.google.com/document/d/12yvOpbLYaJm8TSEBK6XZBrvhA_86CeKoYhNGM50VVrs/edit?tab=t.0#heading=h.xis6al6vj4da)
 
 ---
 
