@@ -1,6 +1,6 @@
 import {BookOpen, FileText, GraduationCap, Layers, Lightbulb} from "lucide-react"
 
-export const getResourceIcon = (type: string) => {
+export const getMaterialIcon = (type: string) => {
   switch (type) {
     case "ARTICLE":
       return <FileText className="h-6 w-6 text-orange-500" />
@@ -25,7 +25,7 @@ export const formatDate = (dateString: string) => {
   }
 }
 
-export const getResourceTypeName = (type: string) => {
+export const getMaterialTypeName = (type: string) => {
   switch (type) {
     case "ARTICLE":
       return "Artigo"

@@ -4,22 +4,22 @@ import type React from "react"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent} from "@/components/ui/card"
 import {Skeleton} from "@/components/ui/skeleton"
-import ResourceGrid from "./MaterialGrid"
-import type {Resource} from "../../types/resource"
+import MaterialGrid from "./MaterialGrid"
+import type {Material} from "../../types/material"
 
-interface ResourceSectionProps {
+interface MaterialSectionProps {
   title: string
   description: string
-  resources: Resource[]
+  materials: Material[]
   icon: React.ReactNode
   isLoading: boolean
   onViewMore?: () => void
 }
 
-const ResourceSection: React.FC<ResourceSectionProps> = ({
+const MaterialSection: React.FC<MaterialSectionProps> = ({
   title,
   description,
-  resources,
+  materials,
   icon,
   isLoading,
   onViewMore,
@@ -52,10 +52,10 @@ const ResourceSection: React.FC<ResourceSectionProps> = ({
             ))}
         </div>
       ) : (
-        <ResourceGrid resources={resources.slice(0, 8)} />
+        <MaterialGrid materials={materials.slice(0, 8)} />
       )}
 
-      {resources.length > 8 && onViewMore && (
+      {materials.length > 8 && onViewMore && (
         <div className="mt-4 text-center">
           <Button
             variant="outline"
@@ -70,4 +70,4 @@ const ResourceSection: React.FC<ResourceSectionProps> = ({
   )
 }
 
-export default ResourceSection
+export default MaterialSection

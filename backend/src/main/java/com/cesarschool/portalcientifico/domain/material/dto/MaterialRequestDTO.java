@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -26,5 +26,5 @@ public class MaterialRequestDTO {
     @NotNull
     private Area area;
 
-    private List<String> keywords;
+    private Set<String> keywords;
 }

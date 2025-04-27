@@ -47,18 +47,6 @@ const Header: React.FC = () => {
           >
             Enviar Material
           </Link>
-          {isAuthenticated && (
-            <Link
-              to="/profile"
-              className={`text-sm font-medium transition-colors ${
-                location.pathname === "/profile" || location.pathname === "/my-upload"
-                  ? "text-orange-500"
-                  : "hover:text-orange-500"
-              }`}
-            >
-              Meus Uploads
-            </Link>
-          )}
         </div>
 
         <div className="flex items-center gap-4">

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { resourceService } from '@/services/resourceService';
+import {useState} from 'react';
+import {materialService} from '@/services/materialService';
 
 type Props = {
   materialId: number;
@@ -13,7 +13,7 @@ export const CommentForm = ({ materialId, onCommentAdded }: Props) => {
     e.preventDefault();
     if (!content.trim()) return;
 
-    await resourceService.addComment(materialId, content);
+    await materialService.addComment(materialId, content);
     setContent('');
     onCommentAdded(); // Atualiza a lista de comentários
   };

@@ -24,9 +24,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const token = getToken();
-    setIsAuthenticated(!!token);
-    setIsLoading(false);
+    const initializeAuth = async () => {
+      const token = getToken();
+      if (token) {
+        try {
+          const response = await authService.getCurrentUser();
+          setUser(response);
+          setIsAuthenticated(true);
+        } catch (error) {
+          logout();
+        }
+      }
+      setIsLoading(false);
+    };
+  
+    initializeAuth();
   }, []);
 
   const login = async (credentials: LoginCredentials) => {

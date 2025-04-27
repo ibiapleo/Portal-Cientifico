@@ -22,7 +22,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 
-interface ResourceType {
+interface MaterialType {
   id: string
   label: string
   icon: React.ReactNode
@@ -37,14 +37,14 @@ interface FilterPanelProps {
   selectedTypes: string[]
   selectedAreas: string[]
   dateRange: [number, number]
-  onlyFreeResources: boolean
+  onlyFreeMaterials: boolean
   sortBy: string
-  resourceTypes: ResourceType[]
+  materialTypes: MaterialType[]
   knowledgeAreas: KnowledgeArea[]
   toggleType: (typeId: string) => void
   toggleArea: (areaId: string) => void
   setDateRange: (range: [number, number]) => void
-  setOnlyFreeResources: (value: boolean) => void
+  setOnlyFreeMaterials: (value: boolean) => void
   setSortBy: (value: string) => void
   applyFilters: () => void
   clearFilters: () => void
@@ -56,14 +56,14 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   selectedTypes,
   selectedAreas,
   dateRange,
-  onlyFreeResources,
+  onlyFreeMaterials,
   sortBy,
-  resourceTypes,
+  materialTypes,
   knowledgeAreas,
   toggleType,
   toggleArea,
   setDateRange,
-  setOnlyFreeResources,
+  setOnlyFreeMaterials,
   setSortBy,
   applyFilters,
   clearFilters,
@@ -92,7 +92,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <div>
               <h3 className="text-sm font-medium mb-3">Tipo de Material</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {resourceTypes.map((type) => (
+                {materialTypes.map((type) => (
                   <Button
                     key={type.id}
                     variant="outline"
@@ -171,8 +171,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Switch id="free-resources" checked={onlyFreeResources} onCheckedChange={setOnlyFreeResources} />
-                <Label htmlFor="free-resources">Apenas recursos gratuitos</Label>
+                <Switch id="free-materials" checked={onlyFreeMaterials} onCheckedChange={setOnlyFreeMaterials} />
+                <Label htmlFor="free-materials">Apenas recursos gratuitos</Label>
               </div>
             </div>
           </div>

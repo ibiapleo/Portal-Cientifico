@@ -1,11 +1,9 @@
 package com.cesarschool.portalcientifico.domain.material;
 
-import com.cesarschool.portalcientifico.domain.comment.Comment;
 import com.cesarschool.portalcientifico.domain.comment.CommentRequestDTO;
 import com.cesarschool.portalcientifico.domain.comment.CommentResponseDTO;
 import com.cesarschool.portalcientifico.domain.material.dto.*;
 import com.cesarschool.portalcientifico.domain.user.User;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -28,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/materials")
@@ -223,5 +220,24 @@ public class MaterialController {
         String content = commentRequest.getContent();
         CommentResponseDTO response = materialLikeCommentAggregation.addCommentToMaterial(id, content, user);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Deleta um material",
+            description = "Permite que um usuário logado delete um material que ele mesmo enviou."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Material deletado com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Usuário não autorizado a deletar este material"),
+            @ApiResponse(responseCode = "404", description = "Material não encontrado")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMaterial(
+            @Parameter(description = "ID do material", required = true) @PathVariable Long id,
+            @Parameter(hidden = true) Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        materialService.deleteMaterial(id, user);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -18,6 +18,7 @@ public class MaterialResponseDTO {
     private String type;
     private String area;
     private String author;
+    private String authorId;
     private long likeCount;
     private boolean liked;
     private long commentCount;

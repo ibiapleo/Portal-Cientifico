@@ -5,7 +5,7 @@ import {X} from "lucide-react"
 import {Badge} from "@/components/ui/badge"
 import {Button} from "@/components/ui/button"
 
-interface ResourceType {
+interface MaterialType {
   id: string
   label: string
 }
@@ -20,7 +20,7 @@ interface ActiveFiltersProps {
   selectedTypes: string[]
   selectedAreas: string[]
   sortBy: string
-  resourceTypes: ResourceType[]
+  materialTypes: MaterialType[]
   knowledgeAreas: KnowledgeArea[]
   clearSearchTerm: () => void
   removeType: (typeId: string) => void
@@ -34,7 +34,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   selectedTypes,
   selectedAreas,
   sortBy,
-  resourceTypes,
+  materialTypes,
   knowledgeAreas,
   clearSearchTerm,
   removeType,
@@ -67,7 +67,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         )}
 
         {selectedTypes.map((type) => {
-          const typeObj = resourceTypes.find((t) => t.id === type)
+          const typeObj = materialTypes.find((t) => t.id === type)
           return (
             <Badge key={type} className="bg-orange-100 text-orange-800 hover:bg-orange-200 border-none">
               Tipo: {typeObj?.label || type}

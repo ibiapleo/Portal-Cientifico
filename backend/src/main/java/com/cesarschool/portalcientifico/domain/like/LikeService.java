@@ -22,7 +22,7 @@ public class LikeService {
 
         if (existingLike.isPresent()) {
             likeRepository.delete(existingLike.get());
-            return false; // removeu o like
+            return false;
         } else {
             Like newLike = Like.builder()
                     .user(user)
@@ -31,7 +31,7 @@ public class LikeService {
                     .createdAt(LocalDateTime.now())
                     .build();
             likeRepository.save(newLike);
-            return true; // adicionou o like
+            return true;
         }
     }
 
@@ -40,7 +40,7 @@ public class LikeService {
     }
 
     public boolean isLikedByUser(User user, TargetType targetType, Long targetId) {
-        return likeRepository.findByUserIdAndTarget(user.getId(), targetType, targetId).isPresent();
+        return likeRepository.existsByUserIdAndTarget(user.getId(), targetType, targetId);
     }
 
     public Map<Long, Long> countLikesByTargetIds(TargetType type, List<Long> targetIds) {

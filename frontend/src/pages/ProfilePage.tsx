@@ -38,8 +38,8 @@ import {
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {toast} from "react-toastify"
 import useAuth from "../hooks/useAuth"
-import resourceService from "../services/resourceService"
-import type {Resource} from "../types/resource"
+import materialService from "../services/materialService"
+import type {Material} from "../types/material"
 
 interface PaginationInfo {
   currentPage: number
@@ -52,11 +52,11 @@ const ProfilePage: React.FC = () => {
   const navigate = useNavigate()
   const { user, isAuthenticated, logout } = useAuth()
   const [activeTab, setActiveTab] = useState<"uploads" | "saved" | "settings">("uploads")
-  const [resources, setResources] = useState<Resource[]>([])
+  const [materials, setMaterials] = useState<Material[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
-  const [resourceToDelete, setResourceToDelete] = useState<string | null>(null)
+  const [materialToDelete, setMaterialToDelete] = useState<string | null>(null)
 
   // Paginação
   const [pagination, setPagination] = useState<PaginationInfo>({
@@ -67,11 +67,11 @@ const ProfilePage: React.FC = () => {
   })
 
   // Buscar recursos do usuário com paginação
-  const fetchUserResources = async (page = 0, size = 10) => {
+  const fetchUserMaterials = async (page = 0, size = 10) => {
     try {
       setIsLoading(true)
-      const response = await resourceService.getUserResourcesPaginated(page, size)
-      setResources(response.content)
+      const response = await materialService.getUserMaterialsPaginated(page, size)
+      setMaterials(response.content)
       setPagination({
         currentPage: response.number,
         totalPages: response.totalPages,
@@ -94,39 +94,39 @@ const ProfilePage: React.FC = () => {
     }
 
     // Carregar recursos do usuário
-    fetchUserResources()
+    fetchUserMaterials()
   }, [isAuthenticated, navigate])
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 0 && newPage < pagination.totalPages) {
-      fetchUserResources(newPage, pagination.size)
+      fetchUserMaterials(newPage, pagination.size)
     }
   }
 
   const handlePageSizeChange = (newSize: string) => {
     const size = Number.parseInt(newSize)
-    fetchUserResources(0, size)
+    fetchUserMaterials(0, size)
   }
 
-  const handleDeleteResource = (resourceId: string) => {
-    setResourceToDelete(resourceId)
+  const handleDeleteMaterial = (materialId: string) => {
+    setMaterialToDelete(materialId)
     setDeleteDialogOpen(true)
   }
 
   const confirmDelete = async () => {
-    if (!resourceToDelete) return
+    if (!materialToDelete) return
 
     try {
-      await resourceService.deleteResource(resourceToDelete)
+      await materialService.deleteMaterial(materialToDelete)
       // Recarregar a página atual após exclusão
-      fetchUserResources(pagination.currentPage, pagination.size)
+      fetchUserMaterials(pagination.currentPage, pagination.size)
       toast.success("Material excluído com sucesso!")
     } catch (err) {
       console.error("Erro ao excluir recurso:", err)
       toast.error("Não foi possível excluir o material. Tente novamente.")
     } finally {
       setDeleteDialogOpen(false)
-      setResourceToDelete(null)
+      setMaterialToDelete(null)
     }
   }
 
@@ -229,7 +229,7 @@ const ProfilePage: React.FC = () => {
                     <AlertCircle className="h-5 w-5 mr-2" />
                     <p>{error}</p>
                   </div>
-                ) : resources.length === 0 ? (
+                ) : materials.length === 0 ? (
                   <div className="text-center py-8">
                     <FileText className="h-12 w-12 text-gray-300 mx-auto mb-2" />
                     <h3 className="text-lg font-medium">Nenhum upload encontrado</h3>
@@ -244,34 +244,34 @@ const ProfilePage: React.FC = () => {
                 ) : (
                   <>
                     <div className="space-y-4">
-                      {resources.map((resource) => (
-                        <div key={resource.id} className="flex border rounded-lg overflow-hidden">
+                      {materials.map((material) => (
+                        <div key={material.id} className="flex border rounded-lg overflow-hidden">
                           <div className="w-16 bg-orange-50 flex items-center justify-center">
-                            {getFileIcon(resource.type)}
+                            {getFileIcon(material.type)}
                           </div>
                           <div className="flex-1 p-4">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                               <div>
                                 <div className="flex flex-wrap gap-2 mb-1">
                                   <Badge variant="outline" className="bg-orange-50 text-orange-700">
-                                    {resource.type}
+                                    {material.type}
                                   </Badge>
-                                  <Badge variant="outline">{resource.area}</Badge>
+                                  <Badge variant="outline">{material.area}</Badge>
                                 </div>
-                                <h3 className="font-medium">{resource.title}</h3>
+                                <h3 className="font-medium">{material.title}</h3>
                                 <div className="flex items-center text-sm text-gray-500 mt-1">
-                                  <span>Enviado em {formatDate(resource.createdAt)}</span>
+                                  <span>Enviado em {formatDate(material.createdAt)}</span>
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Button variant="outline" size="sm" asChild>
-                                  <Link to={`/resource/${resource.id}`}>
+                                  <Link to={`/material/${material.id}`}>
                                     <Eye className="h-4 w-4 mr-1" />
                                     Ver
                                   </Link>
                                 </Button>
                                 <Button variant="outline" size="sm" asChild>
-                                  <Link to={`/edit-resource/${resource.id}`}>
+                                  <Link to={`/edit-material/${material.id}`}>
                                     <Pencil className="h-4 w-4 mr-1" />
                                     Editar
                                   </Link>
@@ -280,7 +280,7 @@ const ProfilePage: React.FC = () => {
                                   variant="outline"
                                   size="sm"
                                   className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                                  onClick={() => handleDeleteResource(resource.id)}
+                                  onClick={() => handleDeleteMaterial(material.id)}
                                 >
                                   <Trash2 className="h-4 w-4 mr-1" />
                                   Excluir
@@ -290,19 +290,19 @@ const ProfilePage: React.FC = () => {
                             <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                               <div className="flex items-center gap-1">
                                 <Eye className="h-4 w-4" />
-                                <span>{resource.totalView|| 0}</span>
+                                <span>{material.totalView|| 0}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Download className="h-4 w-4" />
-                                <span>{resource.totalDownload || 0}</span>
+                                <span>{material.totalDownload || 0}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <ThumbsUp className="h-4 w-4" />
-                                <span>{resource.likeCount || 0}</span>
+                                <span>{material.likeCount || 0}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <MessageSquare className="h-4 w-4" />
-                                <span>{resource.commentCount || 0}</span>
+                                <span>{material.commentCount || 0}</span>
                               </div>
                             </div>
                           </div>
@@ -313,7 +313,7 @@ const ProfilePage: React.FC = () => {
                     {/* Paginação */}
                     <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                       <div className="text-sm text-gray-500">
-                        Mostrando {resources.length} de {pagination.totalElements} resultados
+                        Mostrando {materials.length} de {pagination.totalElements} resultados
                       </div>
 
                       <div className="flex items-center gap-2">

@@ -25,11 +25,11 @@ public class TokenService {
     }
 
     public String generateAccessToken(User user) {
-        return generateToken(user, LocalDateTime.now().plusMinutes(60)); // Token curto (15 min)
+        return generateToken(user, LocalDateTime.now().plusMinutes(60));
     }
 
     public String generateRefreshToken(User user) {
-        String refreshToken = generateToken(user, LocalDateTime.now().plusDays(7)); // Token longo (7 dias)
+        String refreshToken = generateToken(user, LocalDateTime.now().plusDays(1));
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
         return refreshToken;
@@ -59,14 +59,6 @@ public class TokenService {
         } catch (JWTCreationException exception) {
             throw new RuntimeException("Error while generating token");
         }
-    }
-
-    public Optional<User> validateAccessToken(String token) {
-        String email = validateToken(token);
-        if (email == null) {
-            return Optional.empty();
-        }
-        return userRepository.findByEmail(email);
     }
 
 }

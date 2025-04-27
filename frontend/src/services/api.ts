@@ -1,7 +1,7 @@
 import axios, {AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
-import {getToken, removeToken, setToken} from '../utils/storage';
+import {getRefreshToken, getToken, removeToken, setToken} from '../utils/storage';
 
-const API_URL = 'http://localhost:8080/v1/';
+const API_URL = 'http://localhost:8080/v1';
 
 // Criando instância do axios
 const api: AxiosInstance = axios.create({
@@ -30,14 +30,13 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = getRefreshToken();
         const response = await axios.post(`${API_URL}/auth/refresh-token`, { refreshToken });
-        
-        const { token } = response.data;
-        setToken(token);
+        const { accessToken } = response.data;
+        setToken(accessToken);
         
         if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         }
         return api(originalRequest);
       } catch (refreshError) {

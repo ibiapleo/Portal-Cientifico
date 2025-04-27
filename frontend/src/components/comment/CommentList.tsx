@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { CommentResponseDTO } from '@/types/comment';
-import { resourceService } from '@/services/resourceService';
+import {useEffect, useState} from 'react';
+import {CommentResponseDTO} from '@/types/comment';
+import {materialService} from '@/services/materialService';
 
 type Props = {
   materialId: number;
@@ -11,7 +11,7 @@ export const CommentList = ({ materialId }: Props) => {
 
   useEffect(() => {
     const loadComments = async () => {
-      const data = await resourceService.getComments(materialId);
+      const data = await materialService.getComments(materialId);
       setComments(data);
     };
     loadComments();

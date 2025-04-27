@@ -1,381 +1,642 @@
 "use client"
 
 import type React from "react"
-import {useState} from "react"
-import {Link} from "react-router-dom"
-import {BookOpen, Download, FileText, Search, Upload} from "lucide-react"
+import {useEffect, useState} from "react"
+import {Link, useNavigate} from "react-router-dom"
+import {
+    ArrowRight,
+    ArrowUpRight,
+    Bookmark,
+    BookOpen,
+    ChevronDown,
+    Clock,
+    FileText,
+    GraduationCap,
+    ImageIcon,
+    ListChecks,
+    Presentation,
+    School,
+    Search,
+    Sparkles,
+    Star,
+    TrendingUp,
+    Upload,
+    Users,
+} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
-import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
+import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {Badge} from "@/components/ui/badge"
+import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
+import {Skeleton} from "@/components/ui/skeleton"
 import useAuth from "../hooks/useAuth"
-
-// Dados estáticos para recursos
-const staticmaterials = [
-  {
-    id: "1",
-    title: "Fundamentos de Aprendizado de Máquina",
-    type: "Resumo",
-    subject: "Ciência da Computação",
-    author: "Maria Silva",
-    date: "15 Mar 2025",
-    downloads: 128,
-    icon: <BookOpen className="h-8 w-8 text-orange-500" />,
-  },
-  {
-    id: "2",
-    title: "Arquitetura Sustentável: TCC de Planejamento Urbano",
-    type: "TCC",
-    subject: "Arquitetura",
-    author: "João Santos",
-    date: "10 Mar 2025",
-    downloads: 85,
-    icon: <FileText className="h-8 w-8 text-orange-500" />,
-  },
-  {
-    id: "3",
-    title: "Avanços em Tecnologias de Energia Renovável",
-    type: "Artigo",
-    subject: "Engenharia",
-    author: "Ana Costa",
-    date: "8 Mar 2025",
-    downloads: 210,
-    icon: <FileText className="h-8 w-8 text-orange-500" />,
-  },
-  {
-    id: "4",
-    title: "Anotações de Laboratório de Química Orgânica",
-    type: "Resumo",
-    subject: "Química",
-    author: "Pedro Oliveira",
-    date: "5 Mar 2025",
-    downloads: 156,
-    icon: <BookOpen className="h-8 w-8 text-orange-500" />,
-  },
-  {
-    id: "5",
-    title: "Impacto Econômico das Moedas Digitais",
-    type: "Artigo",
-    subject: "Economia",
-    author: "Carla Mendes",
-    date: "3 Mar 2025",
-    downloads: 92,
-    icon: <FileText className="h-8 w-8 text-orange-500" />,
-  },
-  {
-    id: "6",
-    title: "Técnicas de Terapia Cognitivo-Comportamental",
-    type: "Resumo",
-    subject: "Psicologia",
-    author: "Rafael Almeida",
-    date: "28 Fev 2025",
-    downloads: 178,
-    icon: <BookOpen className="h-8 w-8 text-orange-500" />,
-  },
-  {
-    id: "7",
-    title: "Inteligência Artificial na Saúde",
-    type: "TCC",
-    subject: "Informática em Saúde",
-    author: "Sofia Martins",
-    date: "25 Fev 2025",
-    downloads: 143,
-    icon: <FileText className="h-8 w-8 text-orange-500" />,
-  },
-  {
-    id: "8",
-    title: "Estudos de Caso em Direito Empresarial Internacional",
-    type: "Resumo",
-    subject: "Direito",
-    author: "Lucas Ferreira",
-    date: "20 Fev 2025",
-    downloads: 104,
-    icon: <BookOpen className="h-8 w-8 text-orange-500" />,
-  },
-]
+import materialService from "../services/materialService"
+import type {Material, MaterialSearchParams} from "../types/material"
+import MaterialCard from "../components/material/MaterialCard"
 
 const HomePage: React.FC = () => {
   const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState<string>("")
-  const [selectedType, setSelectedType] = useState<string>("")
-  const [materials] = useState(staticmaterials)
+  const [materials, setMaterials] = useState<Material[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchParams, setSearchParams] = useState<MaterialSearchParams>({
+    page: 0,
+    size: 8,
+    sort: "createdAt,desc",
+  })
+  const [hasMore, setHasMore] = useState(true)
+  const [activeTab, setActiveTab] = useState("recentes")
+  const [trendingTopics, setTrendingTopics] = useState<string[]>([])
 
+  // Mapeamento de ícones para tipos de materiais
+  const materialTypeIcons = {
+    ARTICLE: <FileText className="h-5 w-5" />,
+    IMAGE: <ImageIcon className="h-5 w-5" />,
+    TCC: <GraduationCap className="h-5 w-5" />,
+    NOTES: <BookOpen className="h-5 w-5" />,
+    PRESENTATION: <Presentation className="h-5 w-5" />,
+    EXERCISE: <ListChecks className="h-5 w-5" />,
+    OTHER: <Sparkles className="h-5 w-5" />,
+  }
+
+  useEffect(() => {
+    const fetchTrendingTopics = async () => {
+      try {
+        const topics = await materialService.getTrendingTopics()
+        setTrendingTopics(topics)
+      } catch (error) {
+        console.error("Erro ao buscar tópicos em alta:", error)
+        setTrendingTopics([
+          "Inteligência Artificial",
+          "Sustentabilidade",
+          "Blockchain",
+          "Saúde Mental",
+          "Energias Renováveis",
+          "Direito Digital",
+          "Neurociência",
+          "Economia Circular",
+        ])
+      }
+    }
+
+    fetchTrendingTopics()
+  }, [])
+
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        setLoading(true)
+        if (searchParams.page === 0) {
+          setMaterials([])
+        }
+        const response = await materialService.getMaterials(searchParams)
+        setMaterials((prev) =>
+          searchParams.page === 0 ? response.content || [] : [...prev, ...(response.content || [])],
+        )
+        setHasMore(response.pageable.pageNumber < response.totalPages - 1)
+      } catch (error) {
+        console.error("Erro ao buscar materiais:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchMaterials()
+  }, [searchParams])
+
+  // Função para navegar para a página de exploração com os parâmetros de busca
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    // Implementação futura: filtrar recursos com base no termo de pesquisa
-    console.log("Pesquisando por:", searchTerm)
+
+    // Construir os parâmetros de URL para a página de exploração
+    const queryParams = new URLSearchParams()
+
+    if (searchTerm) queryParams.set("q", searchTerm)
+    queryParams.set("tab", "all")
+    queryParams.set("page", "0")
+
+    // Navegar para a página de exploração com os parâmetros
+    navigate(`/explore?${queryParams.toString()}`)
   }
 
-  const handleTypeFilter = (type: string) => {
-    setSelectedType(type === selectedType ? "" : type)
-    // Implementação futura: filtrar recursos com base no tipo
-    console.log("Filtrando por tipo:", type)
+  const handleSortChange = (value: string) => {
+    setSearchParams({
+      ...searchParams,
+      sort: value,
+      page: 0,
+    })
+
+    // Update active tab based on sort
+    if (value.includes("createdAt")) {
+      setActiveTab("recentes")
+    } else if (value.includes("totalDownload")) {
+      setActiveTab("populares")
+    } else if (value.includes("rating")) {
+      setActiveTab("avaliados")
+    }
   }
+
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      setSearchParams({
+        ...searchParams,
+        page: (searchParams.page || 0) + 1,
+      })
+    }
+  }
+
+  // Função para navegar para a página de exploração com um tópico específico
+  const handleTopicClick = (topic: string) => {
+    const queryParams = new URLSearchParams()
+    queryParams.set("q", topic)
+    queryParams.set("tab", "all")
+    queryParams.set("page", "0")
+    navigate(`/explore?${queryParams.toString()}`)
+  }
+
+  // Skeleton loader for materials
+  const MaterialSkeleton = () => (
+    <>
+      {[1, 2, 3, 4].map((i) => (
+        <Card key={i} className="overflow-hidden">
+          <CardHeader className="p-4 pb-2 space-y-2">
+            <div className="flex justify-between">
+              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-10 w-10 rounded-full" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-4">
+            <Skeleton className="h-6 w-full mb-2" />
+            <Skeleton className="h-6 w-3/4 mb-4" />
+            <Skeleton className="h-4 w-1/2 mb-2" />
+            <Skeleton className="h-4 w-1/3" />
+          </CardContent>
+          <CardFooter className="p-4 pt-2">
+            <Skeleton className="h-4 w-1/4" />
+            <Skeleton className="h-8 w-24 ml-auto" />
+          </CardFooter>
+        </Card>
+      ))}
+    </>
+  )
 
   return (
     <>
-      <section className="py-12 md:py-20 bg-gradient-to-b from-orange-50 to-white w-full">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
-            <div className="flex flex-col justify-center space-y-4">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                  Compartilhe Conhecimento, Potencialize o Aprendizado
-                </h1>
-                <p className="text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Envie e descubra materiais de estudo, TCCs e artigos compartilhados por estudantes para estudantes.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button className="bg-orange-500 hover:bg-orange-600" asChild>
-                  <Link to="/upload">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Enviar Material
-                  </Link>
-                </Button>
-                <Button variant="outline">
-                  <BookOpen className="mr-2 h-4 w-4" />
-                  Explorar Recursos
-                </Button>
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <div className="relative w-full max-w-md">
-                <div className="absolute -left-4 -top-4 h-72 w-72 rounded-full bg-orange-100 blur-3xl opacity-70" />
-                <div className="relative rounded-xl border bg-background p-6 shadow-sm">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <h3 className="text-xl font-bold">Encontre Materiais de Estudo</h3>
-                      <p className="text-sm text-gray-500">
-                        Pesquise por tópicos específicos, cursos ou tipos de documento
-                      </p>
-                    </div>
-                    <form onSubmit={handleSearch} className="flex w-full items-center space-x-2">
-                      <Input
-                        type="search"
-                        placeholder="Pesquisar recursos..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                      <Button type="submit" size="icon" className="bg-orange-500 hover:bg-orange-600">
-                        <Search className="h-4 w-4" />
-                        <span className="sr-only">Pesquisar</span>
-                      </Button>
-                    </form>
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className={`rounded-full ${selectedType === "cs" ? "bg-orange-50 text-orange-700 border-orange-200" : ""}`}
-                        onClick={() => handleTypeFilter("cs")}
-                      >
-                        Ciência da Computação
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className={`rounded-full ${selectedType === "engineering" ? "bg-orange-50 text-orange-700 border-orange-200" : ""}`}
-                        onClick={() => handleTypeFilter("engineering")}
-                      >
-                        Engenharia
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className={`rounded-full ${selectedType === "medicine" ? "bg-orange-50 text-orange-700 border-orange-200" : ""}`}
-                        onClick={() => handleTypeFilter("medicine")}
-                      >
-                        Medicina
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className={`rounded-full ${selectedType === "business" ? "bg-orange-50 text-orange-700 border-orange-200" : ""}`}
-                        onClick={() => handleTypeFilter("business")}
-                      >
-                        Administração
-                      </Button>
-                    </div>
-                  </div>
+      {/* Hero Section - Design minimalista e moderno */}
+      <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
+        {/* Elementos decorativos sutis */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute right-0 top-0 w-1/3 h-1/3 bg-orange-100 opacity-20 blur-3xl" />
+          <div className="absolute left-0 bottom-0 w-1/4 h-1/4 bg-orange-200 opacity-10 blur-3xl" />
+        </div>
+
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="max-w-4xl mx-auto text-center mb-12 md:mb-16">
+            <Badge className="mb-4 bg-orange-100 text-orange-700 hover:bg-orange-200 border-none">
+              Plataforma Educacional
+            </Badge>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-orange-800 mb-4">
+              Compartilhe Conhecimento
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+              Uma plataforma colaborativa de materiais de estudo criada por estudantes para estudantes.
+            </p>
+
+            {/* Barra de pesquisa centralizada e minimalista */}
+            <div className="max-w-2xl mx-auto">
+              <form onSubmit={handleSearch} className="flex w-full items-center space-x-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    type="search"
+                    placeholder="Pesquisar materiais de estudo..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 py-6 bg-white border-gray-200 focus:border-orange-500 focus:ring-orange-500 text-base"
+                  />
                 </div>
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="bg-orange-500 hover:bg-orange-600 text-white transition-all px-6"
+                >
+                  Buscar
+                </Button>
+              </form>
+            </div>
+
+            {/* Tópicos em alta */}
+            <div className="mt-6">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <TrendingUp className="h-4 w-4 text-orange-500" />
+                <span className="text-sm font-medium">Tópicos em Alta</span>
+              </div>
+              <div className="flex flex-wrap justify-center gap-2">
+                {trendingTopics.map((topic, index) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="cursor-pointer bg-white hover:bg-orange-50 transition-colors"
+                    onClick={() => handleTopicClick(topic)}
+                  >
+                    {topic}
+                  </Badge>
+                ))}
               </div>
             </div>
+
+            {/* Botões de ação */}
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
+              <Button
+                size="lg"
+                className="bg-orange-500 hover:bg-orange-600 text-white shadow-md transition-all group"
+                asChild
+              >
+                <Link to="/upload">
+                  <Upload className="mr-2 h-5 w-5 group-hover:translate-y-[-2px] transition-transform" />
+                  Enviar Material
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-orange-200 text-orange-700 hover:bg-orange-50 transition-all group"
+                asChild
+              >
+                <Link to="/explore">
+                  <BookOpen className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                  Explorar Recursos
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          {/* Tipos de materiais */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4 max-w-4xl mx-auto mt-12">
+            {[
+              { type: "ARTICLE", label: "Artigos" },
+              { type: "IMAGE", label: "Imagens" },
+              { type: "TCC", label: "TCCs" },
+              { type: "NOTES", label: "Resumos" },
+              { type: "PRESENTATION", label: "Apresentações" },
+              { type: "EXERCISE", label: "Exercícios" },
+              { type: "OTHER", label: "Outros" },
+            ].map((item) => (
+              <Link
+                key={item.type}
+                to={`/explore?type=${item.type}`}
+                className="flex flex-col items-center p-4 bg-white rounded-lg border border-gray-100 hover:border-orange-200 hover:shadow-sm transition-all text-center group"
+              >
+                <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-2 group-hover:bg-orange-100 transition-colors">
+                  {materialTypeIcons[item.type as keyof typeof materialTypeIcons]}
+                </div>
+                <span className="text-sm font-medium">{item.label}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="py-12 w-full">
+      {/* Materials Section - Design simplificado */}
+      <section className="py-16 w-full bg-gray-50">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">Uploads Recentes</h2>
-              <p className="text-gray-500">
-                Descubra os materiais de estudo mais recentes compartilhados por estudantes
-              </p>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Materiais Recentes</h2>
+              <p className="text-gray-500">Descubra os recursos mais recentes compartilhados pela comunidade</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className={!selectedType ? "bg-orange-50 text-orange-700" : ""}
-                onClick={() => setSelectedType("")}
-              >
-                Todos
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className={selectedType === "Artigo" ? "bg-orange-50 text-orange-700" : ""}
-                onClick={() => handleTypeFilter("Artigo")}
-              >
-                Artigos
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className={selectedType === "TCC" ? "bg-orange-50 text-orange-700" : ""}
-                onClick={() => handleTypeFilter("TCC")}
-              >
-                TCCs
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className={selectedType === "Resumo" ? "bg-orange-50 text-orange-700" : ""}
-                onClick={() => handleTypeFilter("Resumo")}
-              >
-                Resumos
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 group"
+              onClick={() => navigate("/explore")}
+            >
+              Ver todos
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </div>
 
-          <div className="mt-8 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {materials.map((material) => (
-              <Card key={material.id} className="overflow-hidden transition-all hover:shadow-md">
-                <CardHeader className="p-4 pb-0 flex items-start justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Badge variant="outline" className="bg-orange-50 text-orange-700 hover:bg-orange-100">
-                      {material.type}
-                    </Badge>
-                    <Badge variant="outline">{material.subject}</Badge>
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => {
+              setActiveTab(value)
+              if (value === "recentes") handleSortChange("createdAt,desc")
+              if (value === "populares") handleSortChange("totalDownload,desc")
+              if (value === "avaliados") handleSortChange("rating,desc")
+            }}
+            className="mb-8"
+          >
+            <TabsList className="bg-white border border-gray-100 p-1 w-full sm:w-auto">
+              <TabsTrigger
+                value="recentes"
+                className="data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700 flex-1 sm:flex-initial"
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                Recentes
+              </TabsTrigger>
+              <TabsTrigger
+                value="populares"
+                className="data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700 flex-1 sm:flex-initial"
+              >
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Populares
+              </TabsTrigger>
+              <TabsTrigger
+                value="avaliados"
+                className="data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700 flex-1 sm:flex-initial"
+              >
+                <Star className="h-4 w-4 mr-2" />
+                Mais Avaliados
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {loading && materials.length === 0 ? (
+              <MaterialSkeleton />
+            ) : materials.length > 0 ? (
+              materials.map((material) => <MaterialCard key={material.id} material={material} />)
+            ) : (
+              <div className="col-span-full py-16 text-center">
+                <div className="mx-auto w-20 h-20 rounded-full bg-orange-50 flex items-center justify-center mb-4">
+                  <Search className="h-8 w-8 text-orange-300" />
+                </div>
+                <h3 className="text-xl font-medium mb-2">Nenhum material encontrado</h3>
+                <p className="text-gray-500 max-w-md mx-auto mb-6">
+                  Tente ajustar seus termos de pesquisa para encontrar o que procura.
+                </p>
+                <Button
+                  variant="outline"
+                  className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                  onClick={() => navigate("/explore")}
+                >
+                  Explorar todos os materiais
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {hasMore && (
+            <div className="mt-10 flex justify-center">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-orange-200 text-orange-600 hover:bg-orange-50 group"
+                onClick={loadMore}
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600 mr-2"></div>
+                    Carregando...
                   </div>
-                  <div className="rounded-full bg-orange-50 p-2">{material.icon}</div>
+                ) : (
+                  <div className="flex items-center">
+                    Carregar Mais
+                    <ChevronDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-1" />
+                  </div>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* How It Works Section - Design minimalista */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tight mb-4">Como Funciona</h2>
+            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+              Compartilhe e acesse materiais acadêmicos em apenas alguns passos simples
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+            {[
+              {
+                step: 1,
+                title: "Crie uma Conta",
+                description: "Cadastre-se gratuitamente e junte-se à nossa comunidade acadêmica",
+                icon: <Users className="h-8 w-8 text-orange-500" />,
+              },
+              {
+                step: 2,
+                title: "Envie Seus Materiais",
+                description: "Compartilhe seus resumos, TCCs ou artigos com a categorização adequada",
+                icon: <Upload className="h-8 w-8 text-orange-500" />,
+              },
+              {
+                step: 3,
+                title: "Explore e Baixe",
+                description: "Encontre recursos que correspondam aos seus interesses e baixe-os para seus estudos",
+                icon: <BookOpen className="h-8 w-8 text-orange-500" />,
+              },
+              {
+                step: 4,
+                title: "Interaja e Colabore",
+                description: "Comente nos recursos, conecte-se com colegas e colabore em projetos",
+                icon: <Sparkles className="h-8 w-8 text-orange-500" />,
+              },
+            ].map((item) => (
+              <div key={item.step} className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center mb-4 group-hover:bg-orange-100 transition-colors">
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-2">
+                  <span className="text-orange-500 mr-1">{item.step}.</span> {item.title}
+                </h3>
+                <p className="text-gray-500">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Community Section - Design minimalista */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="grid gap-12 lg:grid-cols-2 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl font-bold tracking-tight">Junte-se a Milhares de Estudantes</h2>
+              <p className="text-gray-600 text-lg">
+                Conecte-se com uma comunidade vibrante de estudantes compartilhando conhecimento em diversas
+                disciplinas.
+              </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {[
+                  { value: "10K+", label: "Estudantes", icon: <Users className="h-6 w-6 text-orange-400" /> },
+                  { value: "25K+", label: "Recursos", icon: <BookOpen className="h-6 w-6 text-orange-400" /> },
+                  { value: "500+", label: "Universidades", icon: <School className="h-6 w-6 text-orange-400" /> },
+                  { value: "50+", label: "Disciplinas", icon: <FileText className="h-6 w-6 text-orange-400" /> },
+                ].map((stat, i) => (
+                  <div key={i} className="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div className="mx-auto w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-2">
+                      {stat.icon}
+                    </div>
+                    <div className="text-2xl font-bold text-orange-600">{stat.value}</div>
+                    <div className="text-sm text-gray-500">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-4">
+                <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white shadow-md group" asChild>
+                  <Link to={isAuthenticated ? "/upload" : "/cadastro"}>
+                    Junte-se Agora
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="relative">
+              <Card className="border-none shadow-md bg-white overflow-hidden">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-bold">Destaques da Semana</h3>
+                    <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 border-none">
+                      <Star className="h-3 w-3 mr-1 fill-current" /> Top Rated
+                    </Badge>
+                  </div>
                 </CardHeader>
-                <CardContent className="p-4">
-                  <h3 className="font-medium line-clamp-2 min-h-[48px]">{material.title}</h3>
-                  <div className="mt-2 flex items-center text-sm text-gray-500">
-                    <span>Por {material.author}</span>
-                    <span className="mx-2">•</span>
-                    <span>{material.date}</span>
+                <CardContent className="p-0">
+                  <div className="divide-y">
+                    {[
+                      {
+                        title: "Inteligência Artificial: Fundamentos e Aplicações",
+                        author: "Maria Silva",
+                        downloads: 342,
+                        rating: 4.9,
+                      },
+                      {
+                        title: "Desenvolvimento Sustentável na Engenharia Civil",
+                        author: "João Santos",
+                        downloads: 287,
+                        rating: 4.8,
+                      },
+                      {
+                        title: "Psicologia Cognitiva: Resumo Completo",
+                        author: "Ana Costa",
+                        downloads: 256,
+                        rating: 4.7,
+                      },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center p-4 hover:bg-orange-50/50 transition-colors">
+                        <div className="mr-4 bg-orange-50 h-12 w-12 rounded-lg flex items-center justify-center">
+                          <Bookmark className="h-6 w-6 text-orange-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm truncate">{item.title}</h4>
+                          <p className="text-xs text-gray-500">por {item.author}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="flex items-center justify-end text-yellow-500 text-sm">
+                            <Star className="h-3 w-3 fill-current mr-1" />
+                            {item.rating}
+                          </div>
+                          <div className="text-xs text-gray-500">{item.downloads} downloads</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
-                <CardFooter className="p-4 pt-0 flex items-center justify-between">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Download className="mr-1 h-4 w-4" />
-                    <span>{material.downloads}</span>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                    asChild
-                  >
-                    <Link to={`/material/${material.id}`}>Ver Detalhes</Link>
+                <CardFooter className="bg-gray-50">
+                  <Button variant="link" className="text-orange-600 w-full group" asChild>
+                    <Link to="/trending">
+                      Ver todos os destaques
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                   </Button>
                 </CardFooter>
               </Card>
-            ))}
-          </div>
-
-          <div className="mt-8 flex justify-center">
-            <Button variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-50">
-              Carregar Mais Recursos
-            </Button>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-12 bg-orange-50 w-full">
+      {/* Call to Action - Design minimalista */}
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold tracking-tight">Como Funciona</h2>
-              <div className="grid gap-4">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600">
-                    1
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="font-medium">Crie uma Conta</h3>
-                    <p className="text-sm text-gray-500">
-                      Cadastre-se gratuitamente e junte-se à nossa comunidade acadêmica
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600">
-                    2
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="font-medium">Envie Seus Materiais</h3>
-                    <p className="text-sm text-gray-500">
-                      Compartilhe seus resumos, TCCs ou artigos com a categorização adequada
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600">
-                    3
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="font-medium">Explore e Baixe</h3>
-                    <p className="text-sm text-gray-500">
-                      Encontre recursos que correspondam aos seus interesses e baixe-os para seus estudos
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600">
-                    4
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="font-medium">Interaja e Colabore</h3>
-                    <p className="text-sm text-gray-500">
-                      Comente nos recursos, conecte-se com colegas e colabore em projetos
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col space-y-4">
-              <div className="rounded-xl border bg-background p-6 shadow-sm">
-                <h3 className="text-xl font-bold">Junte-se à Nossa Comunidade</h3>
-                <p className="mt-2 text-sm text-gray-500">
-                  Conecte-se com milhares de estudantes compartilhando conhecimento em diversas disciplinas
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-8 md:p-12 shadow-md">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div className="text-white space-y-4">
+                <h2 className="text-3xl font-bold">Pronto para compartilhar seu conhecimento?</h2>
+                <p className="text-orange-50 text-lg">
+                  Faça parte da nossa comunidade e ajude outros estudantes a terem acesso a materiais de qualidade.
                 </p>
-                <div className="mt-4 grid grid-cols-2 gap-4 text-center">
-                  <div className="rounded-lg bg-orange-50 p-4">
-                    <div className="text-2xl font-bold text-orange-600">10K+</div>
-                    <div className="text-xs text-gray-500">Estudantes</div>
-                  </div>
-                  <div className="rounded-lg bg-orange-50 p-4">
-                    <div className="text-2xl font-bold text-orange-600">25K+</div>
-                    <div className="text-xs text-gray-500">Recursos</div>
-                  </div>
-                  <div className="rounded-lg bg-orange-50 p-4">
-                    <div className="text-2xl font-bold text-orange-600">500+</div>
-                    <div className="text-xs text-gray-500">Universidades</div>
-                  </div>
-                  <div className="rounded-lg bg-orange-50 p-4">
-                    <div className="text-2xl font-bold text-orange-600">50+</div>
-                    <div className="text-xs text-gray-500">Disciplinas</div>
-                  </div>
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <Button size="lg" className="bg-white text-orange-600 hover:bg-orange-50 group" asChild>
+                    <Link to="/upload">
+                      <Upload className="mr-2 h-5 w-5" />
+                      Enviar Material
+                    </Link>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white text-white hover:bg-orange-600/50"
+                    asChild
+                  >
+                    <Link to="/explore">
+                      <Search className="mr-2 h-5 w-5" />
+                      Explorar Conteúdo
+                    </Link>
+                  </Button>
                 </div>
-                <Button className="mt-6 w-full bg-orange-500 hover:bg-orange-600" asChild>
-                  <Link to={isAuthenticated ? "/upload" : "/cadastro"}>Junte-se Agora</Link>
-                </Button>
+              </div>
+              <div className="hidden md:flex justify-end">
+                <div className="grid grid-cols-2 gap-4 max-w-xs">
+                  {[
+                    { icon: <FileText className="h-6 w-6 text-orange-500" />, label: "Artigos" },
+                    { icon: <GraduationCap className="h-6 w-6 text-orange-500" />, label: "TCCs" },
+                    { icon: <BookOpen className="h-6 w-6 text-orange-500" />, label: "Resumos" },
+                    { icon: <Presentation className="h-6 w-6 text-orange-500" />, label: "Apresentações" },
+                  ].map((item, i) => (
+                    <div key={i} className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                      <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-2">
+                        {item.icon}
+                      </div>
+                      <p className="text-white text-sm">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Áreas de Conhecimento - Seção minimalista */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">Áreas de Conhecimento</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto">Explore materiais de estudo em diversas áreas acadêmicas</p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {[
+              { id: "COMPUTER_SCIENCE", label: "Ciência da Computação" },
+              { id: "ENGINEERING", label: "Engenharia" },
+              { id: "MEDICINE", label: "Medicina" },
+              { id: "BUSINESS", label: "Administração" },
+              { id: "LAW", label: "Direito" },
+              { id: "PSYCHOLOGY", label: "Psicologia" },
+              { id: "EDUCATION", label: "Educação" },
+              { id: "ARTS", label: "Artes" },
+              { id: "OTHER", label: "Outras Áreas" },
+            ].map((area) => (
+              <Link
+                key={area.id}
+                to={`/explore?area=${area.id}`}
+                className="bg-white p-4 rounded-lg border border-gray-100 hover:border-orange-200 hover:shadow-sm transition-all text-center group flex flex-col items-center justify-center h-24"
+              >
+                <span className="font-medium group-hover:text-orange-600 transition-colors">{area.label}</span>
+                <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity mt-1" />
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -384,4 +645,3 @@ const HomePage: React.FC = () => {
 }
 
 export default HomePage
-

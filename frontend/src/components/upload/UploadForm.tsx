@@ -4,8 +4,8 @@ import type React from "react"
 import {useRef, useState} from "react"
 import {useNavigate} from "react-router-dom"
 import {File, FileUp, Upload, X} from "lucide-react"
-import resourceService from "../../services/resourceService"
-import type {UploadFormData} from "../../types/resource"
+import materialService from "../../services/materialService"
+import type {UploadFormData} from "../../types/material"
 
 const UploadForm: React.FC = () => {
   const navigate = useNavigate()
@@ -193,10 +193,10 @@ const UploadForm: React.FC = () => {
       }
 
       setIsUploading(true)
-      const response = await resourceService.uploadResource(uploadData)
+      const response = await materialService.uploadMaterial(uploadData)
       setIsUploading(false)
 
-      navigate(`/resource/${response.id}`)
+      navigate(`/material/${response.id}`)
     } catch (err: any) {
       setIsUploading(false)
       setError(err.response?.data?.message || "Erro ao enviar o material. Tente novamente.")

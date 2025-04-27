@@ -1,8 +1,6 @@
 package com.cesarschool.portalcientifico.domain.comment;
 
-import com.cesarschool.portalcientifico.domain.material.Material;
 import com.cesarschool.portalcientifico.domain.material.MaterialRepository;
-import com.cesarschool.portalcientifico.domain.material.dto.MaterialResponseDTO;
 import com.cesarschool.portalcientifico.domain.user.User;
 import com.cesarschool.portalcientifico.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service

@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,7 +50,7 @@ public class MaterialService {
     }
 
     public MaterialResponseDTO getMaterialDetails(Long id) {
-        Material material = materialRepository.findById(id)
+        Material material = materialRepository.findByIdWithJoin(id)
                 .orElseThrow(() -> new EntityNotFoundException("Material não encontrado para o id: " + id));
 
         material.setTotalView(material.getTotalView() + 1);
@@ -60,6 +61,7 @@ public class MaterialService {
         dto.setAuthor(material.getUser().getName());
         dto.setArea(material.getArea().getDescription());
         dto.setType(material.getType().getDescription());
+        dto.setAuthorId(material.getUser().getId());
 
         return dto;
     }
@@ -100,6 +102,7 @@ public class MaterialService {
                 .map(material -> {
                     MaterialResponseDTO dto = mapper.map(material, MaterialResponseDTO.class);
                     dto.setArea(material.getArea().getDescription());
+                    dto.setCommentCount(material.getComments().size());
                     dto.setType(material.getType().getDescription());
                     dto.setAuthor(material.getUser().getName());
                     return dto;
@@ -139,5 +142,16 @@ public class MaterialService {
                     dto.setAuthor(material.getUser().getName());
                     return dto;
                 });
+    }
+
+    @Transactional
+    public void deleteMaterial(Long id, User user) {
+        Material material = materialRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Material não encontrado"));
+
+        if (!material.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Você não tem permissão para deletar este material");
+        }
+        materialRepository.delete(material);
     }
 }

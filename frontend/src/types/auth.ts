@@ -27,7 +27,6 @@ export interface User {
     id: string
     name: string
     email: string
-    institution?: string
     createdAt: string
   }
   
@@ -50,7 +49,7 @@ export interface User {
   }
   
   export interface AuthResponse {
-    user: User;
+    user: User | null;
     accessToken: string;
     refreshToken: string;
   }

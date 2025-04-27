@@ -38,7 +38,7 @@ public class OpenApiConfigs {
         return new OpenAPI()
                 .info(new Info()
                         .title(serviceTitle)
-                        .description("Documentação da API do Portal Científico")
+                        .description("Documentação da API do Projeto OAB-PE")
                         .version(serviceVersion)
                         .contact(new Contact()
                                 .name("Equipe de Desenvolvimento")

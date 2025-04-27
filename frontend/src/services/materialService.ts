@@ -1,64 +1,27 @@
 import api from "./api"
-import type {MaterialResponseDTO, Resource} from "../types/resource"
+import type {Material, MaterialResponseDTO, MaterialSearchParams} from "../types/material"
 import type {CommentRequestDTO, CommentResponseDTO} from "../types/comment"
+import {PageResponse} from "@/types/pagination"
 
-// Interface para a resposta paginada do Spring
-interface PageResponse<T> {
-  content: T[]
-  pageable: {
-    pageNumber: number
-    pageSize: number
-    sort: {
-      empty: boolean
-      sorted: boolean
-      unsorted: boolean
-    }
-    offset: number
-    unpaged: boolean
-    paged: boolean
-  }
-  last: boolean
-  totalElements: number
-  totalPages: number
-  size: number
-  number: number
-  sort: {
-    empty: boolean
-    sorted: boolean
-    unsorted: boolean
-  }
-  first: boolean
-  numberOfElements: number
-  empty: boolean
-}
-
-// Interface para parâmetros de busca
-export interface ResourceSearchParams {
-  page?: number
-  size?: number
-  type?: string
-  area?: string
-  search?: string
-  sort?: string
-  dateRange?: number
-  minDownloads?: number
-}
-
-const resourceService = {
+const materialService = {
   // Buscar todos os recursos com paginação e filtros
-  async getResources(params?: ResourceSearchParams): Promise<PageResponse<Resource>> {
-    const response = await api.get("/materials", { params })
-    return response.data
+  async getMaterials(params?: MaterialSearchParams): Promise<PageResponse<Material>> {
+    // Filtrar os parâmetros para remover os que são null, undefined ou vazios
+    const filteredParams = Object.fromEntries(
+      Object.entries(params || {}).filter(([_, value]) => value != null && value !== "")
+    );
+    const response = await api.get("/materials", { params: filteredParams });
+    return response.data;
   },
 
   // Buscar um recurso específico pelo ID
-  async getResourceById(id: string): Promise<Resource> {
+  async getMaterialById(id: string): Promise<Material> {
     const response = await api.get(`/materials/${id}`)
     return response.data
   },
 
   // Buscar recursos do usuário logado com paginação
-  async getUserResourcesPaginated(page = 0, size = 10): Promise<PageResponse<Resource>> {
+  async getUserMaterialsPaginated(page = 0, size = 10): Promise<PageResponse<Material>> {
     const response = await api.get("/materials/me", {
       params: {
         page,
@@ -70,7 +33,7 @@ const resourceService = {
   },
 
   // Fazer upload de um novo recurso
-  async uploadResource(formData: FormData): Promise<MaterialResponseDTO> {
+  async uploadMaterial(formData: FormData): Promise<MaterialResponseDTO> {
     const response = await api.post("/materials", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -80,7 +43,7 @@ const resourceService = {
   },
 
   // Baixar um recurso
-  async downloadResource(id: string): Promise<Blob> {
+  async downloadMaterial(id: string): Promise<Blob> {
     const response = await api.get(`/materials/${id}/download`, {
       responseType: "blob",
     })
@@ -88,7 +51,7 @@ const resourceService = {
   },
 
   // Buscar recursos recomendados para o usuário
-  async getRecommendedResources(page = 0, size = 8): Promise<PageResponse<Resource>> {
+  async getRecommendedMaterials(page = 0, size = 8): Promise<PageResponse<Material>> {
     const response = await api.get("/materials/recommended", {
       params: {
         page,
@@ -99,7 +62,7 @@ const resourceService = {
   },
 
   // Buscar recursos em alta (mais populares)
-  async getTrendingResources(page = 0, size = 8): Promise<PageResponse<Resource>> {
+  async getTrendingMaterials(page = 0, size = 8): Promise<PageResponse<Material>> {
     const response = await api.get("/materials/trending", {
       params: {
         page,
@@ -110,7 +73,7 @@ const resourceService = {
   },
 
   // Buscar recursos recentes
-  async getRecentResources(page = 0, size = 8): Promise<PageResponse<Resource>> {
+  async getRecentMaterials(page = 0, size = 8): Promise<PageResponse<Material>> {
     const response = await api.get("/materials", {
       params: {
         page,
@@ -134,7 +97,7 @@ const resourceService = {
   },
 
   // Curtir/Descurtir comentário
-  async toggleCommentLike(materialId: string, commentId: string): Promise<boolean> {
+  async toggleCommentLike(materialId: string, commentId: number): Promise<boolean> {
     const response = await api.post(`/materials/${materialId}/comments/${commentId}/like`)
     return response.data
   },
@@ -157,8 +120,12 @@ const resourceService = {
     return response.data
   },
 
+  async deleteMaterial(id: string): Promise<void> {
+    await api.delete(`/materials/${id}`)
+  },
+
   // // Salvar um recurso para o usuário
-  // async saveResource(id: string): Promise<void> {
+  // async saveMaterial(id: string): Promise<void> {
   //   await api.post(`/materials/${id}/save`)
   // },
 
@@ -168,24 +135,17 @@ const resourceService = {
   //   return response.data
   // },
 
-  // // Excluir um recurso
-  // async deleteResource(id: string): Promise<void> {
+  // async deleteMaterial(id: string): Promise<void> {
   //   await api.delete(`/materials/${id}`)
   // },
 
   // // Atualizar um recurso
-  // async updateResource(id: string, formData: FormData): Promise<MaterialResponseDTO> {
+  // async updateMaterial(id: string, formData: FormData): Promise<MaterialResponseDTO> {
   //   const response = await api.put(`/materials/${id}`, formData, {
   //     headers: {
   //       "Content-Type": "multipart/form-data",
   //     },
   //   })
-  //   return response.data
-  // },
-
-  // // Buscar recursos relacionados
-  // async getRelatedResources(id: string): Promise<Resource[]> {
-  //   const response = await api.get(`/materials/${id}/related`)
   //   return response.data
   // },
 
@@ -196,4 +156,4 @@ const resourceService = {
   // },
 }
 
-export default resourceService
+export default materialService

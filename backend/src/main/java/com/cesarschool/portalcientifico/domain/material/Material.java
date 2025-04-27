@@ -12,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "materials")
@@ -39,7 +40,7 @@ public class Material {
     private Area area;
 
     @ElementCollection
-    private List<String> keywords;
+    private Set<String> keywords;
 
     @Column(nullable = false)
     private String fileName;
