@@ -1,6 +1,6 @@
 package com.cesarschool.portalcientifico.domain.material;
 
-import com.cesarschool.portalcientifico.domain.comment.CommentResponseDTO;
+import com.cesarschool.portalcientifico.domain.comment.dto.CommentResponseDTO;
 import lombok.Builder;
 import lombok.Data;
 

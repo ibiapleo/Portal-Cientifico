@@ -1,5 +1,6 @@
 package com.cesarschool.portalcientifico.domain.comment;
 
+import com.cesarschool.portalcientifico.domain.comment.dto.CommentResponseDTO;
 import com.cesarschool.portalcientifico.domain.material.MaterialRepository;
 import com.cesarschool.portalcientifico.domain.user.User;
 import com.cesarschool.portalcientifico.exception.EntityNotFoundException;

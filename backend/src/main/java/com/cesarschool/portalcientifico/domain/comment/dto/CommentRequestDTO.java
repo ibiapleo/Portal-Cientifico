@@ -1,4 +1,4 @@
-package com.cesarschool.portalcientifico.domain.comment;
+package com.cesarschool.portalcientifico.domain.comment.dto;
 
 import lombok.Getter;
 import lombok.Setter;

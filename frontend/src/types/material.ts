@@ -18,6 +18,10 @@ export interface Material {
     likeCount: number;
     liked: boolean;
     commentCount: number;
+    averageRating: number | null;
+    totalRatings: number;
+    distribution: Record<number, number>;
+    userRating: number | null;
     createdAt: string;
     updatedAt: string;
   }
@@ -42,6 +46,10 @@ export interface Material {
     likeCount: number;
     liked: boolean;
     commentCount: number;
+    averageRating: number | null;
+    totalRatings: number;
+    distribution: Record<number, number>;
+    userRating: number | null;
     createdAt: string;
     updatedAt: string;
   }
@@ -54,6 +62,7 @@ export interface Material {
     author: string;
     date: string;
     downloads: number;
+    averageRating: number | null;
     icon: React.ReactNode;
   } 
   
@@ -103,3 +112,5 @@ export interface MaterialSearchParams {
   dateRange?: number
   minDownloads?: number
 }
+
+

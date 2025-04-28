@@ -1,8 +1,10 @@
 package com.cesarschool.portalcientifico.domain.material;
 
-import com.cesarschool.portalcientifico.domain.comment.CommentRequestDTO;
-import com.cesarschool.portalcientifico.domain.comment.CommentResponseDTO;
+import com.cesarschool.portalcientifico.domain.comment.dto.CommentRequestDTO;
+import com.cesarschool.portalcientifico.domain.comment.dto.CommentResponseDTO;
 import com.cesarschool.portalcientifico.domain.material.dto.*;
+import com.cesarschool.portalcientifico.domain.rate.dto.RatingRequestDTO;
+import com.cesarschool.portalcientifico.domain.rate.dto.RatingResponseDTO;
 import com.cesarschool.portalcientifico.domain.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,7 +36,7 @@ import java.util.List;
 public class MaterialController {
 
     private final MaterialService materialService;
-    private final MaterialLikeCommentAggregation materialLikeCommentAggregation;
+    private final MaterialAggregation materialAggregation;
 
     @Operation(
             summary = "Faz o upload de um material",
@@ -78,7 +80,7 @@ public class MaterialController {
             @Parameter(description = "ID do material", required = true) @PathVariable Long id,
             @Parameter Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        MaterialResponseDTO materialResponse = materialLikeCommentAggregation.getMaterialAggregation(id, user);
+        MaterialResponseDTO materialResponse = materialAggregation.getMaterialAggregation(id, user);
         return ResponseEntity.status(HttpStatus.OK).body(materialResponse);
     }
 
@@ -120,9 +122,10 @@ public class MaterialController {
             @RequestParam(required = false) List<Area> area,
             @RequestParam(required = false) Integer dateRange,
             @RequestParam(required = false) Integer minDownloads,
+            @RequestParam(required = false) Double averageRating,
             Pageable pageable
     ) {
-        Page<MaterialResponseDTO> page = materialService.getMaterials(search, type, area, dateRange, minDownloads, pageable);
+        Page<MaterialResponseDTO> page = materialAggregation.getMaterialsAggregation(search, type, area, dateRange, minDownloads, pageable);
         return ResponseEntity.ok(page);
     }
 
@@ -162,7 +165,7 @@ public class MaterialController {
             @Parameter(description = "ID do material", required = true) @PathVariable Long id,
             Pageable pageable
     ) {
-        return ResponseEntity.ok(materialLikeCommentAggregation.getCommentsByMaterialId(id, pageable));
+        return ResponseEntity.ok(materialAggregation.getCommentsByMaterialId(id, pageable));
     }
 
     @Operation(
@@ -179,7 +182,7 @@ public class MaterialController {
             @Parameter(hidden = true) Authentication authentication
     ) {
         User user = (User) authentication.getPrincipal();
-        boolean liked = materialLikeCommentAggregation.toggleLikeForMaterial(id, user);
+        boolean liked = materialAggregation.toggleLikeForMaterial(id, user);
         return ResponseEntity.ok(liked);
     }
 
@@ -198,7 +201,7 @@ public class MaterialController {
             @Parameter(hidden = true) Authentication authentication
     ) {
         User user = (User) authentication.getPrincipal();
-        boolean liked = materialLikeCommentAggregation.toggleLikeForComment(materialId, commentId, user);
+        boolean liked = materialAggregation.toggleLikeForComment(materialId, commentId, user);
         return ResponseEntity.ok(liked);
     }
 
@@ -218,7 +221,7 @@ public class MaterialController {
     ) {
         User user = (User) authentication.getPrincipal();
         String content = commentRequest.getContent();
-        CommentResponseDTO response = materialLikeCommentAggregation.addCommentToMaterial(id, content, user);
+        CommentResponseDTO response = materialAggregation.addCommentToMaterial(id, content, user);
         return ResponseEntity.ok(response);
     }
 
@@ -239,5 +242,43 @@ public class MaterialController {
         User user = (User) authentication.getPrincipal();
         materialService.deleteMaterial(id, user);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Avalia um material",
+            description = "Permite que um usuário avalie um material com estrelas de 1 a 5"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Avaliação registrada com sucesso",
+                    content = @Content(schema = @Schema(implementation = RatingResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Avaliação inválida", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Material não encontrado", content = @Content)
+    })
+    @PostMapping("/{id}/rate")
+    public ResponseEntity<RatingResponseDTO> rateMaterial(
+            @Parameter(description = "ID do material", required = true) @PathVariable Long id,
+            @Valid @RequestBody RatingRequestDTO request,
+            @Parameter(hidden = true) Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(materialAggregation.saveRatingToMaterial(id, user, request));
+    }
+
+    @Operation(
+            summary = "Obtém estatísticas de avaliações",
+            description = "Retorna média, distribuição e total de avaliações de um material"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Estatísticas obtidas com sucesso",
+                    content = @Content(schema = @Schema(implementation = RatingResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Material não encontrado", content = @Content)
+    })
+    @GetMapping("/{id}/ratings")
+    public ResponseEntity<RatingResponseDTO> getRatingStats(
+            @Parameter(description = "ID do material", required = true) @PathVariable Long id,
+            @Parameter(hidden = true) Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(materialAggregation.getRatingStatsToMaterial(id, user));
     }
 }

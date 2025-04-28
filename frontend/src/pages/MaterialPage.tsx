@@ -82,6 +82,9 @@ const MaterialPage: React.FC = () => {
   const [isFollowingAuthor, setIsFollowingAuthor] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [isAuthor, setIsAuthor] = useState(false);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [rating, setRating] = useState<RatingResponseDTO | null>(null);
+  const { materialId } = useParams<{ materialId: string }>();
 
   useEffect(() => {
     const fetchMaterialData = async () => {
@@ -322,6 +325,30 @@ const MaterialPage: React.FC = () => {
       toast.success("Link copiado para a área de transferência!")
     }
   }
+
+  const handleStarClick = async (star: number) => {
+    try {
+      if (!id) return; // Use o id correto dos parâmetros da URL
+  
+      // Atualize para usar o serviço correto
+      const updatedRating = await materialService.rateMaterial(id, star);
+      
+      // Atualize o estado do material
+      setMaterial(prev => prev ? {
+        ...prev,
+        averageRating: updatedRating.averageRating,
+        distribution: updatedRating.distribution,
+        totalRatings: updatedRating.totalRatings,
+        userRating: updatedRating.userRating
+      } : null);
+      
+      setIsRatingModalOpen(false);
+      toast.success("Avaliação enviada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao enviar avaliação:", error);
+      toast.error("Falha ao enviar avaliação");
+    }
+  };
 
   const formatDate = (dateString: string) => {
     try {
@@ -749,40 +776,62 @@ const MaterialPage: React.FC = () => {
               <CardContent className="p-6 space-y-4">
                 <h3 className="text-lg font-medium">Avaliações</h3>
                 <div className="flex items-center gap-4">
-                  <div className="text-3xl font-bold">4.7</div>
+                  <div className="text-3xl font-bold">{material.averageRating?.toFixed(1)}</div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs w-8">5 ★</span>
-                      <Progress value={75} className="h-2" />
-                      <span className="text-xs">75%</span>
-                    </div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs w-8">4 ★</span>
-                      <Progress value={20} className="h-2" />
-                      <span className="text-xs">20%</span>
-                    </div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs w-8">3 ★</span>
-                      <Progress value={5} className="h-2" />
-                      <span className="text-xs">5%</span>
-                    </div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs w-8">2 ★</span>
-                      <Progress value={0} className="h-2" />
-                      <span className="text-xs">0%</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs w-8">1 ★</span>
-                      <Progress value={0} className="h-2" />
-                      <span className="text-xs">0%</span>
-                    </div>
+                    {[5, 4, 3, 2, 1].map((star) => {
+                      const starCount = material.distribution[star] || 0;
+                      const percentage = material.totalRatings > 0 
+                        ? (starCount / material.totalRatings) * 100 
+                        : 0;
+          
+                      return (
+                        <div key={star} className="flex items-center gap-2 mb-1">
+                          <span className="text-xs w-8">{star} ★</span>
+                          <Progress value={percentage} className="h-2" />
+                          <span className="text-xs">{percentage.toFixed(0)}%</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-                <Button variant="outline" className="w-full" disabled={!isAuthenticated}>
-                  Avaliar este recurso
+                <Button 
+                  variant="outline" 
+                  className="cursor-pointer w-full" 
+                  disabled={!isAuthenticated || material.userRating !== null}
+                  onClick={() => setIsRatingModalOpen(true)}
+                >
+                  {material.userRating !== null ? "Avaliado" : "Avaliar este material"}
                 </Button>
               </CardContent>
             </Card>
+          )}
+
+          {isRatingModalOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-500/30 backdrop-blur-[2px] z-50 ">
+              <div className="bg-white rounded-2xl p-8 space-y-6 w-full max-w-sm shadow-xl border border-gray-100">
+                <h2 className="text-xl font-semibold text-center">Avaliar Material</h2>
+                
+                {/* Estrelas de Avaliação */}
+                <div className="flex justify-center gap-2 text-3xl">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button 
+                      key={star}
+                      onClick={() => handleStarClick(star)}
+                      className="cursor-pointer hover:scale-110 transition-transform hover:text-yellow-400"
+                    >
+                      ⭐
+                    </button>
+                  ))}
+                </div>
+                <Button 
+                  variant="outline" 
+                  className="cursor-pointer w-full transition-colors duration-200 hover:bg-gray-500/20"
+                  onClick={() => setIsRatingModalOpen(false)}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
           )}
 
           <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg">

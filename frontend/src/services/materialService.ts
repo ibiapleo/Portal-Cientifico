@@ -1,6 +1,7 @@
 import api from "./api"
 import type {Material, MaterialResponseDTO, MaterialSearchParams} from "../types/material"
 import type {CommentRequestDTO, CommentResponseDTO} from "../types/comment"
+import type {RatingRequestDTO, RatingResponseDTO} from "../types/ratings"
 import {PageResponse} from "@/types/pagination"
 
 const materialService = {
@@ -122,6 +123,16 @@ const materialService = {
 
   async deleteMaterial(id: string): Promise<void> {
     await api.delete(`/materials/${id}`)
+  },
+
+  async rateMaterial(materialId: string, value: number): Promise<RatingResponseDTO> {
+    const response = await api.post(`/materials/${materialId}/rate`, { value });
+    return response.data;
+  },
+
+  async getRatingStats(materialId: string): Promise<RatingResponseDTO> {
+    const response = await api.get(`/materials/${materialId}/ratings`);
+    return response.data;
   },
 
   // // Salvar um recurso para o usuário
