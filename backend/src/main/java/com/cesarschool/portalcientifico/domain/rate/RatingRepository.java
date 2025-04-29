@@ -28,4 +28,10 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
     SELECT r FROM Rating r WHERE r.materialId IN :materialIds
     """)
     List<Rating> findAll(@Param("materialIds") List<Long> materialIds);
+
+    @Query("""
+        SELECT COUNT(r) FROM Rating r
+        WHERE r.materialId = :materialId
+        """)
+    long countByMaterial(@Param("materialId") Long materialId);
 }

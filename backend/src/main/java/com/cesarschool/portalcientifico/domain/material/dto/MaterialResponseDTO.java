@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -23,10 +23,9 @@ public class MaterialResponseDTO {
     private long likeCount;
     private boolean liked;
     private long commentCount;
-    private double averageRating;
-    private long totalRatings;
-    private Map<Integer, Integer> distribution;
-    private Integer userRating;
+    private Double averageRating;
+    private Long totalRatings;
+    private Optional<Integer> userRating;
     private List<String> keywords;
     private String fileName;
     private int totalDownload;

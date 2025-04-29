@@ -1,60 +1,61 @@
 "use client"
 
 import type React from "react"
-import {useEffect, useState} from "react"
-import {Link, useNavigate, useParams} from "react-router-dom"
+import { useEffect, useState } from "react"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import {
-    AlertCircle,
-    ArrowLeft,
-    Bookmark,
-    BookOpen,
-    Calendar,
-    Clock,
-    Download,
-    Edit,
-    Eye,
-    FileText,
-    Flag,
-    MessageSquare,
-    MoreVertical,
-    Share2,
-    ThumbsUp,
-    Trash2,
-    User,
+  AlertCircle,
+  ArrowLeft,
+  Bookmark,
+  BookOpen,
+  Calendar,
+  Clock,
+  Download,
+  Edit,
+  Eye,
+  FileText,
+  Flag,
+  MessageSquare,
+  MoreVertical,
+  Share2,
+  ThumbsUp,
+  Trash2,
+  User,
 } from "lucide-react"
 
-import {Button} from "@/components/ui/button"
-import {Card, CardContent} from "@/components/ui/card"
-import {Badge} from "@/components/ui/badge"
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-import {Avatar, AvatarFallback} from "@/components/ui/avatar"
-import {Separator} from "@/components/ui/separator"
-import {Progress} from "@/components/ui/progress"
-import {Textarea} from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Separator } from "@/components/ui/separator"
+import { Progress } from "@/components/ui/progress"
+import { Textarea } from "@/components/ui/textarea"
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import {toast} from "react-toastify"
+import { toast } from "react-toastify"
 import materialService from "../services/materialService"
 import useAuth from "../hooks/useAuth"
-import type {Material} from "../types/material"
-import {debounce} from "lodash-es"
-import type {CommentResponseDTO} from "@/types/comment"
+import type { Material } from "../types/material"
+import { debounce } from "lodash-es"
+import type { CommentResponseDTO } from "@/types/comment"
 import authService from "@/services/authService"
+import type { RatingResponseDTO } from "@/types/rating"
 
 const MaterialPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -81,10 +82,9 @@ const MaterialPage: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isFollowingAuthor, setIsFollowingAuthor] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
-  const [isAuthor, setIsAuthor] = useState(false);
-  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
-  const [rating, setRating] = useState<RatingResponseDTO | null>(null);
-  const { materialId } = useParams<{ materialId: string }>();
+  const [isAuthor, setIsAuthor] = useState(false)
+  const [rating, setRating] = useState<RatingResponseDTO | null>(null)
+  const { materialId } = useParams<{ materialId: string }>()
 
   useEffect(() => {
     const fetchMaterialData = async () => {
@@ -140,8 +140,8 @@ const MaterialPage: React.FC = () => {
         // Buscar recursos relacionados
         try {
           const relatedData = await materialService.getRecommendedMaterials()
-          const firstThreeItems = relatedData.content.slice(0, 3);
-          setRelatedMaterials(firstThreeItems);
+          const firstThreeItems = relatedData.content.slice(0, 3)
+          setRelatedMaterials(firstThreeItems)
         } catch (err) {
           console.error("Erro ao buscar recursos relacionados:", err)
         }
@@ -149,14 +149,12 @@ const MaterialPage: React.FC = () => {
         // Buscar estatísticas do autor
         try {
           //const authorData = await materialService.getAuthorStats(materialData.userId)
-          setAuthorStats(
-            {
-              materials: 12,
-              downloads: 1200,
-              followers: 87,
-              rating: 4.8,
-            },
-          )
+          setAuthorStats({
+            materials: 12,
+            downloads: 1200,
+            followers: 87,
+            rating: 4.8,
+          })
         } catch (err) {
           console.error("Erro ao buscar estatísticas do autor:", err)
           setAuthorStats({
@@ -327,28 +325,61 @@ const MaterialPage: React.FC = () => {
   }
 
   const handleStarClick = async (star: number) => {
-    try {
-      if (!id) return; // Use o id correto dos parâmetros da URL
-  
-      // Atualize para usar o serviço correto
-      const updatedRating = await materialService.rateMaterial(id, star);
-      
-      // Atualize o estado do material
-      setMaterial(prev => prev ? {
-        ...prev,
-        averageRating: updatedRating.averageRating,
-        distribution: updatedRating.distribution,
-        totalRatings: updatedRating.totalRatings,
-        userRating: updatedRating.userRating
-      } : null);
-      
-      setIsRatingModalOpen(false);
-      toast.success("Avaliação enviada com sucesso!");
-    } catch (error) {
-      console.error("Erro ao enviar avaliação:", error);
-      toast.error("Falha ao enviar avaliação");
+    if (!isAuthenticated || !id) {
+      if (!isAuthenticated) toast.info("Faça login para avaliar este material")
+      return
     }
-  };
+  
+    if (material && material.userRating !== null) {
+      toast.info(
+        `Você já avaliou este material com ${material.userRating} ${material.userRating === 1 ? "estrela" : "estrelas"}`
+      )
+      return
+    }
+  
+    try {
+      // Atualização otimista
+      const currentTotal = material?.totalRatings || 0
+      const currentSum = (material?.averageRating || 0) * currentTotal
+      const estimatedNewAverage = (currentSum + star) / (currentTotal + 1)
+  
+      setMaterial((prev) =>
+        prev
+          ? {
+              ...prev,
+              userRating: star, // Valor temporário
+              averageRating: estimatedNewAverage,
+              totalRatings: currentTotal + 1,
+            }
+          : null
+      )
+  
+      // Chamada API
+      const response = await materialService.rateMaterial(id, star) // Response direto com o nº da avaliação
+      const userRatingValue = response.value;
+      // Atualização final com o valor confirmado pela API
+      setMaterial((prev) => 
+        prev ? { ...prev, userRating: userRatingValue } : null
+      );
+      
+      toast.success("Avaliação enviada com sucesso!")
+    } catch (error) {
+      console.error("Erro ao enviar avaliação:", error)
+      toast.error("Falha ao enviar avaliação")
+  
+      // Rollback em caso de erro
+      setMaterial((prev) =>
+        prev
+          ? {
+              ...prev,
+              userRating: null,
+              averageRating: material?.averageRating || 0,
+              totalRatings: material?.totalRatings || 0,
+            }
+          : null
+      )
+    }
+  }
 
   const formatDate = (dateString: string) => {
     try {
@@ -773,65 +804,142 @@ const MaterialPage: React.FC = () => {
 
           {!isAuthor && (
             <Card>
-              <CardContent className="p-6 space-y-4">
-                <h3 className="text-lg font-medium">Avaliações</h3>
-                <div className="flex items-center gap-4">
-                  <div className="text-3xl font-bold">{material.averageRating?.toFixed(1)}</div>
-                  <div className="flex-1">
-                    {[5, 4, 3, 2, 1].map((star) => {
-                      const starCount = material.distribution[star] || 0;
-                      const percentage = material.totalRatings > 0 
-                        ? (starCount / material.totalRatings) * 100 
-                        : 0;
-          
-                      return (
-                        <div key={star} className="flex items-center gap-2 mb-1">
-                          <span className="text-xs w-8">{star} ★</span>
-                          <Progress value={percentage} className="h-2" />
-                          <span className="text-xs">{percentage.toFixed(0)}%</span>
-                        </div>
-                      );
-                    })}
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center">
+                  {/* Average Rating Display */}
+                  <div className="text-center mb-4">
+                    <div className="text-4xl font-bold text-orange-500">
+                      {material.averageRating ? material.averageRating.toFixed(1) : "0.0"}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {material.totalRatings
+                        ? `${material.totalRatings} ${material.totalRatings === 1 ? "avaliação" : "avaliações"}`
+                        : "Sem avaliações"}
+                    </div>
                   </div>
+
+                  {/* Verificação se o usuário já avaliou usando material.userRating */}
+                  {material.userRating !== null ? (
+                    <div className="w-full">
+                      {/* Exibição das estrelas (não interativas) */}
+                      <div className="flex items-center justify-center gap-1 mb-3">
+                        {[1, 2, 3, 4, 5].map((star) => {
+                          const isStarFilled = star <= Math.round(material.averageRating || 0)
+                          const isUserRating = material.userRating !== null && star <= material.userRating
+
+                          return (
+                            <span
+                              key={star}
+                              className={`text-2xl ${
+                                isStarFilled
+                                  ? isUserRating
+                                    ? "text-amber-500" // Destaque para a avaliação do usuário
+                                    : "text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                              title={`Média: ${material.averageRating?.toFixed(1)}`}
+                              aria-label={`${star} ${star === 1 ? "estrela" : "estrelas"}`}
+                            >
+                              ★
+                            </span>
+                          )
+                        })}
+                      </div>
+
+                      {/* Mensagem de confirmação */}
+                      <div className="bg-orange-50 border border-orange-100 rounded-lg p-3 text-center w-full mb-3 shadow-sm">
+                        <p className="text-sm font-medium text-orange-700">
+                          Você avaliou este material!
+                        </p>
+                        <p className="text-xs text-orange-600 mt-1">Obrigado pelo seu feedback</p>
+                      </div>
+
+                      {/* Rating Distribution */}
+                      {material.distribution && material.totalRatings > 0 && (
+                        <div className="space-y-1 text-sm mt-3 w-full">
+                          <h4 className="text-sm font-medium mb-2">Distribuição de avaliações</h4>
+                          {[5, 4, 3, 2, 1].map((rating) => (
+                            <div key={rating} className="flex items-center gap-2">
+                              <span className="w-3">{rating}</span>
+                              <Progress
+                                value={
+                                  material.distribution[rating]
+                                    ? (material.distribution[rating] / material.totalRatings) * 100
+                                    : 0
+                                }
+                                className={`h-2 flex-1 ${rating === material.userRating ? "bg-amber-500" : ""}`}
+                              />
+                              <span className="w-8 text-right text-gray-500">{material.distribution[rating] || 0}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* Usuário não avaliou ainda - Mostrar card interativo */
+                    <div className="w-full">
+                      {/* Estrelas interativas para avaliação */}
+                      <div className="flex items-center justify-center gap-1 mb-3">
+                        {[1, 2, 3, 4, 5].map((star) => {
+                          const isStarFilled = star <= Math.round(material.averageRating || 0)
+
+                          return (
+                            <button
+                              key={star}
+                              onClick={() => handleStarClick(star)}
+                              disabled={!isAuthenticated}
+                              className={`text-2xl transition-all duration-300 ${
+                                !isAuthenticated ? "cursor-not-allowed opacity-90" : "cursor-pointer hover:scale-110"
+                              } ${isStarFilled ? "text-yellow-400" : "text-gray-300"}`}
+                              title={
+                                !isAuthenticated
+                                  ? "Faça login para avaliar"
+                                  : `Avaliar com ${star} ${star === 1 ? "estrela" : "estrelas"}`
+                              }
+                              aria-label={!isAuthenticated ? "Faça login para avaliar" : `Avaliar com ${star} estrelas`}
+                            >
+                              ★
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {/* Mensagem de instrução ou botão de login */}
+                      {isAuthenticated ? (
+                        <p className="text-sm text-center text-gray-600 mb-3">
+                          Clique nas estrelas para avaliar este material
+                        </p>
+                      ) : (
+                        <Button asChild size="sm" className="bg-orange-500 hover:bg-orange-600 w-full mb-3">
+                          <Link to="/login">Entrar para avaliar</Link>
+                        </Button>
+                      )}
+
+                      {/* Rating Distribution */}
+                      {material.distribution && material.totalRatings > 0 && (
+                        <div className="space-y-1 text-sm mt-3 w-full">
+                          <h4 className="text-sm font-medium mb-2">Distribuição de avaliações</h4>
+                          {[5, 4, 3, 2, 1].map((rating) => (
+                            <div key={rating} className="flex items-center gap-2">
+                              <span className="w-3">{rating}</span>
+                              <Progress
+                                value={
+                                  material.distribution[rating]
+                                    ? (material.distribution[rating] / material.totalRatings) * 100
+                                    : 0
+                                }
+                                className="h-2 flex-1"
+                              />
+                              <span className="w-8 text-right text-gray-500">{material.distribution[rating] || 0}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <Button 
-                  variant="outline" 
-                  className="cursor-pointer w-full" 
-                  disabled={!isAuthenticated || material.userRating !== null}
-                  onClick={() => setIsRatingModalOpen(true)}
-                >
-                  {material.userRating !== null ? "Avaliado" : "Avaliar este material"}
-                </Button>
               </CardContent>
             </Card>
-          )}
-
-          {isRatingModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-500/30 backdrop-blur-[2px] z-50 ">
-              <div className="bg-white rounded-2xl p-8 space-y-6 w-full max-w-sm shadow-xl border border-gray-100">
-                <h2 className="text-xl font-semibold text-center">Avaliar Material</h2>
-                
-                {/* Estrelas de Avaliação */}
-                <div className="flex justify-center gap-2 text-3xl">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button 
-                      key={star}
-                      onClick={() => handleStarClick(star)}
-                      className="cursor-pointer hover:scale-110 transition-transform hover:text-yellow-400"
-                    >
-                      ⭐
-                    </button>
-                  ))}
-                </div>
-                <Button 
-                  variant="outline" 
-                  className="cursor-pointer w-full transition-colors duration-200 hover:bg-gray-500/20"
-                  onClick={() => setIsRatingModalOpen(false)}
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </div>
           )}
 
           <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg">

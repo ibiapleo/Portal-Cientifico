@@ -18,7 +18,7 @@ export interface Material {
     likeCount: number;
     liked: boolean;
     commentCount: number;
-    averageRating: number | null;
+    averageRating: number;
     totalRatings: number;
     distribution: Record<number, number>;
     userRating: number | null;
@@ -46,7 +46,7 @@ export interface Material {
     likeCount: number;
     liked: boolean;
     commentCount: number;
-    averageRating: number | null;
+    averageRating: number;
     totalRatings: number;
     distribution: Record<number, number>;
     userRating: number | null;
@@ -62,7 +62,7 @@ export interface Material {
     author: string;
     date: string;
     downloads: number;
-    averageRating: number | null;
+    averageRating: number;
     icon: React.ReactNode;
   } 
   

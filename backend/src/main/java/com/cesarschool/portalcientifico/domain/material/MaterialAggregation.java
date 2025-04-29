@@ -4,12 +4,10 @@ import com.cesarschool.portalcientifico.domain.comment.dto.CommentResponseDTO;
 import com.cesarschool.portalcientifico.domain.comment.CommentService;
 import com.cesarschool.portalcientifico.domain.like.LikeService;
 import com.cesarschool.portalcientifico.domain.like.TargetType;
-import com.cesarschool.portalcientifico.domain.material.dto.Area;
 import com.cesarschool.portalcientifico.domain.material.dto.MaterialResponseDTO;
-import com.cesarschool.portalcientifico.domain.material.dto.TypeMaterial;
+import com.cesarschool.portalcientifico.domain.rate.Rating;
 import com.cesarschool.portalcientifico.domain.rate.RatingService;
 import com.cesarschool.portalcientifico.domain.rate.dto.RatingRequestDTO;
-import com.cesarschool.portalcientifico.domain.rate.dto.RatingResponseDTO;
 import com.cesarschool.portalcientifico.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,62 +31,16 @@ public class MaterialAggregation {
 
     public MaterialResponseDTO getMaterialAggregation(Long materialId, User user) {
         MaterialResponseDTO material = materialService.getMaterialDetails(materialId);
-        RatingResponseDTO ratingStats = ratingService.getRatingStatsDetails(materialId, user);
 
         long likeCount = likeService.countLikes(TargetType.MATERIAL, materialId);
         boolean isLiked = likeService.isLikedByUser(user, TargetType.MATERIAL, materialId);
+        Optional<Integer> userRating = ratingService.isRatedByUser(user, materialId);
 
         material.setLiked(isLiked);
         material.setLikeCount(likeCount);
-
-        double averageRating = ratingStats.getAverageRating();
-        long totalRatings = ratingStats.getTotalRatings();
-        Map<Integer, Integer> ratingDistribution = ratingStats.getDistribution();
-        Integer userRating = ratingStats.getUserRating();
-
-        material.setAverageRating(averageRating);
-        material.setTotalRatings(totalRatings);
-        material.setDistribution(ratingDistribution);
         material.setUserRating(userRating);
 
         return material;
-    }
-
-    public Page<MaterialResponseDTO> getMaterialsAggregation(
-            String search,
-            List<TypeMaterial> types,
-            List<Area> areas,
-            Integer dateRange,
-            Integer minDownloads,
-            Pageable pageable
-    ) {
-        Page<MaterialResponseDTO> materialsPage = materialService.getMaterials(
-                search, types, areas, dateRange, minDownloads, pageable
-        );
-
-        List<Long> materialIds = materialsPage.getContent().stream()
-                .map(MaterialResponseDTO::getId)
-                .toList();
-
-        Map<Long, RatingResponseDTO> ratingsMap = ratingService.getRatingStats(materialIds);
-
-        List<MaterialResponseDTO> enrichedMaterials = materialsPage.getContent().stream()
-                .map(material -> {
-                    RatingResponseDTO rating = ratingsMap.get(material.getId());
-                    if (rating != null) {
-                        material.setAverageRating(rating.getAverageRating());
-                        material.setTotalRatings(rating.getTotalRatings());
-                        material.setDistribution(rating.getDistribution());
-                    }
-                    return material;
-                })
-                .toList();
-
-        return new PageImpl<>(
-                enrichedMaterials,
-                pageable,
-                materialsPage.getTotalElements()
-        );
     }
 
     public Page<CommentResponseDTO> getCommentsByMaterialId(Long materialId, Pageable pageable) {
@@ -118,12 +71,9 @@ public class MaterialAggregation {
         return likeService.toggleLike(user, TargetType.COMMENT, commentId);
     }
 
-    public RatingResponseDTO saveRatingToMaterial(Long materialId, User user, RatingRequestDTO request) {
-        return ratingService.saveRating(materialId, user, request);
-    }
-
-    public RatingResponseDTO getRatingStatsToMaterial(Long materialId, User user) {
-        return ratingService.getRatingStatsDetails(materialId, user);
+    public Integer saveRatingToMaterial(Long materialId, User user, RatingRequestDTO request) {
+        ratingService.saveRating(materialId, user, request);
+        return request.getValue();
     }
 
 }

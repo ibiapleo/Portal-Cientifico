@@ -122,10 +122,9 @@ public class MaterialController {
             @RequestParam(required = false) List<Area> area,
             @RequestParam(required = false) Integer dateRange,
             @RequestParam(required = false) Integer minDownloads,
-            @RequestParam(required = false) Double averageRating,
             Pageable pageable
     ) {
-        Page<MaterialResponseDTO> page = materialAggregation.getMaterialsAggregation(search, type, area, dateRange, minDownloads, pageable);
+        Page<MaterialResponseDTO> page = materialService.getMaterials(search, type, area, dateRange, minDownloads, pageable);
         return ResponseEntity.ok(page);
     }
 
@@ -255,30 +254,14 @@ public class MaterialController {
             @ApiResponse(responseCode = "404", description = "Material não encontrado", content = @Content)
     })
     @PostMapping("/{id}/rate")
-    public ResponseEntity<RatingResponseDTO> rateMaterial(
+    public ResponseEntity<Integer> rateMaterial(
             @Parameter(description = "ID do material", required = true) @PathVariable Long id,
             @Valid @RequestBody RatingRequestDTO request,
             @Parameter(hidden = true) Authentication authentication
     ) {
         User user = (User) authentication.getPrincipal();
-        return ResponseEntity.ok(materialAggregation.saveRatingToMaterial(id, user, request));
+        Integer rated = materialAggregation.saveRatingToMaterial(id, user, request);
+        return ResponseEntity.ok(rated);
     }
 
-    @Operation(
-            summary = "Obtém estatísticas de avaliações",
-            description = "Retorna média, distribuição e total de avaliações de um material"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Estatísticas obtidas com sucesso",
-                    content = @Content(schema = @Schema(implementation = RatingResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Material não encontrado", content = @Content)
-    })
-    @GetMapping("/{id}/ratings")
-    public ResponseEntity<RatingResponseDTO> getRatingStats(
-            @Parameter(description = "ID do material", required = true) @PathVariable Long id,
-            @Parameter(hidden = true) Authentication authentication
-    ) {
-        User user = (User) authentication.getPrincipal();
-        return ResponseEntity.ok(materialAggregation.getRatingStatsToMaterial(id, user));
-    }
 }
