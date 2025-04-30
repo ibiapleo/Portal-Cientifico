@@ -21,7 +21,7 @@ export interface Material {
     averageRating: number;
     totalRatings: number;
     distribution: Record<number, number>;
-    userRating: number | null;
+    userRating: boolean;
     createdAt: string;
     updatedAt: string;
   }
@@ -49,7 +49,7 @@ export interface Material {
     averageRating: number;
     totalRatings: number;
     distribution: Record<number, number>;
-    userRating: number | null;
+    userRating: boolean;
     createdAt: string;
     updatedAt: string;
   }

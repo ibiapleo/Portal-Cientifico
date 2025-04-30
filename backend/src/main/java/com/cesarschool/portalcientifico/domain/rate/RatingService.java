@@ -40,10 +40,8 @@ public class RatingService {
         materialRepository.save(material);
     }
 
-    public Optional<Integer> isRatedByUser(User user, Long materialId) {
-        Optional<Rating> rate = ratingRepository.findByMaterialAndUser(materialId, user.getId());
-
-        return rate.map(Rating::getValue);
+    public boolean isRatedByUser(User user, Long materialId) {
+        return ratingRepository.existsByMaterialIdAndUser(materialId, user);
     }
 
 }

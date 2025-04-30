@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +24,7 @@ public class MaterialResponseDTO {
     private long commentCount;
     private Double averageRating;
     private Long totalRatings;
-    private Optional<Integer> userRating;
+    private boolean userRating;
     private List<String> keywords;
     private String fileName;
     private int totalDownload;

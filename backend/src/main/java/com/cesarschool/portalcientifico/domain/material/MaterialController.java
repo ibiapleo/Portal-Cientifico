@@ -254,14 +254,13 @@ public class MaterialController {
             @ApiResponse(responseCode = "404", description = "Material não encontrado", content = @Content)
     })
     @PostMapping("/{id}/rate")
-    public ResponseEntity<Integer> rateMaterial(
+    public boolean rateMaterial(
             @Parameter(description = "ID do material", required = true) @PathVariable Long id,
             @Valid @RequestBody RatingRequestDTO request,
             @Parameter(hidden = true) Authentication authentication
     ) {
         User user = (User) authentication.getPrincipal();
-        Integer rated = materialAggregation.saveRatingToMaterial(id, user, request);
-        return ResponseEntity.ok(rated);
+        return materialAggregation.saveRatingToMaterial(id, user, request);
     }
 
 }

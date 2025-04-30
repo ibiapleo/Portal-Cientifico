@@ -1,5 +1,5 @@
 export type RatingResponseDTO = {
-    value: number;
+    value: boolean;
 }
 
 export type UserRatingResponse = {

@@ -10,6 +10,7 @@ import com.cesarschool.portalcientifico.domain.rate.RatingService;
 import com.cesarschool.portalcientifico.domain.rate.dto.RatingRequestDTO;
 import com.cesarschool.portalcientifico.domain.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.service.GenericResponseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -28,13 +29,14 @@ public class MaterialAggregation {
     private final LikeService likeService;
     private final CommentService commentService;
     private final RatingService ratingService;
+    private final GenericResponseService responseBuilder;
 
     public MaterialResponseDTO getMaterialAggregation(Long materialId, User user) {
         MaterialResponseDTO material = materialService.getMaterialDetails(materialId);
 
         long likeCount = likeService.countLikes(TargetType.MATERIAL, materialId);
         boolean isLiked = likeService.isLikedByUser(user, TargetType.MATERIAL, materialId);
-        Optional<Integer> userRating = ratingService.isRatedByUser(user, materialId);
+        boolean userRating = ratingService.isRatedByUser(user, materialId);
 
         material.setLiked(isLiked);
         material.setLikeCount(likeCount);
@@ -71,9 +73,9 @@ public class MaterialAggregation {
         return likeService.toggleLike(user, TargetType.COMMENT, commentId);
     }
 
-    public Integer saveRatingToMaterial(Long materialId, User user, RatingRequestDTO request) {
+    public boolean saveRatingToMaterial(Long materialId, User user, RatingRequestDTO request) {
         ratingService.saveRating(materialId, user, request);
-        return request.getValue();
+        return true;
     }
 
 }

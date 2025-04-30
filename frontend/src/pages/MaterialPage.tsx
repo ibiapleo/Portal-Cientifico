@@ -330,9 +330,9 @@ const MaterialPage: React.FC = () => {
       return
     }
   
-    if (material && material.userRating !== null) {
+    if (material && material.userRating !== false) {
       toast.info(
-        `Você já avaliou este material com ${material.userRating} ${material.userRating === 1 ? "estrela" : "estrelas"}`
+        `Você já avaliou este material`
       )
       return
     }
@@ -347,7 +347,7 @@ const MaterialPage: React.FC = () => {
         prev
           ? {
               ...prev,
-              userRating: star, // Valor temporário
+              userRating: false,
               averageRating: estimatedNewAverage,
               totalRatings: currentTotal + 1,
             }
@@ -372,7 +372,7 @@ const MaterialPage: React.FC = () => {
         prev
           ? {
               ...prev,
-              userRating: null,
+              userRating: false,
               averageRating: material?.averageRating || 0,
               totalRatings: material?.totalRatings || 0,
             }
@@ -819,13 +819,13 @@ const MaterialPage: React.FC = () => {
                   </div>
 
                   {/* Verificação se o usuário já avaliou usando material.userRating */}
-                  {material.userRating !== null ? (
+                  {material.userRating !== false ? (
                     <div className="w-full">
                       {/* Exibição das estrelas (não interativas) */}
                       <div className="flex items-center justify-center gap-1 mb-3">
                         {[1, 2, 3, 4, 5].map((star) => {
                           const isStarFilled = star <= Math.round(material.averageRating || 0)
-                          const isUserRating = material.userRating !== null && star <= material.userRating
+                          const isUserRating = typeof material.userRating === "number" && star <= material.userRating
 
                           return (
                             <span
@@ -867,7 +867,7 @@ const MaterialPage: React.FC = () => {
                                     ? (material.distribution[rating] / material.totalRatings) * 100
                                     : 0
                                 }
-                                className={`h-2 flex-1 ${rating === material.userRating ? "bg-amber-500" : ""}`}
+                                className={`h-2 flex-1 ${rating === (typeof material.userRating === "number" ? material.userRating : -1) ? "bg-amber-500" : ""}`}
                               />
                               <span className="w-8 text-right text-gray-500">{material.distribution[rating] || 0}</span>
                             </div>

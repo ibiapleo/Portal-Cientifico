@@ -1,5 +1,6 @@
 package com.cesarschool.portalcientifico.domain.rate;
 
+import com.cesarschool.portalcientifico.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,29 +10,6 @@ import java.util.Optional;
 
 public interface RatingRepository extends JpaRepository<Rating, Long> {
 
-    @Query(value = """
-        SELECT r FROM Rating r
-        WHERE r.materialId = :materialId AND r.user.id = :userId
-    """)
-    Optional<Rating> findByMaterialAndUser(
-            @Param("materialId") Long materialId,
-            @Param("userId") String userId
-    );
+    boolean existsByMaterialIdAndUser(Long materialId, User user);
 
-    @Query("""
-        SELECT r FROM Rating r
-        WHERE r.materialId = :materialId
-    """)
-    List<Rating> findAllByMaterialId(@Param("materialId") Long materialId);
-
-    @Query("""
-    SELECT r FROM Rating r WHERE r.materialId IN :materialIds
-    """)
-    List<Rating> findAll(@Param("materialIds") List<Long> materialIds);
-
-    @Query("""
-        SELECT COUNT(r) FROM Rating r
-        WHERE r.materialId = :materialId
-        """)
-    long countByMaterial(@Param("materialId") Long materialId);
 }
