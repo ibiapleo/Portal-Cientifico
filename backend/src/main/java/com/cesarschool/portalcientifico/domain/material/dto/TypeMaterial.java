@@ -1,4 +1,4 @@
-package com.cesarschool.portalcientifico.domain.upload;
+package com.cesarschool.portalcientifico.domain.material.dto;
 
 import lombok.Getter;
 
@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum TypeMaterial {
     ARTICLE("Artigo"),
     IMAGE("Imagem"),
-    TCC("Trabalho de Conclusão de Curso"),
+    TCC("TCC"),
     NOTES("Resumo"),
     PRESENTATION("Apresentação"),
     EXERCISE("Lista de Exercícios"),

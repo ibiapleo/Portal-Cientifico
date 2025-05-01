@@ -1,6 +1,6 @@
 import type React from "react"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { AuthProvider } from "./contexts/AuthContext"
+import {BrowserRouter, Route, Routes} from "react-router-dom"
+import {AuthProvider} from "./contexts/AuthContext"
 import PrivateRoute from "./components/auth/PrivateRoute"
 import Layout from "./components/layout/Layout"
 
@@ -11,26 +11,28 @@ import RegisterPage from "./pages/RegisterPage"
 import MaterialPage from "./pages/MaterialPage"
 import UploadPage from "./pages/UploadPage"
 import ProfilePage from "./pages/ProfilePage"
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {ToastContainer} from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import ExplorePage from "./pages/ExplorePage"
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-      <ToastContainer />
+        <ToastContainer />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/cadastro" element={<RegisterPage />} />
 
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
-            <Route path="material/:id" element={<materialPage />} />
-            <Route path="explore" element={<HomePage />} />
+            <Route path="material/:id" element={<MaterialPage />} />
+            <Route path="explore" element={<ExplorePage />} />
 
             <Route element={<PrivateRoute />}>
               <Route path="upload" element={<UploadPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="edit-material/:id" element={<UploadPage />} />
               <Route path="settings" element={<ProfilePage />} />
             </Route>
           </Route>
@@ -41,4 +43,3 @@ const App: React.FC = () => {
 }
 
 export default App
-

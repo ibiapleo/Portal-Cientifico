@@ -1,9 +1,11 @@
 package com.cesarschool.portalcientifico.domain.user;
 
+import com.cesarschool.portalcientifico.domain.material.dto.Area;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 public class User {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -43,6 +46,12 @@ public class User {
     @Column(length = 500)
     private String refreshToken;
 
+    @ElementCollection(targetClass = Area.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "user_preferred_areas", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "area")
+    private List<Area> preferredAreas;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -52,4 +61,5 @@ public class User {
     protected void onUpdate() {
         this.lastActivity = LocalDateTime.now();
     }
+
 }

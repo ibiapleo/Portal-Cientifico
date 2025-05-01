@@ -1,55 +1,56 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Download } from 'lucide-react';
-import { MaterialCardProps } from '../../types/material';
+import type React from "react"
+import {Link} from "react-router-dom"
+import {Clock, Download} from "lucide-react"
+import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
+import {Badge} from "@/components/ui/badge"
+import {Button} from "@/components/ui/button"
+import type {Material} from "../../types/material"
+import {formatDate, getMaterialIcon, getMaterialTypeName} from "../../utils/material-helpers"
 
-const MaterialCard: React.FC<MaterialCardProps> = ({
-  id,
-  title,
-  type,
-  subject,
-  author,
-  date,
-  downloads,
-  icon
-}) => {
+interface MaterialCardProps {
+  material: Material;
+}
+
+const MaterialCard: React.FC<MaterialCardProps> = ({ material }) => {
   return (
-    <div className="overflow-hidden rounded-lg border bg-white shadow-sm transition-all hover:shadow-md">
-      <div className="p-4 pb-0 flex items-start justify-between">
+    <Card className="overflow-hidden transition-all hover:shadow-md">
+      <CardHeader className="p-4 pb-0 flex items-start justify-between">
         <div className="flex items-center space-x-2">
-          <span className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-2.5 py-0.5 text-xs font-medium text-orange-700">
-            {type}
-          </span>
-          <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium">
-            {subject}
-          </span>
+          <Badge variant="outline" className="bg-orange-50 text-orange-700 hover:bg-orange-100">
+            {getMaterialTypeName(material.type)}
+          </Badge>
+          <Badge variant="outline">{material.area}</Badge>
         </div>
-        <div className="rounded-full bg-orange-50 p-2">
-          {icon}
-        </div>
-      </div>
-      <div className="p-4">
-        <h3 className="font-medium line-clamp-2 min-h-[48px]">{title}</h3>
+        <div className="rounded-full bg-orange-50 p-2">{getMaterialIcon(material.type)}</div>
+      </CardHeader>
+      <CardContent className="p-4">
+        <h3 className="font-medium line-clamp-2 min-h-[48px]">{material.title}</h3>
         <div className="mt-2 flex items-center text-sm text-gray-500">
-          <span>Por {author}</span>
-          <span className="mx-2">•</span>
-          <span>{date}</span>
+          <span>Por {material.author}</span>
         </div>
-      </div>
-      <div className="p-4 pt-0 flex items-center justify-between">
+        <div className="mt-1 flex items-center text-sm text-gray-500">
+          <Clock className="mr-1 h-4 w-4" />
+          <span>{formatDate(material.createdAt)}</span>
+        </div>
+      </CardContent>
+      <CardFooter className="p-4 pt-0 flex items-center justify-between">
         <div className="flex items-center text-sm text-gray-500">
           <Download className="mr-1 h-4 w-4" />
-          <span>{downloads}</span>
+          <span>{material.totalDownload}</span>
+          {material.averageRating != null && (
+            <>
+              <span className="mx-2">•</span>
+              <span className="text-yellow-500">★</span>
+              <span className="ml-1">{material.averageRating?.toFixed(1)|| "N/A"} </span>
+            </>
+          )}
         </div>
-        <Link 
-          to={`/material/${id}`}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium text-orange-600 hover:bg-orange-50 hover:text-orange-700 h-8 px-3"
-        >
-          Ver Detalhes
-        </Link>
-      </div>
-    </div>
-  );
-};
+        <Button size="sm" variant="ghost" className="text-orange-600 hover:bg-orange-50 hover:text-orange-700" asChild>
+          <Link to={`/material/${material.id}`}>Ver Detalhes</Link>
+        </Button>
+      </CardFooter>
+    </Card>
+  )
+}
 
-export default MaterialCard;
+export default MaterialCard

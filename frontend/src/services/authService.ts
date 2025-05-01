@@ -1,52 +1,67 @@
-import { LoginCredentials, RegisterData } from "@/types/auth";
-import api from "../services/api";
-import { setToken, clearToken } from "../utils/storage";
+import api from './api';
+import {AuthResponse, LoginCredentials, RegisterData, User} from '../types/auth';
+import {getRefreshToken, getToken, removeToken, setRefreshToken, setToken} from '../utils/storage';
 
 const authService = {
 
-  async login(credentials: LoginCredentials) {
+  async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      const response = await api.post("/v1/auth/login", credentials);
-      console.log(response.data);
-
+      const response = await api.post<AuthResponse>('/auth/login', credentials);
       if (response.data.accessToken) {
         setToken(response.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-        return { success: true, accessToken: response.data.accessToken, refreshToken: response.data.refreshToken };
-      } else {
-        return { success: false, error: "Token não recebido do servidor" };
+        setRefreshToken(response.data.refreshToken);
       }
-    } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      return { success: false, error: "Erro ao fazer login" };
+      return response.data;
+    } catch (err) {
+      console.error("Erro no login do authService:", err);
+      throw err;
     }
   },
 
-  async register(data: RegisterData) {
+  async register(data: RegisterData): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/auth/register', data);
+    return response.data;
+  },
+
+  async logout(): Promise<void> {
     try {
-      const response = await api.post('/v1/auth/register', data);
-      const { token, user } = response.data;
-      setToken(token);
-      return { success: true, user, token };
-    } catch (error) {
-      console.error("Erro no registro:", error);
-      return { success: false, error: "Erro ao criar conta" };
+      const refreshToken = getRefreshToken();
+      if (refreshToken) {
+        await api.post('/auth/logout', { refreshToken });
+      }
+    } catch (err) {
+      console.error("Erro ao fazer logout:", err);
+    } finally {
+      removeToken();
     }
   },
 
-  async getCurrentUser() {
+  async getCurrentUser(): Promise<User | null> {
+    const token = getToken();
+    if (!token) return null;
+
     try {
-      const response = await api.get("/v1/auth/me");
+      const response = await api.get<User>('/users/me');
       return response.data;
     } catch (error) {
-      console.error("Erro ao obter usuário:", error);
-      throw error;
+      this.logout();
+      return null;
     }
   },
 
-  logout() {
-    clearToken();
+  async toggleFollowAuthor(authorId: string): Promise<boolean> {
+    const response = await api.post(`/users/${authorId}/follow`);
+    return response.data;
   },
-}
+
+  async checkFollowStatus(targetUserId: string): Promise<boolean> {
+    const response = await api.get<boolean>(`/users/${targetUserId}/follow/status`);
+    return response.data;
+  },
+
+  isAuthenticated(): boolean {
+    return !!getToken();
+  }
+};
 
 export default authService;

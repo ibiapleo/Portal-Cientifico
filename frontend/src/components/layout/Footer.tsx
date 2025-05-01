@@ -1,16 +1,16 @@
 import type React from "react"
-import { Link } from "react-router-dom"
-import { GraduationCap } from "lucide-react"
+import {Link} from "react-router-dom"
+import {GraduationCap} from "lucide-react"
 
 const Footer: React.FC = () => {
   return (
     <footer className="border-t bg-background">
-      <div className="container flex flex-col gap-6 py-8 md:flex-row md:items-center md:justify-between md:py-12">
-        <div className="flex items-center gap-2">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
+        <div className="flex items-center gap-4 md:ml-10">
           <GraduationCap className="h-6 w-6 text-orange-500" />
           <span className="text-xl font-bold">Portal Científico</span>
         </div>
-        <div className="flex flex-wrap gap-6 text-sm">
+        <div className="flex flex-wrap justify-center gap-6 text-sm mx-auto md:mx-0">
           <Link to="#" className="hover:text-orange-500 transition-colors">
             Termos
           </Link>
@@ -27,7 +27,7 @@ const Footer: React.FC = () => {
             Contato
           </Link>
         </div>
-        <div className="text-sm text-gray-500">© 2025 Portal Científico. Todos os direitos reservados.</div>
+        <div className="text-sm text-gray-500 text-center mr:text-right">© 2025 Portal Científico. Todos os direitos reservados.</div>
       </div>
     </footer>
   )

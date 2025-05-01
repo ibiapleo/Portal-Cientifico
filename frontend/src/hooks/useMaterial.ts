@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import {useEffect, useState} from "react"
 import materialService from "../services/materialService"
-import type { Material } from "../types/material"
+import type {Material} from "../types/material"
 
 interface UsematerialsOptions {
   page?: number
