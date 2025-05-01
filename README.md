@@ -154,7 +154,7 @@ Nesta entrega foram desenvolvidas *4 histórias* adicionais:
 
 ### 🎞 Demonstrações da Entrega 3
 
-- 💻 [Veja o ScreenCast da entrega 3 aqui](https://youtu.be/GcTC-wfDpi0)
+- 💻 [Veja o ScreenCast da entrega 3 aqui](https://youtu.be/uE2AScnn7zo)
 
 ---
 
