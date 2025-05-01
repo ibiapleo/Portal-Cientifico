@@ -1,13 +1,13 @@
 # 📚 Portal Científico
 
-Uma **plataforma colaborativa** voltada à comunidade acadêmica, com foco no **compartilhamento, descoberta e avaliação de materiais de estudo**. Desenvolvida para otimizar a experiência de estudantes e professores na troca de conhecimento.
+Uma *plataforma colaborativa* voltada à comunidade acadêmica, com foco no *compartilhamento, descoberta e avaliação de materiais de estudo*. Desenvolvida para otimizar a experiência de estudantes e professores na troca de conhecimento.
 
 ---
 
 ## 👥 Colaboradores(as)
 
-- [@eniobazante](https://github.com/eniobazante) — Ênio Bazante  
-- [@GabrielMorais2](https://github.com/GabrielMorais2) — Gabriel Moraes  
+- [@eniobazante](https://github.com/eniobazante) — Ênio Bazante
+- [@GabrielMorais2](https://github.com/GabrielMorais2) — Gabriel Moraes
 - [@ibiapleo](https://github.com/ibiapleo) — Leonardo Ibiapina
 
 ---
@@ -15,26 +15,26 @@ Uma **plataforma colaborativa** voltada à comunidade acadêmica, com foco no **
 ## 📦 Entrega 1 — Apresentação Inicial
 
 ### 🎥 Screencast da Plataforma
-▶️ [Assista ao vídeo de demonstração](https://youtu.be/szpE2hgFouo)
+▶ [Assista ao vídeo de demonstração](https://youtu.be/szpE2hgFouo)
 
-### 🧪 Protótipo Lo-Fi  
-🖱️ [Interaja com o protótipo no Figma](https://www.figma.com/proto/k5pap6pCHgXMyEZtbNGYUU/Prot%C3%B3tipo-Lo-fi---Portal-Cient%C3%ADfico?node-id=1-28&p=f&t=VVGT05M2aVdpzYf8-0&scaling=scale-down-width&content-scaling=fixed&page-id=0:1&starting-point-node-id=1:28)
+### 🧪 Protótipo Lo-Fi
+🖱 [Interaja com o protótipo no Figma](https://www.figma.com/proto/k5pap6pCHgXMyEZtbNGYUU/Prot%C3%B3tipo-Lo-fi---Portal-Cient%C3%ADfico?node-id=1-28&p=f&t=VVGT05M2aVdpzYf8-0&scaling=scale-down-width&content-scaling=fixed&page-id=0:1&starting-point-node-id=1:28)
 
-### 📖 Histórias do Projeto  
-📄 [Visualize as histórias](https://docs.google.com/document/d/1LFEneIjGzYzV-NdVrRg7SpgecYAnPrniMDs4sBEjZZc/edit?usp=sharing)
+### 📖 Histórias do Projeto
+📄 [Visualize as histórias](http://docs.google.com/document/d/12yvOpbLYaJm8TSEBK6XZBrvhA_86CeKoYhNGM50VVrs/edit?tab=t.0#heading=h.xis6al6vj4da)
 
 ---
 
 ## 📦 Entrega 2 — Funcionalidades Implementadas
 
-Nesta entrega foram desenvolvidas **5 histórias**:
+Nesta entrega foram desenvolvidas *5 histórias*:
 
 ### 1. 🧑‍💻 Cadastro e Autenticação
 
-**História:**  
+*História:*
 > Como estudante, quero criar uma conta e fazer login na plataforma, para acessar todos os recursos e ter um perfil personalizado.
 
-**Critérios de Aceitação:**
+*Critérios de Aceitação:*
 - Cadastro com e-mail/senha ou redes sociais.
 - Login seguro com autenticação.
 - Recuperação de senha via e-mail.
@@ -44,10 +44,10 @@ Nesta entrega foram desenvolvidas **5 histórias**:
 
 ### 2. 📤 Upload de Materiais
 
-**História:**  
+*História:*
 > Como estudante, quero fazer upload dos meus materiais de estudo, para compartilhá-los com outros estudantes.
 
-**Critérios de Aceitação:**
+*Critérios de Aceitação:*
 - Suporte a arquivos PDF, DOC e PPT.
 - Campos para título, descrição e disciplina.
 - Palavras-chave para busca.
@@ -57,22 +57,22 @@ Nesta entrega foram desenvolvidas **5 histórias**:
 
 ### 3. 🔍 Busca e Filtros
 
-**História:**  
+*História:*
 > Como estudante, quero pesquisar e filtrar materiais, para encontrar rapidamente conteúdos relevantes.
 
-**Critérios de Aceitação:**
+*Critérios de Aceitação:*
 - Busca por palavra-chave.
 - Filtros por tipo, disciplina e data.
 - Ordenação por relevância, popularidade e data.
 
 ---
 
-### 4. 👁️ Visualização de Detalhes
+### 4. 👁 Visualização de Detalhes
 
-**História:**  
+*História:*
 > Como estudante, quero visualizar informações detalhadas antes de baixar um material.
 
-**Critérios de Aceitação:**
+*Critérios de Aceitação:*
 - Exibição de título, descrição, disciplina e autor.
 - Visualização prévia do conteúdo.
 - Estatísticas de visualizações e downloads.
@@ -81,31 +81,106 @@ Nesta entrega foram desenvolvidas **5 histórias**:
 
 ### 5. 📥 Download de Materiais
 
-**História:**  
+*História:*
 > Como estudante, quero baixar materiais de estudo para utilizar offline.
 
-**Critérios de Aceitação:**
+*Critérios de Aceitação:*
 - Download direto do arquivo.
 - Registro da contagem de downloads.
 - Verificação de integridade do arquivo.
 
 ---
 
-## 🎞️ Demonstrações da Entrega 2
+## 🎞 Demonstrações da Entrega 2
 
 ### 🔧 Backend
-▶️ [Assista à demonstração das rotas implementadas](https://youtu.be/MvMISBdVQr0)
+▶ [Assista à demonstração das rotas implementadas](https://youtu.be/MvMISBdVQr0)
 
 ### 💻 Frontend
-▶️ [Veja a interface com as funcionalidades](https://youtu.be/TcPfzKTepy4)
+▶ [Veja a interface com as funcionalidades](https://youtu.be/TcPfzKTepy4)
 
-### 🖼️ Diagrama de Classes  
+### 🖼 Diagrama de Classes
 ![Diagrama de Classes](https://github.com/user-attachments/assets/f4ab8c06-0eb9-4b41-ab59-2ebdc1cc82f8)
 
 ---
 
-## 📦 Entrega 3 — A Fazer
 
-> Em construção...
 
+## 📦 Entrega 3 — Funcionalidades Implementadas
+
+Nesta entrega foram desenvolvidas *5 histórias* adicionais:
+
+### 1. 💬 Sistema de Comentários
+
+*História:*
+> Como estudante, quero comentar nos materiais, para compartilhar minhas opiniões e tirar dúvidas.
+
+*Critérios de Aceitação:*
+- O usuário deve poder adicionar comentários a um material.
+- Deve permitir responder a comentários existentes.
+- Deve possibilitar curtir comentários.
+- O usuário deve ser notificado quando receber uma resposta.
+
+---
+
+### 2. ⭐ Sistema de Avaliação
+
+*História:*
+> Como estudante, quero avaliar os materiais, para fornecer feedback sobre sua qualidade.
+
+*Critérios de Aceitação:*
+- Deve permitir avaliação com estrelas de 1 a 5.
+- Deve exibir a média de avaliações do material.
+- Deve mostrar a distribuição das avaliações.
+
+---
+
+### 3. 🔍 Busca e Filtros
+
+*História:*
+> Como estudante, quero pesquisar e filtrar materiais por diferentes critérios, para encontrar rapidamente o conteúdo relevante.
+
+*Critérios de Aceitação:*
+- O usuário deve poder buscar materiais por palavra-chave.
+- Deve haver filtros por tipo de material, disciplina e data de envio.
+- Deve permitir ordenação por relevância, popularidade e data.
+
+---
+
+### 4. 👁 Visualização de Detalhes
+
+*História:*
+> Como estudante, quero visualizar informações detalhadas sobre um material antes de baixá-lo, para avaliar sua relevância.
+
+*Critérios de Aceitação:*
+- Deve exibir título, descrição, disciplina e autor do material.
+- Deve permitir a visualização prévia do conteúdo.
+- Deve mostrar estatísticas de visualizações e downloads.
+
+---
+
+### 5. 🔗 Compartilhamento
+
+*História:*
+> Como estudante, quero compartilhar materiais com colegas, para disseminar conhecimento útil.
+
+*Critérios de Aceitação:*
+- Deve permitir compartilhar materiais via link.
+- Deve suportar compartilhamento em redes sociais.
+- Deve permitir envio de materiais por e-mail.
+- Deve gerar código QR para acesso rápido ao material.
+
+---
+
+### 🎞 Demonstrações da Entrega 3
+
+- 💻 [Veja o ScreenCast da entrega 3 aqui](https://youtu.be/GcTC-wfDpi0)
+
+---
+
+## 🖼 Diagrama de Classes
+
+![Diagrama de Classes](https://github.com/user-attachments/assets/f4ab8c06-0eb9-4b41-ab59-2ebdc1cc82f8)
+
+---
 ---
