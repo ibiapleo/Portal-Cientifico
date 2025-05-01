@@ -30,7 +30,7 @@ Uma *plataforma colaborativa* voltada à comunidade acadêmica, com foco no *com
 
 ## 📦 Entrega 2 — Funcionalidades Implementadas
 
-Nesta entrega foram desenvolvidas *5 histórias*:
+Nesta entrega foram desenvolvidas *4 histórias*:
 
 ### 1. 🧑‍💻 Cadastro e Autenticação
 
@@ -58,19 +58,8 @@ Nesta entrega foram desenvolvidas *5 histórias*:
 
 ---
 
-### 3. 🔍 Busca e Filtros
 
-*História:*
-> Como estudante, quero pesquisar e filtrar materiais, para encontrar rapidamente conteúdos relevantes.
-
-*Critérios de Aceitação:*
-- Busca por palavra-chave.
-- Filtros por tipo, disciplina e data.
-- Ordenação por relevância, popularidade e data.
-
----
-
-### 4. 👁 Visualização de Detalhes
+### 3. 👁 Visualização de Detalhes
 
 *História:*
 > Como estudante, quero visualizar informações detalhadas antes de baixar um material.
@@ -82,7 +71,7 @@ Nesta entrega foram desenvolvidas *5 histórias*:
 
 ---
 
-### 5. 📥 Download de Materiais
+### 4. 📥 Download de Materiais
 
 *História:*
 > Como estudante, quero baixar materiais de estudo para utilizar offline.
@@ -111,7 +100,7 @@ Nesta entrega foram desenvolvidas *5 histórias*:
 
 ## 📦 Entrega 3 — Funcionalidades Implementadas
 
-Nesta entrega foram desenvolvidas *5 histórias* adicionais:
+Nesta entrega foram desenvolvidas *4 histórias* adicionais:
 
 ### 1. 💬 Sistema de Comentários
 
