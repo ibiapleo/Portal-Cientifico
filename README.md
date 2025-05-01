@@ -162,18 +162,6 @@ Nesta entrega foram desenvolvidas *5 histórias* adicionais:
 
 ---
 
-### 5. 🔗 Compartilhamento
-
-*História:*
-> Como estudante, quero compartilhar materiais com colegas, para disseminar conhecimento útil.
-
-*Critérios de Aceitação:*
-- Deve permitir compartilhar materiais via link.
-- Deve suportar compartilhamento em redes sociais.
-- Deve permitir envio de materiais por e-mail.
-- Deve gerar código QR para acesso rápido ao material.
-
----
 
 ### 🎞 Demonstrações da Entrega 3
 
