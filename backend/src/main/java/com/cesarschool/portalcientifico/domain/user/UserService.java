@@ -1,5 +1,6 @@
 package com.cesarschool.portalcientifico.domain.user;
 
+import com.cesarschool.portalcientifico.domain.s3.S3Service;
 import com.cesarschool.portalcientifico.domain.user.follow.Follow;
 import com.cesarschool.portalcientifico.domain.user.follow.FollowRepository;
 import com.cesarschool.portalcientifico.domain.user.payload.*;
@@ -13,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -21,22 +24,23 @@ public class UserService {
     private final FollowRepository followRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final S3Service s3Service;
     private final ModelMapper mapper;
 
-    public RegisterResponseDTO registerUser(RegisterRequestDTO registerRequestDTO) {
+    public RegisterResponseDTO registerUser(RegisterRequestDTO registerRequestDTO) throws IOException {
         validateEmailUniqueness(registerRequestDTO.getEmail());
-
         User newUser = User.builder()
                 .name(registerRequestDTO.getName())
                 .email(registerRequestDTO.getEmail())
                 .password(passwordEncoder.encode(registerRequestDTO.getPassword()))
                 .role(UserRole.USER)
                 .build();
-
-        userRepository.save(newUser);
-        return new RegisterResponseDTO(newUser.getEmail(), newUser.getName());
+        User savedUser = userRepository.save(newUser);
+        String fileName = s3Service.uploadFile(registerRequestDTO.getProfilePicture(), savedUser.getId());
+        savedUser.setProfilePictureFileName(fileName);
+        userRepository.save(savedUser);
+        return new RegisterResponseDTO(savedUser.getEmail(), savedUser.getName());
     }
-
     public TokenResponseDTO login(LoginRequestDTO loginRequestDTO) {
         User user = userRepository.findByEmail(loginRequestDTO.getEmail())
                 .orElseThrow(() -> new BadCredentialsException("Email ou senha incorretos"));
@@ -48,7 +52,14 @@ public class UserService {
         String accessToken = tokenService.generateAccessToken(user);
         String refreshToken = tokenService.generateRefreshToken(user);
 
-        return new TokenResponseDTO(accessToken, refreshToken, mapper.map(user, UserResponseDTO.class));
+        UserResponseDTO userResponseDTO = mapper.map(user, UserResponseDTO.class);
+
+        if (user.getProfilePictureFileName() != null) {
+            String presignedUrl = s3Service.generatePresignedUrl(user.getProfilePictureFileName());
+            userResponseDTO.setProfilePictureUrl(presignedUrl);
+        }
+
+        return new TokenResponseDTO(accessToken, refreshToken, userResponseDTO);
     }
 
     public TokenResponseDTO refreshToken(String refreshToken) {

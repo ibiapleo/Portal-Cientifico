@@ -661,7 +661,7 @@ const MaterialPage: React.FC = () => {
                   <h4 className="font-medium">{material.author}</h4>
                   <p className="text-sm text-gray-500">{material.institution || "Instituição não informada"}</p>
                   <Button variant="link" className="text-orange-600 p-0 h-auto text-sm" asChild>
-                    <Link to={`/author/${encodeURIComponent(material.author)}`}>Ver perfil</Link>
+                    <Link to={`/profile/${encodeURIComponent(material.authorId)}`}>Ver perfil</Link>
                   </Button>
                 </div>
               </div>

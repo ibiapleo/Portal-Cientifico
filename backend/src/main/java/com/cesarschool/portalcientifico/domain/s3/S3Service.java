@@ -23,6 +23,13 @@ public class S3Service {
         return fileName;
     }
 
+    public String uploadFile(MultipartFile file, String userId) throws IOException {
+        String fileName = userId + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        byte[] fileContent = file.getBytes();
+        S3Config.uploadFile(s3Client, fileName, fileContent);
+        return fileName;
+    }
+
     public String generatePresignedUrl(String fileName) {
         return S3Config.generatePresignedUrl(fileName);
     }

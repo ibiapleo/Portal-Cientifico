@@ -32,7 +32,11 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getCurrentUser(
             @Parameter(hidden = true) Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getCreatedAt()));
+        return ResponseEntity.ok(UserResponseDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .createdAt(user.getCreatedAt()).build());
     }
 
     @Operation(

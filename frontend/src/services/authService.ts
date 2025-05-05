@@ -1,5 +1,5 @@
 import api from './api';
-import {AuthResponse, LoginCredentials, RegisterData, User} from '../types/auth';
+import {AuthResponse, LoginCredentials, User} from '../types/auth';
 import {getRefreshToken, getToken, removeToken, setRefreshToken, setToken} from '../utils/storage';
 
 const authService = {
@@ -18,9 +18,18 @@ const authService = {
     }
   },
 
-  async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/register', data);
-    return response.data;
+  async register(formData: FormData): Promise<AuthResponse> {
+    try {
+      const response = await api.post<AuthResponse>('/auth/register', formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (err) {
+      console.error("Erro na resposta:", err.response);
+      throw err;
+    }
   },
 
   async logout(): Promise<void> {

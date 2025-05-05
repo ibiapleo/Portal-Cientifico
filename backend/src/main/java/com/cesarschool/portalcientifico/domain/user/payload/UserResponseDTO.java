@@ -17,4 +17,5 @@ public class UserResponseDTO {
     private String name;
     private String email;
     private LocalDateTime createdAt;
+    private String profilePictureUrl;
 }

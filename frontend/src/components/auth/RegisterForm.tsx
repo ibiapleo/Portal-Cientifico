@@ -1,10 +1,11 @@
 "use client"
 
 import type React from "react"
-import {useState} from "react"
-import {Link} from "react-router-dom"
+import { useState, useRef } from "react"
+import { Link } from "react-router-dom"
+import { Camera, Upload, X } from "lucide-react"
 import useAuth from "../../hooks/useAuth"
-import type {RegisterData} from "../../types/auth"
+import type { RegisterData } from "../../types/auth"
 
 interface RegisterFormProps {
   onSuccess?: () => void
@@ -17,9 +18,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
     password: "",
     confirmPassword: "",
   })
+  const [profilePicture, setProfilePicture] = useState<File | null>(null)
+  const [profilePreview, setProfilePreview] = useState<string | null>(null)
   const [acceptTerms, setAcceptTerms] = useState<boolean>(false)
   const [error, setError] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { register } = useAuth()
 
@@ -28,6 +32,42 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Por favor, selecione uma imagem válida")
+        return
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        setError("A imagem deve ter no máximo 5MB")
+        return
+      }
+
+      setProfilePicture(file)
+
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setProfilePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setProfilePicture(null)
+    setProfilePreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click()
+  }
+
+  // Modificar a função handleSubmit para corrigir como os dados são enviados
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
@@ -46,13 +86,23 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
     setIsLoading(true)
 
     try {
+      // Criar FormData para envio multipart/form-data
+      const formDataToSend = new FormData()
+      
       const userData: RegisterData = {
         name: formData.name,
         email: formData.email,
         password: formData.password,
       }
 
-      const result = await register(userData)
+      formDataToSend.append("user", new Blob([JSON.stringify(userData)], { type: "application/json" }))
+
+      // Adicionar a foto de perfil se existir
+      if (profilePicture) {
+        formDataToSend.append("profilePicture", profilePicture)
+      }
+
+      const result = await register(formDataToSend)
 
       if (result.success) {
         if (onSuccess) onSuccess()
@@ -70,6 +120,56 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">{error}</div>}
+
+      {/* Foto de perfil */}
+      <div className="flex flex-col items-center space-y-3">
+        <div className="relative">
+          {profilePreview ? (
+            <div className="relative w-24 h-24">
+              <img
+                src={profilePreview || "/placeholder.svg"}
+                alt="Preview da foto de perfil"
+                className="w-24 h-24 rounded-full object-cover border-2 border-orange-200"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                aria-label="Remover imagem"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <div
+              onClick={triggerFileInput}
+              className="w-24 h-24 rounded-full bg-orange-50 flex items-center justify-center cursor-pointer border-2 border-dashed border-orange-200 hover:bg-orange-100 transition-colors"
+            >
+              <Camera className="h-8 w-8 text-orange-400" />
+            </div>
+          )}
+        </div>
+
+        <div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+            id="profile-picture"
+          />
+          <button
+            type="button"
+            onClick={triggerFileInput}
+            className="text-sm text-orange-600 flex items-center hover:text-orange-700"
+          >
+            <Upload className="h-4 w-4 mr-1" />
+            {profilePreview ? "Alterar foto" : "Adicionar foto de perfil"}
+          </button>
+          <p className="text-xs text-gray-500 mt-1">Opcional, máximo 5MB</p>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-4">
         <div className="space-y-2">
@@ -194,4 +294,3 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
 }
 
 export default RegisterForm
-

@@ -9,7 +9,7 @@ const RegisterPage: React.FC = () => {
   const navigate = useNavigate()
 
   const handleRegisterSuccess = () => {
-    navigate("/")
+    navigate("/login")
   }
 
   return (
