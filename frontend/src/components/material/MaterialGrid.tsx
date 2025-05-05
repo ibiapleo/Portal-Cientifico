@@ -1,6 +1,7 @@
 import React from 'react';
 import {BookOpen, FileText} from 'lucide-react';
 import {Material} from '../../types/material';
+import MaterialCard from './MaterialCard';
 
 interface MaterialGridProps {
   materials: Material[];
@@ -47,15 +48,15 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({
       
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {materials.map((material) => (
-          <materialCard
-            key={material.id}
+          <MaterialCard
             id={material.id}
             title={material.title}
             type={material.type}
             subject={material.subject}
             author={material.author}
             date={formatDate(material.createdAt)}
-            downloads={material.downloads}
+            downloads={material.totalDownload}
+            rating={material.averageRating}
             icon={getIconForType(material.type)}
           />
         ))}

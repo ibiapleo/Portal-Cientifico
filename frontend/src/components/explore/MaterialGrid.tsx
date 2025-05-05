@@ -49,7 +49,7 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({ materials }) => {
                 <span>{material.totalDownload}</span>
                 <span className="mx-2">•</span>
                 <span className="text-yellow-500">★</span>
-                <span className="ml-1">{material.rating || "N/A"}</span>
+                <span className="ml-1">{material.averageRating?.toFixed(1) || "N/A"}</span>
               </div>
               <Button
                 size="sm"

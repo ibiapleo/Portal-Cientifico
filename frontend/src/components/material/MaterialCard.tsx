@@ -8,7 +8,7 @@ import type {Material} from "../../types/material"
 import {formatDate, getMaterialIcon, getMaterialTypeName} from "../../utils/material-helpers"
 
 interface MaterialCardProps {
-  material: Material
+  material: Material;
 }
 
 const MaterialCard: React.FC<MaterialCardProps> = ({ material }) => {
@@ -37,11 +37,11 @@ const MaterialCard: React.FC<MaterialCardProps> = ({ material }) => {
         <div className="flex items-center text-sm text-gray-500">
           <Download className="mr-1 h-4 w-4" />
           <span>{material.totalDownload}</span>
-          {material.rating && (
+          {material.averageRating != null && (
             <>
               <span className="mx-2">•</span>
               <span className="text-yellow-500">★</span>
-              <span className="ml-1">{material.rating}</span>
+              <span className="ml-1">{material.averageRating?.toFixed(1)|| "N/A"} </span>
             </>
           )}
         </div>

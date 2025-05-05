@@ -74,4 +74,11 @@ public class Material {
 
     @OneToMany(mappedBy = "materialId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+
+    @Column(name = "average_rating", columnDefinition = "double precision default 0")
+    private Double averageRating;
+
+    @Column(name = "total_rating", columnDefinition = "long default 0")
+    private Long totalRatings;
+
 }

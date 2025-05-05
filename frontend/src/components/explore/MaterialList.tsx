@@ -47,11 +47,11 @@ const MaterialList: React.FC<MaterialListProps> = ({ materials }) => {
                   </div>
                   <div className="flex items-center">
                     <Download className="h-4 w-4 mr-1" />
-                    <span>{material.downloads}</span>
+                    <span>{material.totalDownload}</span>
                   </div>
                   <div className="flex items-center">
                     <span className="text-yellow-500 mr-1">★</span>
-                    <span>{material.rating || "N/A"}</span>
+                    <span>{material.averageRating?.toFixed(1) || "N/A"}</span>
                   </div>
                 </div>
               </div>

@@ -1,12 +1,16 @@
 package com.cesarschool.portalcientifico.domain.material;
 
-import com.cesarschool.portalcientifico.domain.comment.CommentResponseDTO;
+import com.cesarschool.portalcientifico.domain.comment.dto.CommentResponseDTO;
 import com.cesarschool.portalcientifico.domain.comment.CommentService;
 import com.cesarschool.portalcientifico.domain.like.LikeService;
 import com.cesarschool.portalcientifico.domain.like.TargetType;
 import com.cesarschool.portalcientifico.domain.material.dto.MaterialResponseDTO;
+import com.cesarschool.portalcientifico.domain.rate.Rating;
+import com.cesarschool.portalcientifico.domain.rate.RatingService;
+import com.cesarschool.portalcientifico.domain.rate.dto.RatingRequestDTO;
 import com.cesarschool.portalcientifico.domain.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.service.GenericResponseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -14,24 +18,29 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MaterialLikeCommentAggregation {
+public class MaterialAggregation {
 
     private final MaterialService materialService;
     private final LikeService likeService;
     private final CommentService commentService;
+    private final RatingService ratingService;
+    private final GenericResponseService responseBuilder;
 
     public MaterialResponseDTO getMaterialAggregation(Long materialId, User user) {
         MaterialResponseDTO material = materialService.getMaterialDetails(materialId);
 
         long likeCount = likeService.countLikes(TargetType.MATERIAL, materialId);
         boolean isLiked = likeService.isLikedByUser(user, TargetType.MATERIAL, materialId);
+        boolean userRating = ratingService.isRatedByUser(user, materialId);
 
         material.setLiked(isLiked);
         material.setLikeCount(likeCount);
+        material.setUserRating(userRating);
 
         return material;
     }
@@ -63,4 +72,10 @@ public class MaterialLikeCommentAggregation {
     public boolean toggleLikeForComment(Long commentId, Long id, User user) {
         return likeService.toggleLike(user, TargetType.COMMENT, commentId);
     }
+
+    public boolean saveRatingToMaterial(Long materialId, User user, RatingRequestDTO request) {
+        ratingService.saveRating(materialId, user, request);
+        return true;
+    }
+
 }

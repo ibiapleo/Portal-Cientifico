@@ -22,6 +22,9 @@ public class MaterialResponseDTO {
     private long likeCount;
     private boolean liked;
     private long commentCount;
+    private Double averageRating;
+    private Long totalRatings;
+    private boolean userRating;
     private List<String> keywords;
     private String fileName;
     private int totalDownload;
