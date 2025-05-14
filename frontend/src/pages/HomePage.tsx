@@ -472,17 +472,6 @@ const HomePage: React.FC = () => {
                       Enviar Material
                     </Link>
                   </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-white text-white hover:bg-orange-600/50"
-                    asChild
-                  >
-                    <Link to="/explore">
-                      <Search className="mr-2 h-5 w-5" />
-                      Explorar Conteúdo
-                    </Link>
-                  </Button>
                 </div>
               </div>
               <div className="hidden md:flex justify-end">

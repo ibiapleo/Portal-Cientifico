@@ -121,10 +121,11 @@ const MaterialPage: React.FC = () => {
 
         if (isAuthenticated) {
           try {
-            //const savedStatus = await materialService.checkSavedStatus(id)
-            setIsSaved(true)
+            const savedStatus = await materialService.checkSavedStatus(id)
+            setIsSaved(savedStatus)
           } catch (err) {
             console.error("Erro ao verificar status de salvamento:", err)
+            setIsSaved(false)
           }
         }
 
@@ -148,20 +149,16 @@ const MaterialPage: React.FC = () => {
 
         // Buscar estatísticas do autor
         try {
-          //const authorData = await materialService.getAuthorStats(materialData.userId)
-          setAuthorStats({
-            materials: 12,
-            downloads: 1200,
-            followers: 87,
-            rating: 4.8,
-          })
+          const authorData = await materialService.getAuthorStats(materialData.authorId)
+          setAuthorStats(authorData)
         } catch (err) {
           console.error("Erro ao buscar estatísticas do autor:", err)
+          // Fallback to empty stats if API fails
           setAuthorStats({
-            materials: 12,
-            downloads: 1200,
-            followers: 87,
-            rating: 4.8,
+            materials: 0,
+            downloads: 0,
+            followers: 0,
+            rating: 0,
           })
         }
       } catch (err) {

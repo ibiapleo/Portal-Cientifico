@@ -1,17 +1,17 @@
 "use client"
 
 import type React from "react"
-import {useEffect, useState} from "react"
-import {useSearchParams} from "react-router-dom"
-import {BookOpen, Clock, FileText, GraduationCap, Layers, Lightbulb, Sparkles, TrendingUp} from "lucide-react"
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-import {Card, CardContent} from "@/components/ui/card"
-import {Skeleton} from "@/components/ui/skeleton"
+import { useEffect, useState } from "react"
+import { useSearchParams } from "react-router-dom"
+import { BookOpen, Clock, FileText, GraduationCap, Layers, Lightbulb, Sparkles, TrendingUp } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import useAuth from "../hooks/useAuth"
-import {toast} from "react-toastify"
-import type {Material} from "../types/material"
+import { toast } from "react-toastify"
+import type { Material } from "../types/material"
 import materialService from "../services/materialService"
-import type {PageResponse} from "../types/pagination"
+import type { PageResponse } from "../types/pagination"
 
 // Componentes
 import SearchBar from "../components/explore/SearchBar"
@@ -93,11 +93,13 @@ const ExplorePage: React.FC = () => {
     const sort = searchParams.get("sort") || "relevance"
     const page = Number.parseInt(searchParams.get("page") || "0", 10)
     const size = Number.parseInt(searchParams.get("size") || "12", 10)
+    const view = searchParams.get("view") || "grid"
 
     setSearchTerm(query)
     if (type) setSelectedTypes(type.split(","))
     if (area) setSelectedAreas(area.split(","))
     setSortBy(sort)
+    setViewMode(view as "grid" | "list")
     setPagination((prev) => ({
       ...prev,
       currentPage: page,
@@ -282,6 +284,7 @@ const ExplorePage: React.FC = () => {
     params.set("tab", activeTab)
     params.set("page", "0") // Resetar para a primeira página ao aplicar filtros
     params.set("size", pagination.size.toString())
+    params.set("view", viewMode) // Save view mode in URL
 
     setSearchParams(params)
     setFiltersVisible(false)
@@ -302,6 +305,7 @@ const ExplorePage: React.FC = () => {
     params.set("tab", activeTab)
     params.set("page", "0")
     params.set("size", pagination.size.toString())
+    params.set("view", viewMode) // Keep view mode when clearing filters
     setSearchParams(params)
     setPagination((prev) => ({ ...prev, currentPage: 0 }))
   }
@@ -374,6 +378,7 @@ const ExplorePage: React.FC = () => {
     params.set("tab", "all")
     params.set("page", "0")
     params.set("size", pagination.size.toString())
+    params.set("view", viewMode) // Keep view mode when clicking on topic
     setSearchParams(params)
     setPagination((prev) => ({ ...prev, currentPage: 0 }))
   }
@@ -396,6 +401,14 @@ const ExplorePage: React.FC = () => {
     setPagination((prev) => ({ ...prev, size: newSize, currentPage: 0 }))
   }
 
+  // Handle view mode change
+  const handleViewModeChange = (mode: "grid" | "list") => {
+    setViewMode(mode)
+    const params = new URLSearchParams(searchParams)
+    params.set("view", mode)
+    setSearchParams(params)
+  }
+
   return (
     <div className="container mx-auto py-10 px-4 md:px-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
@@ -407,7 +420,7 @@ const ExplorePage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+          <ViewToggle viewMode={viewMode} setViewMode={handleViewModeChange} />
 
           <FilterPanel
             selectedTypes={selectedTypes}
@@ -560,10 +573,12 @@ const ExplorePage: React.FC = () => {
                   materials={recommendedMaterials}
                   icon={<Sparkles className="h-5 w-5 text-orange-500" />}
                   isLoading={isLoading}
+                  viewMode={viewMode}
                   onViewMore={() => {
                     const params = new URLSearchParams()
                     params.set("tab", "recommended")
                     params.set("page", "0")
+                    params.set("view", viewMode)
                     setSearchParams(params)
                     setActiveTab("recommended")
                   }}
@@ -577,10 +592,12 @@ const ExplorePage: React.FC = () => {
                   materials={trendingMaterials}
                   icon={<TrendingUp className="h-5 w-5 text-orange-500" />}
                   isLoading={isLoading}
+                  viewMode={viewMode}
                   onViewMore={() => {
                     const params = new URLSearchParams()
                     params.set("tab", "trending")
                     params.set("page", "0")
+                    params.set("view", viewMode)
                     setSearchParams(params)
                     setActiveTab("trending")
                   }}
@@ -594,10 +611,12 @@ const ExplorePage: React.FC = () => {
                   materials={recentMaterials}
                   icon={<Clock className="h-5 w-5 text-orange-500" />}
                   isLoading={isLoading}
+                  viewMode={viewMode}
                   onViewMore={() => {
                     const params = new URLSearchParams()
                     params.set("tab", "recent")
                     params.set("page", "0")
+                    params.set("view", viewMode)
                     setSearchParams(params)
                     setActiveTab("recent")
                   }}
