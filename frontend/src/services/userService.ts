@@ -21,15 +21,6 @@ const userService = {
     return response.data
   },
 
-  // Atualizar perfil com imagem
-  async updateUserProfileWithImage(formData: FormData): Promise<UserProfile> {
-    const response = await api.put("/users/me/with-image", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
-    return response.data
-  },
 
   // Alterar senha
   async changePassword(passwordData: PasswordChangeRequest): Promise<void> {
@@ -43,16 +34,16 @@ const userService = {
   },
 
   // Buscar quem o usuário segue
-  async getUserFollowing(userId: string): Promise<UserProfile[]> {
-    const response = await api.get(`/users/${userId}/following`)
-    return response.data
-  },
+  // async getUserFollowing(userId: string): Promise<UserProfile[]> {
+  //   const response = await api.get(`/users/${userId}/following`)
+  //   return response.data
+  // },
 
   // Seguir/deixar de seguir usuário
-  async followUser(targetUserId: string): Promise<boolean> {
-    const response = await api.post(`/users/${targetUserId}/follow`)
-    return response.data.following
-  },
+  // async followUser(targetUserId: string): Promise<boolean> {
+  //   const response = await api.post(`/users/${targetUserId}/follow`)
+  //   return response.data.following
+  // },
 
   // Buscar materiais salvos pelo usuário
   async getSavedMaterials(page = 0, size = 10): Promise<PageResponse<any>> {
