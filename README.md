@@ -97,7 +97,6 @@ Nesta entrega foram desenvolvidas *4 histórias*:
 ---
 
 
-
 ## 📦 Entrega 3 — Funcionalidades Implementadas
 
 Nesta entrega foram desenvolvidas *4 histórias* adicionais:
@@ -162,13 +161,17 @@ Nesta entrega foram desenvolvidas *4 histórias* adicionais:
 
 ![Diagrama de Classes](https://github.com/user-attachments/assets/f4ab8c06-0eb9-4b41-ab59-2ebdc1cc82f8)
 
+
 ---
----
+
 
 ### 📦 Entrega 4 — Funcionalidades Adicionais
 
-## 🖼 Diagrama de Classes
+## 🖼 Diagrama de Classes (FINAL)
 
+![Diagrama OAB](https://github.com/user-attachments/assets/16e388d4-b0a9-4239-b07d-59ca408b4b9a)
+
+## 🖼 SWAGGER (FINAL)
 
 ## ⚙️ Como Rodar o Projeto Localmente
 
@@ -185,8 +188,8 @@ Antes de rodar, você precisa ter instalado:
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-cd SEU_REPOSITORIO
+git clone https://github.com/Portal-Cientifico/Portal-Cientifico.git
+cd Portal-Cientifico
 ```
 
 2. Rode os serviços com Docker Compose:
