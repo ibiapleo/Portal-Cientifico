@@ -164,3 +164,48 @@ Nesta entrega foram desenvolvidas *4 histórias* adicionais:
 
 ---
 ---
+
+### 📦 Entrega 4 — Funcionalidades Adicionais
+
+## 🖼 Diagrama de Classes
+
+
+## ⚙️ Como Rodar o Projeto Localmente
+
+### ✅ Pré-requisitos
+
+Antes de rodar, você precisa ter instalado:
+
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- Git (opcional, para clonar)
+
+### ▶️ Passo a passo
+
+1. Clone o repositório:
+
+```bash
+git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
+cd SEU_REPOSITORIO
+```
+
+2. Rode os serviços com Docker Compose:
+
+```bash
+  docker-compose up -d
+```
+
+Esse comando irá construir e iniciar os seguintes serviços automaticamente:
+
+ - Backend Java (Spring Boot)
+ - Frontend React 
+ - Banco de dados PostgreSQL
+
+
+### Onde os serviços estão disponíveis?
+
+| Serviço                   | Porta Local | URL de Acesso                                       |
+| ------------------------- | ----------- | --------------------------------------------------- |
+| **Frontend** (React)      | `3000`      | [http://localhost:3000](http://localhost:3000)      |
+| **Backend** (Spring Boot) | `8080`      | [http://localhost:8080](http://localhost:8080)      |
+| **PostgreSQL**            | `5434`      | `localhost:5434` (via DBeaver ou outro cliente SQL) |
