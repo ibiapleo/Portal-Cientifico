@@ -1,12 +1,16 @@
 package com.cesarschool.portalcientifico.domain.user.payload;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserProfileDTO {
     private String id;
     private String name;

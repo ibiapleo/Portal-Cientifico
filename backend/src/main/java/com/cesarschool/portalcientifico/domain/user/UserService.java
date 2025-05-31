@@ -7,9 +7,12 @@ import com.cesarschool.portalcientifico.domain.user.payload.*;
 import com.cesarschool.portalcientifico.exception.EmailAlreadyExistsException;
 import com.cesarschool.portalcientifico.exception.EntityNotFoundException;
 import com.cesarschool.portalcientifico.infra.security.TokenService;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,12 @@ public class UserService {
     private final TokenService tokenService;
     private final S3Service s3Service;
     private final ModelMapper mapper;
+
+
+    public UserProfileDTO getUserProfile(String id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        return mapper.map (user, UserProfileDTO.class);
+    }
 
     public RegisterResponseDTO registerUser(RegisterRequestDTO registerRequestDTO) throws IOException {
         validateEmailUniqueness(registerRequestDTO.getEmail());
@@ -110,4 +119,6 @@ public class UserService {
         }
         return followRepository.existsByUserIdAndTargetUserId(user.getId(), targetUserId);
     }
+
+
 }

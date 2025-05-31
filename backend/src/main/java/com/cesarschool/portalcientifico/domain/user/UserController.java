@@ -1,5 +1,6 @@
 package com.cesarschool.portalcientifico.domain.user;
 
+import com.cesarschool.portalcientifico.domain.user.payload.UserProfileDTO;
 import com.cesarschool.portalcientifico.domain.user.payload.UserResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService service;
+    private final UserService userService;
 
     @Operation(
             summary = "Obter informações do usuário logado",
@@ -25,18 +27,22 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário autenticado retornado com sucesso",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDTO.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileDTO.class))),
             @ApiResponse(responseCode = "401", description = "Token inválido ou ausente", content = @Content)
     })
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getCurrentUser(
+    public UserProfileDTO getCurrentUser(
+
             @Parameter(hidden = true) Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return ResponseEntity.ok(UserResponseDTO.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .name(user.getName())
-                .createdAt(user.getCreatedAt()).build());
+        return userService.getUserProfile(user.getId());
+    }
+    @GetMapping("/{userId}")
+    public UserProfileDTO getUserProfile(
+            @PathVariable String userId,
+            @Parameter(hidden = true) Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return userService.getUserProfile(userId);
     }
 
     @Operation(
@@ -57,6 +63,7 @@ public class UserController {
     }
 
 
+
     @Operation(
             summary = "Verificar se o usuário logado segue o autor",
             description = "Retorna true se o usuário atual segue o autor especificado, senão false."
@@ -73,5 +80,4 @@ public class UserController {
         boolean isFollowing = service.checkFollowStatus(user, targetUserId);
         return ResponseEntity.ok(isFollowing);
     }
-
 }
