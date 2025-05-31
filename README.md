@@ -164,7 +164,6 @@ Nesta entrega foram desenvolvidas *4 histórias* adicionais:
 
 ---
 
-
 ### 📦 Entrega 4 — Funcionalidades Adicionais
 
 ## 🖼 Diagrama de Classes (FINAL)
@@ -218,3 +217,10 @@ Esse comando irá construir e iniciar os seguintes serviços automaticamente:
 | **Frontend** (React)      | `3000`      | [http://localhost:3000](http://localhost:3000)      |
 | **Backend** (Spring Boot) | `8080`      | [http://localhost:8080](http://localhost:8080)      |
 | **PostgreSQL**            | `5434`      | `localhost:5434` (via DBeaver ou outro cliente SQL) |
+=======
+---
+
+
+### 🎞 Demonstrações da Entrega 4
+
+- 💻 [Veja o ScreenCast da entrega 3 aqui](https://youtu.be/uE2AScnn7zo)
