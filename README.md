@@ -175,6 +175,10 @@ Nesta entrega foram desenvolvidas *4 histórias* adicionais:
 
 ![image](https://github.com/user-attachments/assets/67ae5757-243b-43ef-84d1-5f28ab4b1401)
 
+## BUG TRACKER
+
+![image](https://github.com/user-attachments/assets/9f1c327a-7180-47e4-b090-f46b4a0bb6e2)
+
 ## ⚙️ Como Rodar o Projeto Localmente
 
 ### ✅ Pré-requisitos
