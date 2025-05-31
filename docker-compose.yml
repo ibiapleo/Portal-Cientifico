@@ -2,7 +2,6 @@ services:
 
   postgres-backend:
     image: postgres:16-alpine
-    container_name: postgres-backend
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
@@ -28,13 +27,13 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      postgres-produtos:
+      postgres-backend:
         condition: service_healthy
     environment:
-      - POSTGRES_HOST=postgres-produtos
+      - POSTGRES_HOST=postgres-backend
     networks:
-      - react-spring
       - spring-postgres
+      - react-spring
     restart: always
 
   frontend:

@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {materialService} from '@/services/materialService';
+import materialService from "@/services/materialService";
 
 type Props = {
   materialId: number;

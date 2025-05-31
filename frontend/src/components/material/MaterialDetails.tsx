@@ -17,11 +17,13 @@ import {
     User,
 } from "lucide-react"
 import useAuth from "../../hooks/useAuth"
+import materialService from "@/services/materialService.ts";
+import {Material} from "@/types/material.ts";
 
 const MaterialDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>()
-  const { isAuthenticated, user } = useAuth()
-  const [material, setmaterial] = useState<material | null>(null)
+  const { isAuthenticated } = useAuth()
+  const [material, setmaterial] = useState<Material | null>(null)
   const [activeTab, setActiveTab] = useState<"about" | "preview" | "comments">("about")
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string>("")
