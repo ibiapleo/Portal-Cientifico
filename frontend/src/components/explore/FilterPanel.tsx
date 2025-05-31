@@ -81,13 +81,13 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto rounded-l-lg">
+      <SheetContent className="w-full sm:max-w-[35%] overflow-y-auto rounded-l-lg  px-6">
         <SheetHeader>
           <SheetTitle>Filtros de Busca</SheetTitle>
           <SheetDescription>Refine sua busca para encontrar exatamente o que precisa</SheetDescription>
         </SheetHeader>
 
-        <div className="py-6">
+        <div className="py-10">
           <div className="space-y-6">
             <div>
               <h3 className="text-sm font-medium mb-3">Tipo de Material</h3>

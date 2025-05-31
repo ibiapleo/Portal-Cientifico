@@ -10,12 +10,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/v1/auth")
@@ -49,9 +50,12 @@ public class AuthController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = RegisterResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos ou usuário já existe", content = @Content)
     })
-    @PostMapping("/register")
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RegisterResponseDTO> register(
-            @RequestBody RegisterRequestDTO registerRequestDTO) {
+            @RequestPart("user") RegisterRequestDTO registerRequestDTO,
+            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture) throws IOException {
+
+        registerRequestDTO.setProfilePicture(profilePicture);
         RegisterResponseDTO registerResponse = userService.registerUser(registerRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(registerResponse);
     }

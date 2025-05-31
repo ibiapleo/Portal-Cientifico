@@ -1,7 +1,7 @@
 services:
+
   postgres-backend:
     image: postgres:16-alpine
-    container_name: postgres-backend
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
@@ -20,9 +20,40 @@ services:
       retries: 5
       start_period: 80s
 
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres-backend:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres-backend
+    networks:
+      - spring-postgres
+      - react-spring
+    restart: always
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - react-spring
+    depends_on:
+      - backend
+    expose:
+      - 80
+
 volumes:
   postgres-data: {}
 
 networks:
+  react-spring:
+    driver: bridge
   spring-postgres:
     driver: bridge

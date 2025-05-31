@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {CommentResponseDTO} from '@/types/comment';
-import {materialService} from '@/services/materialService';
+import materialService from "@/services/materialService";
 
 type Props = {
   materialId: number;

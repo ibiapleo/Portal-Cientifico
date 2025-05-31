@@ -55,13 +55,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (data: RegisterData) => {
+  const register = async (formData: FormData) => {
     try {
-      const response = await authService.register(data);
+      const response = await authService.register(formData);
       setUser(response.user);
       setIsAuthenticated(true);
       return { success: true, data: response };
     } catch (error: any) {
+      console.log(error)
       return {
         success: false,
         error: error.response?.data?.message || 'Erro ao criar conta',

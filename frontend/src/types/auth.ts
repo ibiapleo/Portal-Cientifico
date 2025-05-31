@@ -28,6 +28,7 @@ export interface User {
     name: string
     email: string
     createdAt: string
+    profilePictureUrl: string
   }
   
   
@@ -56,6 +57,6 @@ export interface User {
   
   export interface AuthContextType extends AuthState {
     login: (credentials: LoginCredentials) => Promise<{ success: boolean; data?: any; error?: string }>;
-    register: (data: RegisterData) => Promise<{ success: boolean; data?: any; error?: string }>;
+    register: (FormData: FormData) => Promise<{ success: boolean; data?: any; error?: string }>;
     logout: () => void;
   }

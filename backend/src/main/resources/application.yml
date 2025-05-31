@@ -10,7 +10,7 @@ spring:
       max-request-size: 50MB
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${DB_PORT:5434}/${POSTGRES_DB:db_backend}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${DB_PORT:5432}/${POSTGRES_DB:db_backend}
     username: ${POSTGRES_USER:root}
     password: ${POSTGRES_PASSWORD:root}
 
@@ -22,10 +22,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     defer-datasource-initialization: true
-
-  sql:
-    init:
-      mode: always
 
 openapi:
   service:

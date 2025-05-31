@@ -121,10 +121,11 @@ const MaterialPage: React.FC = () => {
 
         if (isAuthenticated) {
           try {
-            //const savedStatus = await materialService.checkSavedStatus(id)
-            setIsSaved(true)
+            const savedStatus = await materialService.checkSavedStatus(id)
+            setIsSaved(savedStatus)
           } catch (err) {
             console.error("Erro ao verificar status de salvamento:", err)
+            setIsSaved(false)
           }
         }
 
@@ -148,20 +149,16 @@ const MaterialPage: React.FC = () => {
 
         // Buscar estatísticas do autor
         try {
-          //const authorData = await materialService.getAuthorStats(materialData.userId)
-          setAuthorStats({
-            materials: 12,
-            downloads: 1200,
-            followers: 87,
-            rating: 4.8,
-          })
+          const authorData = await materialService.getAuthorStats(materialData.authorId)
+          setAuthorStats(authorData)
         } catch (err) {
           console.error("Erro ao buscar estatísticas do autor:", err)
+          // Fallback to empty stats if API fails
           setAuthorStats({
-            materials: 12,
-            downloads: 1200,
-            followers: 87,
-            rating: 4.8,
+            materials: 0,
+            downloads: 0,
+            followers: 0,
+            rating: 0,
           })
         }
       } catch (err) {
@@ -719,7 +716,7 @@ const MaterialPage: React.FC = () => {
                   <h4 className="font-medium">{material.author}</h4>
                   <p className="text-sm text-gray-500">{material.institution || "Instituição não informada"}</p>
                   <Button variant="link" className="text-orange-600 p-0 h-auto text-sm" asChild>
-                    <Link to={`/author/${encodeURIComponent(material.author)}`}>Ver perfil</Link>
+                    <Link to={`/profile/${encodeURIComponent(material.authorId)}`}>Ver perfil</Link>
                   </Button>
                 </div>
               </div>

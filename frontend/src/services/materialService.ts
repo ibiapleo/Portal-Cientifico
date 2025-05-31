@@ -1,7 +1,7 @@
 import api from "./api"
 import type {Material, MaterialResponseDTO, MaterialSearchParams} from "../types/material"
 import type {CommentRequestDTO, CommentResponseDTO} from "../types/comment"
-import type {RatingRequestDTO, RatingResponseDTO} from "../types/ratings"
+import type {RatingResponseDTO} from "../types/ratings"
 import {PageResponse} from "@/types/pagination"
 
 const materialService = {

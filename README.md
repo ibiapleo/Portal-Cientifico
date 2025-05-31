@@ -97,7 +97,6 @@ Nesta entrega foram desenvolvidas *4 histórias*:
 ---
 
 
-
 ## 📦 Entrega 3 — Funcionalidades Implementadas
 
 Nesta entrega foram desenvolvidas *4 histórias* adicionais:
@@ -162,12 +161,66 @@ Nesta entrega foram desenvolvidas *4 histórias* adicionais:
 
 ![Diagrama de Classes](https://github.com/user-attachments/assets/f4ab8c06-0eb9-4b41-ab59-2ebdc1cc82f8)
 
+
 ---
+
+### 📦 Entrega 4 — Funcionalidades Adicionais
+
+## 🖼 Diagrama de Classes (FINAL)
+
+![Diagrama OAB](https://github.com/user-attachments/assets/16e388d4-b0a9-4239-b07d-59ca408b4b9a)
+
+## 🖼 SWAGGER (FINAL)
+
+![image](https://github.com/user-attachments/assets/67ae5757-243b-43ef-84d1-5f28ab4b1401)
+
+## BUG TRACKER
+
+![image](https://github.com/user-attachments/assets/9f1c327a-7180-47e4-b090-f46b4a0bb6e2)
+
+## ⚙️ Como Rodar o Projeto Localmente
+
+### ✅ Pré-requisitos
+
+Antes de rodar, você precisa ter instalado:
+
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- Git (opcional, para clonar)
+
+### ▶️ Passo a passo
+
+1. Clone o repositório:
+
+```bash
+git clone https://github.com/Portal-Cientifico/Portal-Cientifico.git
+cd Portal-Cientifico
+```
+
+2. Rode os serviços com Docker Compose:
+
+```bash
+  docker-compose up -d
+```
+
+Esse comando irá construir e iniciar os seguintes serviços automaticamente:
+
+ - Backend Java (Spring Boot)
+ - Frontend React 
+ - Banco de dados PostgreSQL
+
+
+### Onde os serviços estão disponíveis?
+
+| Serviço                   | Porta Local | URL de Acesso                                       |
+| ------------------------- | ----------- | --------------------------------------------------- |
+| **Frontend** (React)      | `3000`      | [http://localhost:3000](http://localhost:3000)      |
+| **Backend** (Spring Boot) | `8080`      | [http://localhost:8080](http://localhost:8080)      |
+| **PostgreSQL**            | `5434`      | `localhost:5434` (via DBeaver ou outro cliente SQL) |
+=======
 ---
 
 
 ### 🎞 Demonstrações da Entrega 4
 
 - 💻 [Veja o ScreenCast da entrega 3 aqui](https://youtu.be/uE2AScnn7zo)
-
----

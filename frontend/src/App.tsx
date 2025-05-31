@@ -29,6 +29,8 @@ const App: React.FC = () => {
             <Route path="material/:id" element={<MaterialPage />} />
             <Route path="explore" element={<ExplorePage />} />
 
+            <Route path="profile/:userId" element={<ProfilePage />} />
+
             <Route element={<PrivateRoute />}>
               <Route path="upload" element={<UploadPage />} />
               <Route path="profile" element={<ProfilePage />} />

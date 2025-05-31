@@ -78,7 +78,7 @@ public class Material {
     @Column(name = "average_rating", columnDefinition = "double precision default 0")
     private Double averageRating;
 
-    @Column(name = "total_rating", columnDefinition = "long default 0")
+    @Column(name = "total_rating")
     private Long totalRatings;
 
 }

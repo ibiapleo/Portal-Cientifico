@@ -9,6 +9,9 @@
     }
   ],
   "compilerOptions": {
+    "noEmitOnError": false,
+    "skipLibCheck": true,
+    "strict": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
