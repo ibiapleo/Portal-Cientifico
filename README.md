@@ -165,6 +165,10 @@ Nesta entrega foram desenvolvidas *4 histórias* adicionais:
 
 ![image](https://github.com/user-attachments/assets/1ab504e4-99d3-43f7-8854-cbc74be3d817)
 
+## BUG TRACKER
+
+![image](https://github.com/user-attachments/assets/9f1c327a-7180-47e4-b090-f46b4a0bb6e2)
+
 ---
 
 ### 📦 Entrega 4 — Funcionalidades Adicionais
