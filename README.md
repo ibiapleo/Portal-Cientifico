@@ -166,6 +166,44 @@ Nesta entrega foram desenvolvidas *4 histórias* adicionais:
 
 ### 📦 Entrega 4 — Funcionalidades Adicionais
 
+### 👤 Perfil do Usuário
+
+**História de Usuário:**  
+Como estudante, quero ter um perfil personalizado para gerenciar meus uploads, downloads e interações.
+
+**Critérios de Aceitação:**
+- [ ] O usuário pode visualizar seus materiais enviados
+- [ ] O usuário pode visualizar perfis de outros usuários
+- [ ] Exibe estatísticas de contribuição (uploads, downloads recebidos)
+- [ ] O usuário pode editar informações pessoais (nome, foto, biografia)
+
+---
+
+### 9. ⭐ Salvamento e Favoritos
+
+**História de Usuário:**  
+Como estudante, quero salvar materiais como favoritos para acessá-los facilmente depois.
+
+**Critérios de Aceitação:**  
+- [ ] Pode marcar/desmarcar materiais como favoritos
+- [ ] Pode organizar favoritos em coleções (pastas ou tags)
+- [ ] Acesso rápido aos favoritos na seção "Meus Favoritos"
+- [ ] Exibe data de salvamento para ordenação
+
+---
+
+### 10. ↗️ Compartilhamento
+
+**História de Usuário:**  
+Como estudante, quero compartilhar materiais com colegas para disseminar conhecimento útil.
+
+**Critérios de Aceitação:**  
+- [ ] Pode compartilhar via link copiável
+- [ ] Suporta compartilhamento direto em redes sociais (WhatsApp, Twitter etc)
+- [ ] Pode enviar materiais por e-mail com pré-visualização
+- [ ] Gera código QR para acesso rápido
+- [ ] Links compartilhados registram estatísticas de acesso
+
 ## 🖼 Diagrama de Classes (FINAL)
 
 ![Diagrama OAB](https://github.com/user-attachments/assets/16e388d4-b0a9-4239-b07d-59ca408b4b9a)
@@ -218,3 +256,8 @@ Esse comando irá construir e iniciar os seguintes serviços automaticamente:
 | **Backend** (Spring Boot) | `8080`      | [http://localhost:8080](http://localhost:8080)      |
 | **PostgreSQL**            | `5434`      | `localhost:5434` (via DBeaver ou outro cliente SQL) |
 
+### 🎞 Demonstrações da Entrega 4
+
+- 💻 [Veja o ScreenCast da entrega 3 aqui](https://youtu.be/PznfYYMN5Eg)
+
+---
