@@ -161,6 +161,9 @@ Nesta entrega foram desenvolvidas *4 histórias* adicionais:
 
 ![Diagrama de Classes](https://github.com/user-attachments/assets/f4ab8c06-0eb9-4b41-ab59-2ebdc1cc82f8)
 
+## TESTES UNITARIOS
+
+![image](https://github.com/user-attachments/assets/1ab504e4-99d3-43f7-8854-cbc74be3d817)
 
 ---
 
@@ -215,6 +218,10 @@ Como estudante, quero compartilhar materiais com colegas para disseminar conheci
 ## BUG TRACKER
 
 ![image](https://github.com/user-attachments/assets/9f1c327a-7180-47e4-b090-f46b4a0bb6e2)
+
+## TESTES UNITARIOS
+
+![image](https://github.com/user-attachments/assets/1ab504e4-99d3-43f7-8854-cbc74be3d817)
 
 ## ⚙️ Como Rodar o Projeto Localmente
 
